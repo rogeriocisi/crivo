@@ -23,6 +23,8 @@ O Crivo não existe para provar que a mediunidade é real, nem que não é. Ele 
 
 Em caso de conflito entre documentos, a **Constitution prevalece**.
 
+**Artigo técnico** (rascunho, em português): [`paper/artigo-tecnico.pt-BR.md`](paper/artigo-tecnico.pt-BR.md)
+
 ## Stack prevista
 
 Java (LTS) · Spring Boot · Spring Modulith · PostgreSQL · Flyway · Thymeleaf + HTMX · Testcontainers · Docker Compose
