@@ -33,6 +33,10 @@ final class PreregistrationDocument {
         }
         line(out, "");
         section(out, "Hipoteses", plan.hypotheses());
+        line(out, "## Criterios de inclusao e triagem de mediuns");
+        line(out, "");
+        line(out, plan.mediumInclusionCriteria());
+        line(out, "");
         line(out, "## Criterio de pareamento");
         line(out, "");
         line(out, plan.pairingCriteria());
@@ -44,9 +48,11 @@ final class PreregistrationDocument {
         line(out, "");
         section(out, "Analises secundarias", plan.secondaryAnalyses());
         section(out, "Regras de exclusao", plan.exclusionRules());
-        line(out, "## Tamanho-alvo da amostra");
+        line(out, "## Unidade de analise e regra de parada");
         line(out, "");
-        line(out, String.valueOf(plan.targetSampleSize()) + " escolhas forcadas independentes");
+        line(out, "- Unidade de analise: " + plan.analysisUnit().name());
+        line(out, "- Regra de parada: " + plan.stoppingRule().name());
+        line(out, "- Tamanho-alvo da amostra: " + plan.targetSampleSize() + " unidade(s) independente(s)");
         line(out, "");
         line(out, "## Forma canonica do plano");
         line(out, "");

@@ -3,7 +3,7 @@
 > Spec de alto nível. Cada épico abaixo vira uma spec detalhada própria antes da implementação.
 > Conformidade obrigatória com `CONSTITUTION.md`. Contexto e motivação em `VISION.md`. Fundamentação científica em `REFERENCES.md`.
 >
-> Versão 0.2 · novembro/2026 · 0.2: seção 2.1 "O que é uma leitura", regra "um item = uma afirmação" e referências
+> Versão 0.3 · novembro/2026 · 0.2: seção 2.1 "O que é uma leitura", regra "um item = uma afirmação" e referências · 0.3: critérios de inclusão de médiuns no pré-registro, regra de parada vinculante e unidade de análise por par (seções 5 e 9)
 
 ---
 
@@ -99,7 +99,8 @@ Esta matriz é a **especificação de segurança central**. Cada célula "✗" v
 
 ### E1. Estudo e pré-registro
 **Objetivo**: criar um estudo e congelar o pré-registro de forma verificável.
-- Criar o estudo com título, protocolo (v1: pareado), hipóteses, critérios de pareamento, escalas de pontuação, análise primária e secundária, regras de exclusão e tamanho-alvo da amostra.
+- Criar o estudo com título, protocolo (v1: pareado), hipóteses, **critérios de recrutamento e triagem de médiuns**, critérios de pareamento, escalas de pontuação, análise primária e secundária, regras de exclusão, **unidade de análise**, **regra de parada** e tamanho-alvo da amostra.
+- Os critérios de inclusão de médiuns são pré-registrados porque selecionar médiuns por desempenho anterior infla o efeito. Os resultados positivos da literatura vêm de "médiuns selecionados" sem que os critérios de seleção tenham sido publicados; aqui eles entram no documento com hash, antes da coleta.
 - Gerar o documento canônico do pré-registro (Markdown/JSON normalizado) → SHA-256 → carimbo de tempo (RFC 3161/OpenTimestamps) → espelho opcional no OSF.
 - Emendas versionadas, com justificativa; as versões anteriores continuam visíveis.
 
@@ -117,7 +118,7 @@ Esta matriz é a **especificação de segurança central**. Cada célula "✗" v
 ### E3. Pareamento e sorteio
 **Objetivo**: formar os pares e sortear as alocações de forma verificável.
 - Pareamento por critérios pré-registrados (por exemplo, mesmo gênero e faixa etária).
-- Sorteio com `SecureRandom`: médium por par, experimentador por sessão, ordem das leituras e ordem de apresentação ao sitter.
+- Sorteio com `SecureRandom`: médium por par, experimentador por sessão, ordem das leituras, ordem de apresentação ao sitter e **qual dos dois sitters do par é a unidade independente da análise confirmatória** (ver E7).
 - Esquema compromisso → revelação (Constitution P5).
 
 **Aceite**: com a semente revelada, uma CLI reproduz exatamente as mesmas alocações.
@@ -153,12 +154,14 @@ Esta matriz é a **especificação de segurança central**. Cada célula "✗" v
 **Objetivo**: revelar e analisar exatamente como foi pré-registrado.
 - Desmascaramento permitido só quando todas as avaliações estiverem fechadas (ou o prazo pré-registrado tiver expirado). É uma ação explícita e irreversível.
 - Revelação da semente.
-- Análise primária (sugestão a confirmar no pré-registro): proporção de escolhas corretas comparada a 0,5, com teste binomial unilateral.
+- Análise primária: proporção de escolhas corretas comparada a 0,5, com teste binomial exato unilateral.
+- **Unidade de análise: o par.** Os dois sitters de um par avaliam o mesmo material, em espelho, e por isso as duas escolhas não são independentes. Entra na análise confirmatória apenas a escolha do sitter que o sorteio designou para aquele par, definida antes da primeira sessão. A escolha do outro sitter é coletada e relatada como análise secundária.
+- **Regra de parada vinculante.** A coleta para no tamanho-alvo pré-registrado, sem análise interina. Se os dados não corresponderem ao que foi declarado — coleta interrompida antes, continuada depois, ou pré-registro não congelado —, o sistema **rotula o resultado como exploratório** e imprime o motivo ao lado. Isso responde à crítica de parada opcional (*optional stopping*).
 - Análises secundárias: nota global alvo × chamariz (Wilcoxon pareado) e proporção de itens corretos alvo × chamariz.
 - Análises não pré-registradas aparecem numa seção "Exploratória".
 - Relatório final com o mesmo modelo para qualquer resultado.
 
-**Aceite**: a mesma análise, rodada pelo script em R do pacote de verificação, produz os mesmos números (dentro da tolerância numérica).
+**Aceite**: a mesma análise, rodada pelo script em R do pacote de verificação, produz os mesmos números (dentro da tolerância numérica). Uma análise fora dos termos pré-registrados nunca aparece rotulada como confirmatória, nem no relatório nem no pacote exportado.
 
 ### E8. Auditoria e verificação
 **Objetivo**: permitir que qualquer terceiro confira o estudo.
@@ -211,10 +214,10 @@ Incident ──* Session (affected)
 
 ## 9. Questões em aberto
 
-1. **Tamanho da amostra**: precisa de cálculo de poder formal. Como referência, para detectar 65% de acerto contra 50% (α = 0,05 unilateral, poder de 80%) são necessárias cerca de 70 escolhas independentes. Também é preciso decidir como tratar a dependência entre os dois sitters de um mesmo par.
+1. **Tamanho da amostra**: precisa de cálculo de poder formal, e agora com uma consequência prática em cima da mesa. A dependência entre os dois sitters de um par **está decidida** (unidade de análise = par, ver E7), e isso tem custo: as cerca de 70 escolhas independentes necessárias para detectar 65% contra 50% (α = 0,05 unilateral, poder de 80%) passam a significar **70 pares, ou seja 140 sitters e 140 sessões**, não 70 sitters. A alternativa é usar as duas escolhas de cada par com um método que corrija o agrupamento (por exemplo GEE ou erro-padrão robusto por cluster), o que recupera parte do poder mas exige uma decisão estatística e uma implementação que a v1 não tem. **Recomendação**: manter a unidade por par no piloto, que é a opção conservadora e exata, e refazer o cálculo de poder antes de definir o tamanho do estudo real.
 2. **Escala de itens**: qual escala usar e como tratar o "não sei avaliar".
 3. **Primeiro nome**: dar ao médium o nome real ou um pseudônimo? (Isso afeta a ética e a validade.)
-4. **Recrutamento de médiuns**: critérios de inclusão e se haverá triagem prévia.
+4. **Recrutamento de médiuns**: o campo de critérios já existe no pré-registro e é obrigatório; falta decidir o conteúdo — quais critérios de inclusão e se haverá triagem prévia. Se houver triagem por desempenho, ela precisa estar descrita ali, porque é exatamente o ponto que a crítica usa para explicar resultados positivos.
 5. **CEP**: o estudo terá fins de publicação acadêmica? Se sim, a submissão à Plataforma Brasil vem antes do piloto.
 6. **Devolutiva**: o que cada participante recebe ao final, e como comunicar resultados nulos com cuidado.
 7. **Reconciliação** com a documentação de pesquisa já existente no Google Drive (*TransferênciaAnômalaInformação*).

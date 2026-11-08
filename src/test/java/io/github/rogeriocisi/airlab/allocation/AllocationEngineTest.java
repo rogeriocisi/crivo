@@ -104,10 +104,61 @@ class AllocationEngineTest {
                         .map(s -> new AllocationPlan.SessionAllocation(s.pairCode(), s.targetCode(),
                                 "MED-OTHER", s.experimenterCode(), s.readingOrder()))
                         .toList(),
-                plan.presentations());
+                plan.presentations(),
+                plan.confirmatoryUnits());
 
         assertThat(AllocationEngine.commitment(SEED, tampered))
                 .isNotEqualTo(AllocationEngine.commitment(SEED, plan));
+    }
+
+    @Test
+    @DisplayName("cada par tem um sitter sorteado como unidade da analise confirmatoria")
+    void each_pair_has_one_drawn_confirmatory_unit() {
+        AllocationPlan plan = AllocationEngine.plan(SEED, INPUT);
+
+        assertThat(plan.confirmatoryUnits()).hasSize(2);
+        assertThat(plan.confirmatoryUnits().stream()
+                .map(AllocationPlan.ConfirmatoryUnit::pairCode))
+                .containsExactly("PR-0001", "PR-0002");
+
+        for (AllocationPlan.ConfirmatoryUnit unit : plan.confirmatoryUnits()) {
+            List<String> targetsOfPair = unit.pairCode().equals("PR-0001")
+                    ? List.of("TGT-A", "TGT-B")
+                    : List.of("TGT-C", "TGT-D");
+            assertThat(unit.targetCode()).isIn(targetsOfPair);
+        }
+    }
+
+    @Test
+    @DisplayName("a unidade confirmatoria tambem e reproduzivel e entra no compromisso")
+    void the_confirmatory_unit_is_part_of_the_commitment() {
+        AllocationPlan plan = AllocationEngine.plan(SEED, INPUT);
+        AllocationPlan again = AllocationEngine.plan(SEED, INPUT);
+
+        assertThat(again.confirmatoryUnits()).isEqualTo(plan.confirmatoryUnits());
+        assertThat(plan.canonicalForm()).contains("confirmatoryUnits");
+
+        // Designate the other sitter of each pair, whichever one the draw picked.
+        AllocationPlan swapped = new AllocationPlan(
+                plan.studyCode(),
+                plan.sessions(),
+                plan.presentations(),
+                plan.confirmatoryUnits().stream()
+                        .map(u -> new AllocationPlan.ConfirmatoryUnit(u.pairCode(),
+                                otherTargetOfPair(u.pairCode(), u.targetCode())))
+                        .toList());
+
+        assertThat(swapped.confirmatoryUnits()).isNotEqualTo(plan.confirmatoryUnits());
+
+        assertThat(AllocationEngine.commitment(SEED, swapped))
+                .isNotEqualTo(AllocationEngine.commitment(SEED, plan));
+    }
+
+    private static String otherTargetOfPair(String pairCode, String targetCode) {
+        List<String> targets = pairCode.equals("PR-0001")
+                ? List.of("TGT-A", "TGT-B")
+                : List.of("TGT-C", "TGT-D");
+        return targets.get(0).equals(targetCode) ? targets.get(1) : targets.get(0);
     }
 
     @Test

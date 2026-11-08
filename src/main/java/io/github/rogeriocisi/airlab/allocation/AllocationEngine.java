@@ -56,6 +56,7 @@ public final class AllocationEngine {
 
         List<AllocationPlan.SessionAllocation> sessions = new ArrayList<>();
         List<AllocationPlan.PresentationOrder> presentations = new ArrayList<>();
+        List<AllocationPlan.ConfirmatoryUnit> confirmatoryUnits = new ArrayList<>();
 
         for (DrawInput.PairInput pair : pairs) {
             String medium = mediums.get(
@@ -73,6 +74,16 @@ public final class AllocationEngine {
                         pair.pairCode(), targets.get(i), medium, experimenter, i + 1));
             }
 
+            // Which sitter of this pair carries the one independent observation of the
+            // confirmatory analysis. Drawn here, before any session, so that the unit of
+            // analysis cannot be picked after the fact (SPEC, Epic E7).
+            List<String> pairTargets = new ArrayList<>(List.of(pair.targetA(), pair.targetB()));
+            pairTargets.sort(Comparator.naturalOrder());
+            confirmatoryUnits.add(new AllocationPlan.ConfirmatoryUnit(
+                    pair.pairCode(),
+                    pairTargets.get(new SeedStream(seed, "confirmatory-unit:" + pair.pairCode())
+                            .nextInt(pairTargets.size()))));
+
             // Presentation order to each sitter, drawn independently per sitter so that
             // "mine was shown first" carries no information (P1, Epic E6).
             for (String target : List.of(pair.targetA(), pair.targetB())) {
@@ -86,8 +97,9 @@ public final class AllocationEngine {
         sessions.sort(Comparator.comparing(AllocationPlan.SessionAllocation::pairCode)
                 .thenComparing(AllocationPlan.SessionAllocation::readingOrder));
         presentations.sort(Comparator.comparing(AllocationPlan.PresentationOrder::targetCode));
+        confirmatoryUnits.sort(Comparator.comparing(AllocationPlan.ConfirmatoryUnit::pairCode));
 
-        return new AllocationPlan(input.studyCode(), sessions, presentations);
+        return new AllocationPlan(input.studyCode(), sessions, presentations, confirmatoryUnits);
     }
 
     /**

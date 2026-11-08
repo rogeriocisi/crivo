@@ -35,12 +35,15 @@ class PreregistrationIntegrationTest {
     private static PreregistrationPlan plan() {
         return new PreregistrationPlan(
                 List.of("Sitters escolhem a propria leitura acima do acaso"),
+                "Mediuns voluntarios maiores de 18 anos, sem triagem por desempenho previo",
                 "Mesmo genero e mesma faixa de idade ao obito",
                 List.of("correto", "parcialmente", "incorreto", "nao sei avaliar"),
                 "Proporcao de escolhas corretas comparada a 0,5, teste binomial unilateral",
+                AnalysisUnit.PAIR,
+                StoppingRule.FIXED_SAMPLE_SIZE,
+                70,
                 List.of(),
-                List.of("Sessao interrompida e excluida"),
-                70);
+                List.of("Sessao interrompida e excluida"));
     }
 
     @Test

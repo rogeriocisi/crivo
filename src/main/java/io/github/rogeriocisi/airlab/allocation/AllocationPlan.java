@@ -15,11 +15,13 @@ import java.util.Map;
  */
 public record AllocationPlan(String studyCode,
                              List<SessionAllocation> sessions,
-                             List<PresentationOrder> presentations) {
+                             List<PresentationOrder> presentations,
+                             List<ConfirmatoryUnit> confirmatoryUnits) {
 
     public AllocationPlan {
         sessions = List.copyOf(sessions);
         presentations = List.copyOf(presentations);
+        confirmatoryUnits = List.copyOf(confirmatoryUnits);
     }
 
     /**
@@ -42,6 +44,17 @@ public record AllocationPlan(String studyCode,
     public record PresentationOrder(String targetCode, String firstShownTargetCode) {
     }
 
+    /**
+     * Which sitter of a pair contributes the one independent observation of the confirmatory
+     * analysis (see {@code study.AnalysisUnit#PAIR}).
+     *
+     * <p>Drawn with everything else, before the first session, so the choice of unit cannot
+     * be made after seeing which sitter got it right. The other sitter's forced choice is
+     * still collected and still reported, as a declared secondary analysis.
+     */
+    public record ConfirmatoryUnit(String pairCode, String targetCode) {
+    }
+
     /** Canonical JSON of the plan: the exact bytes the commitment is computed over. */
     public String canonicalForm() {
         List<Object> sessionList = new ArrayList<>();
@@ -61,10 +74,18 @@ public record AllocationPlan(String studyCode,
             row.put("firstShown", p.firstShownTargetCode());
             presentationList.add(row);
         }
+        List<Object> confirmatoryList = new ArrayList<>();
+        for (ConfirmatoryUnit unit : confirmatoryUnits) {
+            Map<String, Object> row = new LinkedHashMap<>();
+            row.put("pair", unit.pairCode());
+            row.put("target", unit.targetCode());
+            confirmatoryList.add(row);
+        }
         Map<String, Object> root = new LinkedHashMap<>();
         root.put("study", studyCode);
         root.put("sessions", sessionList);
         root.put("presentations", presentationList);
+        root.put("confirmatoryUnits", confirmatoryList);
         return CanonicalJson.write(root);
     }
 }

@@ -1,6 +1,6 @@
 # Plano técnico do MVP — Crivo (AIR Lab)
 
-> Derivado de `CONSTITUTION.md` (prevalece) e de `SPEC.md`. Versão 1.0 · novembro/2026.
+> Derivado de `CONSTITUTION.md` (prevalece) e de `SPEC.md`. Versão 1.1 · novembro/2026.
 > Este documento registra as decisões de implementação do MVP: estrutura de módulos,
 > esquemas e migrações, execução por linha de comando e justificativa de cada dependência.
 
@@ -42,7 +42,7 @@ quem pode depender; `ModularityTest` verifica isso no build.
 | `study` | E1 | **Implementado**: estudo, documento canônico do pré-registro, congelamento, emendas |
 | `participant` | E2 | **Implementado**: participantes, consentimento, alvos, pareamento, desistência |
 | `redaction` | E5 | Parcial: `ClueScrubber` (guarda de pistas). Persistência e telas pendentes |
-| `analysis` | E7 | Parcial: teste binomial exato (análise primária). Persistência e relatório pendentes |
+| `analysis` | E7 | Parcial: teste binomial exato, política de rótulo confirmatório/exploratório e redução às unidades independentes. Persistência e relatório pendentes |
 | `session` | E4 | Pendente (tabelas prontas) |
 | `scoring` | E6 | Pendente (tabelas prontas) |
 | `unblinding` | E7 | Pendente (tabelas prontas) |
@@ -75,7 +75,28 @@ Flyway, em `src/main/resources/db/migration`. Histórico no esquema `research`.
 superusuário, de modo que a imposição vale também no perfil local, onde a aplicação conecta
 como proprietária do banco.
 
-## 4. Decisões criptográficas
+## 4. Decisões metodológicas impostas pelo código
+
+Três críticas recorrentes a esta literatura não se resolvem com disciplina do pesquisador; o
+sistema as trata como regra:
+
+| Crítica | Como o sistema responde | Onde |
+|---|---|---|
+| Resultados positivos vêm de "médiuns selecionados", sem critérios publicados | `mediumInclusionCriteria` é campo obrigatório do pré-registro, entra no documento com hash antes da coleta | `study.PreregistrationPlan` |
+| Parada opcional: encerrar a coleta quando os números ficam bons | A análise só recebe o rótulo **confirmatória** se o pré-registro estava congelado e o número de unidades coletadas for exatamente o alvo declarado. Fora disso, sai rotulada como exploratória, com o motivo impresso ao lado | `analysis.ConfirmatoryAnalysisPolicy` |
+| Dependência entre os dois sitters de um par, tratados como observações independentes | A unidade da análise confirmatória é o par: entra só a escolha do sitter **sorteado** para aquele par, antes da primeira sessão. A outra escolha é relatada como secundária | `allocation.AllocationPlan.ConfirmatoryUnit`, `analysis.IndependentUnits` |
+
+O sistema não pretende impedir que uma coleta seja interrompida — isso está fora do alcance de
+software. O que ele faz é recusar o rótulo de confirmatória nesse caso, o que é a parte que
+importa para quem lê o relatório.
+
+**Custo da decisão da unidade de análise**: com o par como unidade, as ~70 observações
+independentes do cálculo de referência passam a significar 70 pares — 140 sitters e 140
+sessões. A alternativa (usar as duas escolhas com correção para agrupamento) recupera poder,
+mas exige um método que a v1 não implementa. A decisão e a recomendação estão registradas na
+`SPEC.md`, seção 9, questão 1, e o cálculo de poder formal continua pendente.
+
+## 5. Decisões criptográficas
 
 | Decisão | Por quê |
 |---|---|
@@ -86,7 +107,7 @@ como proprietária do banco.
 | Semente cifrada em custódia (AES-256-GCM) até o desmascaramento | Um dump do banco durante o estudo não revela a semente, e a semente sobrevive a um reinício |
 | Campos identificáveis cifrados com AES-256-GCM, envelope `v1:` | LGPD (P6) e espaço para rotação de chave |
 
-## 5. Dependências novas e sua justificativa (P8)
+## 6. Dependências novas e sua justificativa (P8)
 
 | Dependência | Por quê | Custo de manutenção |
 |---|---|---|
@@ -101,7 +122,7 @@ como proprietária do banco.
 Jackson entra apenas como já parte do starter web, e só é usado para **ler** a entrada do
 sorteio na CLI, nunca para calcular hash.
 
-## 6. Testes
+## 7. Testes
 
 | Teste | Princípio | Tipo |
 |---|---|---|
@@ -109,6 +130,8 @@ sorteio na CLI, nunca para calcular hash.
 | `PreregistrationIntegrationTest` | P2, P5 | PostgreSQL real: congelamento, imutabilidade, emenda, sorteio único, revelação da semente |
 | `AllocationEngineTest` | P5 | Unitário: reprodutibilidade, independência da ordem de entrada, compromisso ligado às alocações |
 | `BinomialTestTest` | P9 | Unitário: valores de referência exatos (conferem com `binom.test` do R) |
+| `ConfirmatoryAnalysisPolicyTest` | P2 | Unitário: parada antes e depois do alvo, pré-registro não congelado e unidade dependente viram exploratória |
+| `IndependentUnitsTest` | P9 | Unitário: uma escolha por par, a do sitter sorteado; dado faltante interrompe em vez de encolher a amostra |
 | `ClueScrubberTest` | P1 | Unitário: primeiro nome, pistas de sessão, datas, item com mais de uma afirmação |
 | `BlindingMatrixTest` | P1 | Estrutural: campo proibido ausente da projeção, não filtrado na view |
 | `ModularityTest` | Regra 1 e 2 | Fronteiras de módulo |
@@ -116,7 +139,7 @@ sorteio na CLI, nunca para calcular hash.
 Os testes de integração usam o mesmo PostgreSQL embarcado, então `./mvnw test` funciona em
 Windows e Linux sem Docker e sem banco instalado.
 
-## 7. Armadilhas conhecidas
+## 8. Armadilhas conhecidas
 
 1. **Binários do PostgreSQL embarcado**: fixados em 16.9.0. Os 17.x quebram o `initdb` no Windows.
 2. **Diretório do cluster**: nunca aponte `airlab.local-database.data-directory` para pasta
@@ -129,10 +152,11 @@ Windows e Linux sem Docker e sem banco instalado.
    Aceitável para implantação por `scp`; se incomodar, separe um perfil Maven que exclua os
    binários no artefato de produção.
 
-## 8. Próximos cortes
+## 9. Próximos cortes
 
 1. **E4 (sessões)**: consumir `AllocationDrawn`, criar sessões, tela do experimentador com
-   apenas o primeiro nome, upload de mídia com identificador aleatório.
+   apenas o primeiro nome, upload de mídia com identificador aleatório. É aqui que a unidade
+   confirmatória sorteada precisa ser persistida junto com as sessões, para alimentar o E7.
 2. **E5 (redação)**: persistência das leituras redigidas e itens, usando o `ClueScrubber` como
    validação de submissão.
 3. **E6 (avaliação cega)**: links de uso único e expiráveis, formulário do sitter, bloqueio no
