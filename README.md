@@ -18,7 +18,8 @@ O Crivo não existe para provar que a mediunidade é real, nem que não é. Ele 
 |---|---|
 | [`docs/VISION.md`](docs/VISION.md) | Visão, problema, objetivos, não objetivos, papéis, roadmap e riscos |
 | [`docs/CONSTITUTION.md`](docs/CONSTITUTION.md) | Princípios inegociáveis (P1–P10), arquitetura de referência e implantação por fase |
-| [`docs/SPEC.md`](docs/SPEC.md) | Especificação macro: protocolo pareado, matriz de cegamento, épicos, modelo de domínio e MVP |
+| [`docs/SPEC.md`](docs/SPEC.md) | Especificação macro: o que é uma leitura, protocolo pareado, matriz de cegamento, épicos, modelo de domínio e MVP |
+| [`docs/REFERENCES.md`](docs/REFERENCES.md) | Papers que embasam o projeto (a favor e críticos) e a decisão de projeto que cada um informa |
 
 Em caso de conflito entre documentos, a **Constitution prevalece**.
 

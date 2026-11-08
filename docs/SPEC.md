@@ -1,9 +1,9 @@
 # Especificação Macro — Crivo (codinome AIR Lab)
 
 > Spec de alto nível. Cada épico abaixo vira uma spec detalhada própria antes da implementação.
-> Conformidade obrigatória com `CONSTITUTION.md`. Contexto e motivação em `VISION.md`.
+> Conformidade obrigatória com `CONSTITUTION.md`. Contexto e motivação em `VISION.md`. Fundamentação científica em `REFERENCES.md`.
 >
-> Versão 0.1 · novembro/2026
+> Versão 0.2 · novembro/2026 · 0.2: seção 2.1 "O que é uma leitura", regra "um item = uma afirmação" e referências
 
 ---
 
@@ -29,6 +29,26 @@ A v1 implementa **um único protocolo**: a **leitura mediúnica pareada com cega
 | **Chamariz** | A leitura do outro falecido do par, apresentada ao sitter como alternativa |
 | **Desmascaramento** | Revelação controlada de qual leitura era de qual alvo, depois que todas as avaliações forem fechadas |
 | **Pacote de verificação** | Conjunto exportado que permite a um terceiro auditar e reexecutar a análise |
+
+### 2.1 O que é uma leitura
+
+**Leitura** é tudo o que o médium produz numa sessão a respeito de um falecido-alvo: as afirmações que ele faz sobre aquela pessoa. É a matéria-prima do estudo, o dado bruto a ser avaliado.
+
+O termo vem do inglês *reading*, usado na pesquisa sobre mediunidade. No vocabulário espírita, o mais próximo seria "comunicação" ou "mensagem" (por psicofonia ou psicografia). A troca é deliberada: "comunicação" já pressupõe que alguém está se comunicando, enquanto "leitura" descreve só o que aconteceu (o médium falou e isso foi registrado) sem afirmar de onde veio a informação. É o princípio P3 da Constitution, de neutralidade.
+
+**Ciclo de vida de uma leitura no protocolo:**
+
+1. **Sessão:** o experimentador diz ao médium apenas o primeiro nome do alvo (por exemplo, "Antônio"). O médium fala livremente sobre essa pessoa (aparência, personalidade, circunstâncias da morte, hobbies, relações, recados), e tudo é gravado.
+2. **Leitura bruta:** a gravação e a sua transcrição.
+3. **Leitura redigida:** a transcrição é convertida numa lista numerada de **itens**, cada um com **uma única afirmação verificável**. Saem as pistas espúrias, como o primeiro nome, referências ao experimentador e datas. Exemplo inventado:
+   1. Era um homem alto, de mãos grandes.
+   2. Gostava de mexer com marcenaria.
+   3. Faleceu de forma repentina, ligada ao coração.
+   4. Tinha uma relação difícil com um irmão.
+   5. Mostra um relógio de bolso como algo importante.
+4. **Avaliação cega:** o sitter recebe duas leituras redigidas, a do seu falecido e a do chamariz, sem saber qual é qual. Ele pontua cada item, dá uma nota global para cada leitura e escolhe qual acredita ser a sua.
+
+**Por que itens e chamariz:** afirmações genéricas ("era uma pessoa querida pela família") tendem a "acertar" para qualquer um. O chamariz expõe exatamente isso: só conta como evidência o que se ajusta ao alvo verdadeiro **mais** do que ao chamariz, de forma consistente e acima do acaso. A decomposição em itens verificáveis segue a prática da literatura (ver `REFERENCES.md`, Rocha et al. 2014 e Beischel et al. 2015).
 
 ## 3. Fluxo do protocolo (visão ponta a ponta)
 
@@ -114,7 +134,8 @@ Esta matriz é a **especificação de segurança central**. Cada célula "✗" v
 ### E5. Redação
 **Objetivo**: transformar a leitura em lista de itens avaliáveis, sem pistas espúrias.
 - O redator vê a transcrição sem saber a qual sitter ela pertence.
-- Divide em itens numerados e remove referências ao experimentador, datas da sessão e o primeiro nome do alvo. Essa última remoção é necessária porque, dentro de um par, o nome revelaria a leitura.
+- Divide em itens numerados, com **uma única afirmação verificável por item**. Itens com várias afirmações dificultam a pontuação, uma crítica feita ao formato de O'Keeffe & Wiseman, 2005 (ver `REFERENCES.md`).
+- Remove referências ao experimentador, datas da sessão e o primeiro nome do alvo. Essa última remoção é necessária porque, dentro de um par, o nome revelaria a leitura.
 - Cada redação fica versionada e auditada.
 
 **Aceite**: as duas leituras de um par chegam ao sitter em formato idêntico e sem o primeiro nome.

@@ -97,5 +97,6 @@ O Crivo não existe para provar que a mediunidade é real nem que não é. Ele e
 ## 10. Documentos relacionados
 
 - `CONSTITUTION.md`: princípios inegociáveis e arquitetura tecnológica.
-- `SPEC.md`: especificação macro (escopo, épicos, requisitos, modelo de domínio).
+- `SPEC.md`: especificação macro (escopo, épicos, requisitos, modelo de domínio), incluindo a explicação do que é uma leitura (seção 2.1).
+- `REFERENCES.md`: papers que embasam o protocolo, inclusive os críticos, e qual decisão de projeto cada um informa.
 - Documentação de pesquisa existente no Google Drive (pastas *Psicobiofísica* e *TransferênciaAnômalaInformação*), a reconciliar com esta visão.

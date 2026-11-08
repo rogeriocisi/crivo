@@ -7,6 +7,7 @@ Instruções para o Claude Code neste repositório.
 1. `docs/CONSTITUTION.md`: princípios inegociáveis P1–P10, arquitetura e implantação. **Prevalece sobre todo o resto.**
 2. `docs/SPEC.md`: especificação macro, com a matriz de cegamento (seção 4) e os épicos E1–E9.
 3. `docs/VISION.md`: contexto, objetivos e não objetivos.
+4. `docs/REFERENCES.md`: fundamentação científica. Ao mudar uma regra do protocolo, verifique se ela contraria alguma decisão mapeada ali.
 
 ## Regras de trabalho
 
