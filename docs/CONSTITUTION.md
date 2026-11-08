@@ -2,7 +2,7 @@
 
 > Este documento define os **princípios inegociáveis** do projeto e a **arquitetura tecnológica de referência**. Toda spec, plano e tarefa deve estar em conformidade com ele. Quando houver conflito entre este documento e qualquer outro, **este prevalece**.
 >
-> Versão 1.1.1 · Ratificada em: novembro/2026 · 1.1.0: adicionada a seção "Implantação por fase" · 1.1.1: nome público "Crivo", codinome técnico "AIR Lab"
+> Versão 1.2.0 · Ratificada em: novembro/2026 · 1.1.0: adicionada a seção "Implantação por fase" · 1.1.1: nome público "Crivo", codinome técnico "AIR Lab" · 1.2.0: arquitetura sem Docker — aplicação executada por linha de comando (JAR/Spring Boot) em Windows e Linux, com PostgreSQL nativo ou embarcado
 
 ---
 
@@ -102,7 +102,7 @@ O projeto é mantido por um desenvolvedor solo.
 | Framework | **Spring Boot** (versão estável atual) | Padrão de mercado; segurança, dados e testes integrados |
 | Modularidade | **Spring Modulith** | Fronteiras de módulo verificadas por teste, eventos de domínio |
 | Build | **Maven** | Simples e previsível (Gradle é aceitável se preferido) |
-| Banco | **PostgreSQL** | Permissões por esquema e por papel; garante o append-only (P4) |
+| Banco | **PostgreSQL** instalado nativamente (serviço do SO) em produção; **embarcado pela aplicação** em desenvolvimento e teste | Permissões por esquema e por papel; garante o append-only (P4). Não é substituível por H2: o P4 depende de `REVOKE`/papéis do PostgreSQL |
 | Migrações | **Flyway** | Versionamento do esquema auditável |
 | Acesso a dados | Spring Data JPA nos agregados + **jOOQ ou JDBC** para consultas estatísticas | JPA no CRUD; SQL explícito onde a precisão importa |
 | Interface | **Thymeleaf + HTMX** | Sem SPA para manter; renderizado no servidor; acessível |
@@ -111,8 +111,9 @@ O projeto é mantido por um desenvolvedor solo.
 | Criptografia | JCA (`SecureRandom`, SHA-256) + criptografia de campo para dados identificáveis | Sem dependência exótica |
 | Carimbo de tempo | **RFC 3161 (TSA)** e/ou **OpenTimestamps**; pré-registro também espelhado no **OSF Registries** | Prova de anterioridade verificável por terceiros |
 | Transcrição (opcional) | **whisper.cpp** local | Os dados de participantes não saem da máquina (P6, P10) |
-| Testes | JUnit 5, AssertJ, **Testcontainers** (PostgreSQL real), ArchUnit/Modulith tests | Testes de cegamento contra banco real |
-| Implantação | **Docker Compose** em servidor Ubuntu | Operável por uma pessoa |
+| Testes | JUnit 5, AssertJ, **PostgreSQL embarcado** (`io.zonky.test:embedded-postgres`, binários reais do PostgreSQL, sem Docker), ArchUnit/Modulith tests | Testes de cegamento contra PostgreSQL real, rodando em Windows e Linux sem container |
+| Execução | **JAR executável do Spring Boot**, acionado por linha de comando (`java -jar`) em Windows e Linux, via script único `scripts/start.sh` / `scripts/start.ps1` | Um comando sobe tudo; sem Docker, sem runtime de container |
+| Implantação | **Processo do sistema operacional**: unidade `systemd` no Linux, serviço do Windows (WinSW/`sc.exe`) ou Agendador de Tarefas | Operável por uma pessoa, sem camada de orquestração |
 | Backups | Dump criptografado diário + teste de restauração mensal | Dados de pesquisa são irreproduzíveis |
 | Observabilidade | Logs estruturados **sem dados pessoais** + Spring Actuator | Logs nunca podem quebrar cegamento nem privacidade |
 
@@ -125,28 +126,49 @@ O projeto é mantido por um desenvolvedor solo.
 5. **O desmascaramento** é uma operação explícita, irreversível, autorizada só depois do fechamento de todas as avaliações, e registrada na trilha.
 6. **Configuração por ambiente**: segredos ficam fora do repositório (variáveis de ambiente/arquivo `.env` não versionado).
 7. **Nomes de arquivos e metadados** de mídia são substituídos por identificadores aleatórios no upload (P1).
+8. **Sem dependência de Docker**: nenhuma etapa obrigatória do projeto (build, teste, execução, implantação, verificação do pacote de auditoria) pode exigir Docker, container ou orquestrador. Quem clona o repositório precisa apenas de um JDK e do script de inicialização.
+9. **Processo único**: a aplicação é um só processo Java, com o servidor web embutido. Componentes externos obrigatórios se limitam ao PostgreSQL; qualquer novo processo obrigatório exige justificativa escrita (P8).
+10. **Paridade Windows/Linux**: todo caminho, script e comando documentado funciona nos dois sistemas. Nada de caminho absoluto no estilo `/var/...` no código; diretórios de dados vêm de configuração (`crivo.storage.path`), com padrão relativo ao diretório de trabalho.
 
 ### Implantação por fase
 
-O mesmo `docker-compose.yml` serve a todas as fases. O que muda é **onde** roda e **que dados** existem ali.
+O mesmo artefato (um JAR executável) serve a todas as fases, acionado pelo mesmo script de linha de comando. O que muda é **onde** roda, **qual perfil** está ativo e **que dados** existem ali.
 
 | Fase | Onde roda | Dados | Exposição |
 |---|---|---|---|
-| **Desenvolvimento** | Workstation Ubuntu do autor | Somente fictícios | Local (`localhost`) |
-| **Dry-run** | Workstation Ubuntu | Fictícios (pessoas reais simulando papéis com falecidos inventados) | Temporária, via **Cloudflare Tunnel** ou **Tailscale Funnel**; sem abrir portas no roteador; túnel desligado ao fim de cada sessão de teste |
-| **Piloto / estudos reais** | **VPS com região em São Paulo** (2 vCPU, 2–4 GB RAM são suficientes) | Reais, sensíveis | HTTPS público, só com as rotas da aplicação |
+| **Desenvolvimento** | Workstation do autor, **Windows ou Linux** (perfil `local`) | Somente fictícios | Local (`localhost`) |
+| **Dry-run** | Workstation Windows ou Linux (perfil `local`) | Fictícios (pessoas reais simulando papéis com falecidos inventados) | Temporária, via **Cloudflare Tunnel** ou **Tailscale Funnel**; sem abrir portas no roteador; túnel desligado ao fim de cada sessão de teste |
+| **Piloto / estudos reais** | **VPS Linux com região em São Paulo** (2 vCPU, 2–4 GB RAM são suficientes), perfil `prod`: JAR como serviço `systemd` + PostgreSQL do sistema | Reais, sensíveis | HTTPS público, só com as rotas da aplicação |
 | **Pós-estudo** | VPS desligada ou arquivada | Dados identificáveis eliminados conforme o termo de consentimento | Nenhuma; o que permanece público fica nos repositórios externos (abaixo) |
 
 #### Regras de implantação
 
 1. **Residência de dados**: dados reais de participantes ficam em infraestrutura com região no Brasil. Transferência internacional só com base legal documentada (LGPD, art. 33).
-2. **Provedor**: preferir VPS simples (uma máquina, Docker Compose) a serviços gerenciados, por causa do P8. Candidatos com região em São Paulo: AWS, Google Cloud, Azure, Oracle Cloud, Vultr, Magalu Cloud. Confirme preço e condições atuais na hora da escolha.
-3. **Borda**: proxy reverso **Caddy** (ou Traefik) com HTTPS automático. Só as portas 80/443 ficam abertas; o SSH usa chave e, de preferência, só é acessível via Tailscale.
-4. **Banco**: o PostgreSQL não é exposto à internet e roda na rede interna do Compose.
+2. **Provedor**: preferir VPS simples (uma máquina, pacotes do sistema operacional) a serviços gerenciados ou plataformas de container, por causa do P8. Candidatos com região em São Paulo: AWS, Google Cloud, Azure, Oracle Cloud, Vultr, Magalu Cloud. Confirme preço e condições atuais na hora da escolha.
+3. **Borda**: proxy reverso **Caddy** instalado como pacote/serviço do sistema (binário único, HTTPS automático), encaminhando para a aplicação em `127.0.0.1:8080`. Só as portas 80/443 ficam abertas; o SSH usa chave e, de preferência, só é acessível via Tailscale.
+4. **Banco**: em produção, o PostgreSQL é o do sistema operacional (`apt install postgresql`), escutando **somente** em `127.0.0.1`, nunca exposto à internet. Em desenvolvimento e teste, a própria aplicação sobe uma instância embarcada (binários reais do PostgreSQL) em `~/.airlab/pgdata`, descartável e isolada — fora do repositório e fora de pasta sincronizada. Nos dois casos valem os mesmos esquemas, papéis e migrações Flyway — nada de banco diferente por ambiente.
 5. **Backups**: dump diário criptografado (por exemplo, `age` ou `restic`) enviado para **fora da VPS**, seja armazenamento de objetos de outro provedor, seja a workstation do autor. A restauração é testada mensalmente.
 6. **Transcrição sempre local (P6, P10)**: o whisper.cpp roda na **workstation**, nunca na VPS. O fluxo é: baixar o áudio por canal autenticado → transcrever localmente → subir apenas o texto → apagar a cópia local do áudio ao fim do estudo, conforme o termo.
 7. **Segredos**: em variáveis de ambiente ou arquivo `.env` com permissão restrita no servidor, nunca no repositório.
-8. **Atualizações**: imagens com versão fixada; atualizações de segurança do sistema operacional automáticas; atualização da aplicação só entre sessões de coleta, nunca durante um estudo em andamento sem registro na trilha de auditoria.
+8. **Atualizações**: versões de JDK, PostgreSQL e dependências fixadas e registradas; atualizações de segurança do sistema operacional automáticas; atualização da aplicação só entre sessões de coleta, nunca durante um estudo em andamento sem registro na trilha de auditoria.
+
+#### Execução por linha de comando
+
+A aplicação é acionada por **um único script**, que sobe todos os componentes necessários (banco e aplicação) e vale para Windows e Linux:
+
+| Sistema | Comando |
+|---|---|
+| Linux / macOS | `./scripts/start.sh` |
+| Windows (PowerShell) | `.\scripts\start.ps1` |
+| Windows (cmd) | `scripts\start.cmd` |
+
+Regras:
+
+1. **Um comando, tudo de pé**: no perfil `local` (padrão), o script valida o JDK, constrói o JAR se preciso, sobe o PostgreSQL embarcado, aplica as migrações Flyway e inicia a aplicação. Nenhuma instalação manual de banco é exigida do desenvolvedor.
+2. **Pré-requisito único**: um JDK (LTS) instalado. O Maven vem pelo *wrapper* do próprio repositório; o PostgreSQL de desenvolvimento vem como dependência da aplicação.
+3. **Mesmo script em produção**: `--profile prod` usa o PostgreSQL do sistema, lê os segredos do ambiente (ou do `.env` não versionado) e não sobe banco embarcado; a falta de qualquer variável obrigatória interrompe a inicialização com mensagem clara, nunca com um padrão silencioso.
+4. **CLI de auditoria**: a verificação do P4/P5 também é linha de comando e o mesmo artefato — `./scripts/airlab.sh verify` e `.\scripts\airlab.ps1 verify` — e precisa rodar nos dois sistemas operacionais, porque o auditor externo não escolhe a plataforma.
+5. **Sem passo oculto**: qualquer etapa que o script não faça sozinho (criar papéis no PostgreSQL de produção, gerar segredos) está documentada no `README.md` como comando explícito.
 
 #### Parte pública (separada da aplicação)
 
@@ -170,7 +192,7 @@ Se o estudo for vinculado a uma universidade (por exemplo, por causa do CEP), av
 - **Commits pequenos** e mensagens no padrão Conventional Commits.
 - **Definição de pronto**: testes passando (incluindo cegamento e auditoria), migração revisada, documentação atualizada e nenhum dado pessoal em logs.
 - **Idioma**: documentação e interface em português; código, identificadores e commits em inglês.
-- **Nomenclatura**: o nome público é **Crivo**; o codinome técnico **AIR Lab** é usado em pacotes Java (`io.github.rogeriocisi.airlab`), artefatos Maven, imagens Docker e na CLI (`airlab`).
+- **Nomenclatura**: o nome público é **Crivo**; o codinome técnico **AIR Lab** é usado em pacotes Java (`io.github.rogeriocisi.airlab`), artefatos Maven e na CLI (`airlab`).
 
 ## Parte IV — Governança
 

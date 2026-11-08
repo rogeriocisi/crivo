@@ -191,7 +191,7 @@ Dados identificáveis nunca entram no pacote, e uma verificação automática bl
 
 ## 5.7 Implantação
 
-O sistema é distribuído como um conjunto Docker Compose. Em produção, roda numa máquina virtual com dados residentes no Brasil, com proxy reverso com HTTPS, banco não exposto e backups criptografados fora do servidor. A transcrição de áudio, quando usada, roda **localmente** na máquina do pesquisador (whisper.cpp). Nenhum modelo de IA participa da avaliação ou da pontuação de leituras.
+O sistema é distribuído como um único artefato executável (um JAR do Spring Boot), acionado por linha de comando em Windows e em Linux, sem container nem orquestrador. Em desenvolvimento, a própria aplicação sobe uma instância embarcada do PostgreSQL, de modo que reproduzir o ambiente exige apenas um JDK — uma decisão deliberada, para que um auditor externo consiga rodar a verificação na sua própria máquina, qualquer que seja o sistema operacional. Em produção, roda numa máquina virtual com dados residentes no Brasil, com o PostgreSQL do sistema operacional não exposto à internet, proxy reverso com HTTPS e backups criptografados fora do servidor. A transcrição de áudio, quando usada, roda **localmente** na máquina do pesquisador (whisper.cpp). Nenhum modelo de IA participa da avaliação ou da pontuação de leituras.
 
 # 6. Garantias e limites
 
