@@ -1,0 +1,41 @@
+# Crivo (AIR Lab) — unidade systemd de exemplo (perfil prod, Linux).
+#
+# Instalação:
+#   sudo cp scripts/airlab.service.example /etc/systemd/system/airlab.service
+#   sudo systemctl daemon-reload && sudo systemctl enable --now airlab
+#
+# Os segredos ficam em /etc/airlab/airlab.env, com permissão 600 e dono root
+# (Constitution, regra de implantação 7). Nunca no repositório.
+
+[Unit]
+Description=Crivo (AIR Lab)
+Documentation=https://github.com/rogeriocisi/crivo
+After=network-online.target postgresql.service
+Wants=network-online.target
+Requires=postgresql.service
+
+[Service]
+Type=simple
+User=airlab
+Group=airlab
+WorkingDirectory=/opt/airlab
+EnvironmentFile=/etc/airlab/airlab.env
+ExecStart=/usr/bin/java -jar /opt/airlab/airlab.jar --spring.profiles.active=prod
+Restart=on-failure
+RestartSec=5
+SuccessExitStatus=143
+
+# A aplicação escuta em loopback; o Caddy faz o HTTPS na borda.
+# Endurecimento: ela só precisa escrever no diretório de dados.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/airlab/data
+ProtectKernelTunables=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+
+[Install]
+WantedBy=multi-user.target
