@@ -1,0 +1,55 @@
+spring:
+  application:
+    name: airlab
+  profiles:
+    default: local
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  flyway:
+    enabled: true
+    schemas: research
+    locations: classpath:db/migration
+  thymeleaf:
+    cache: false
+  threads:
+    virtual:
+      enabled: true
+
+server:
+  port: ${AIRLAB_PORT:8080}
+  address: ${AIRLAB_BIND:127.0.0.1}
+  forward-headers-strategy: framework
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: never
+
+# Logs estruturados sem dado pessoal (Constitution P6).
+logging:
+  level:
+    root: INFO
+    io.github.rogeriocisi.airlab: INFO
+    org.hibernate.SQL: WARN
+
+airlab:
+  storage:
+    path: ${AIRLAB_STORAGE_PATH:./data/media}
+  identity:
+    # Chave AES-256 em Base64 para os campos do esquema identity (LGPD, P6).
+    # Em producao vem do ambiente; sem ela a aplicacao nao inicia no perfil prod.
+    encryption-key: ${AIRLAB_IDENTITY_KEY:}
+  local-database:
+    enabled: false
+    port: 5433
+    data-directory: ${user.home}/.airlab/pgdata

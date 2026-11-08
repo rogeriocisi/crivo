@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Crivo</title>
+  <link rel="stylesheet" href="/css/crivo.css">
+</head>
+<body>
+<main>
+  <h1>Crivo</h1>
+  <p class="lead">Protocolos cegos para pesquisa de mediunidade.</p>
+
+  <p>
+    Esta instalacao conduz estudos com cegamento multiplo, sorteio verificavel,
+    pre-registro imutavel e trilha de auditoria encadeada por hash. O objetivo nao e
+    provar que a mediunidade existe nem que nao existe: e que a resposta, qualquer que
+    seja, possa ser conferida por terceiros.
+  </p>
+
+  <section>
+    <h2>Estado da trilha de auditoria</h2>
+    <dl>
+      <dt>Eventos registrados</dt>
+      <dd th:text="${auditEvents}">0</dd>
+      <dt>Hash do ultimo evento</dt>
+      <dd><code th:text="${auditHead}">0</code></dd>
+      <dt>Estudos cadastrados</dt>
+      <dd th:text="${studyCount}">0</dd>
+    </dl>
+    <p class="note">
+      A integridade da cadeia e verificavel por linha de comando, fora da aplicacao:
+      <code>./scripts/airlab.sh verify</code> no Linux,
+      <code>.\scripts\airlab.ps1 verify</code> no Windows.
+    </p>
+  </section>
+
+  <p><a href="/sobre">Sobre o protocolo</a> · <a href="/login">Entrar</a></p>
+</main>
+</body>
+</html>

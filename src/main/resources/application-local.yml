@@ -1,0 +1,27 @@
+#
+# Perfil local: desenvolvimento e dry-run, em Windows ou Linux.
+#
+# A propria aplicacao sobe um PostgreSQL embarcado (binarios reais do PostgreSQL,
+# sem Docker) e e ela quem fornece o DataSource, por isso nao ha url de banco aqui.
+# Somente dados ficticios. Nunca use este perfil com participantes reais.
+#
+airlab:
+  local-database:
+    enabled: true
+    port: ${AIRLAB_LOCAL_DB_PORT:5433}
+    # Fora do diretorio do projeto: um cluster PostgreSQL nao deve viver em pasta
+    # sincronizada (Google Drive, OneDrive) nem em disco de rede. Ajuste com
+    # AIRLAB_LOCAL_DB_DIR se quiser outro lugar.
+    data-directory: ${AIRLAB_LOCAL_DB_DIR:${user.home}/.airlab/pgdata}
+  identity:
+    # Chave de desenvolvimento: gerada na primeira execucao e guardada em
+    # ./data/dev-identity.key, fora do versionamento. Nunca use em producao.
+    encryption-key: ${AIRLAB_IDENTITY_KEY:}
+
+spring:
+  jpa:
+    show-sql: false
+
+logging:
+  level:
+    io.github.rogeriocisi.airlab: DEBUG

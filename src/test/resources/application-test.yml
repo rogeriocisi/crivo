@@ -1,0 +1,19 @@
+#
+# Testes: PostgreSQL embarcado real, sem Docker, em Windows ou Linux.
+# Os testes de cegamento (P1) e de integridade da trilha (P4) precisam de um
+# PostgreSQL de verdade, porque as garantias estao em triggers e permissoes.
+#
+airlab:
+  local-database:
+    enabled: true
+    port: ${AIRLAB_TEST_DB_PORT:5434}
+    # Fora do diretorio do projeto de proposito: um cluster PostgreSQL nao deve viver
+    # em pasta sincronizada (Google Drive, OneDrive) nem em disco de rede.
+    data-directory: ${java.io.tmpdir}/airlab-test-pgdata
+  identity:
+    encryption-key: ${AIRLAB_TEST_IDENTITY_KEY:MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=}
+
+logging:
+  level:
+    io.github.rogeriocisi.airlab: INFO
+    org.flywaydb: WARN

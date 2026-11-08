@@ -1,0 +1,88 @@
+:root {
+    color-scheme: light dark;
+    --bg: #fbfaf7;
+    --fg: #1d1d1b;
+    --muted: #5d5c57;
+    --rule: #d9d6cd;
+    --accent: #2f5d50;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg: #16171a;
+        --fg: #eceae4;
+        --muted: #a6a39a;
+        --rule: #32343a;
+        --accent: #8fc4b2;
+    }
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+main {
+    max-width: 44rem;
+    margin: 0 auto;
+    padding: 3rem 1rem 4rem;
+}
+
+h1 {
+    font-size: 2rem;
+    letter-spacing: -0.01em;
+    margin-bottom: 0.25rem;
+}
+
+h2 {
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-top: 2.5rem;
+}
+
+.lead {
+    color: var(--muted);
+    margin-top: 0;
+}
+
+.note {
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+section {
+    border-top: 1px solid var(--rule);
+    padding-top: 0.5rem;
+}
+
+dl {
+    display: grid;
+    grid-template-columns: minmax(10rem, auto) 1fr;
+    gap: 0.35rem 1rem;
+}
+
+dt {
+    color: var(--muted);
+}
+
+dd {
+    margin: 0;
+}
+
+code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.85em;
+    overflow-wrap: anywhere;
+}
+
+a {
+    color: var(--accent);
+}

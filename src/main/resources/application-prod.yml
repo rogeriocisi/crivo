@@ -1,0 +1,23 @@
+#
+# Perfil prod: PostgreSQL do sistema operacional, atras de proxy reverso (Caddy).
+# Nenhum valor sensivel aqui: tudo vem do ambiente ou do arquivo .env nao versionado
+# (Constitution, regra arquitetural 6 e regra de implantacao 7).
+#
+airlab:
+  local-database:
+    enabled: false
+
+spring:
+  datasource:
+    url: ${AIRLAB_DB_URL}
+    username: ${AIRLAB_DB_USER}
+    password: ${AIRLAB_DB_PASSWORD}
+  thymeleaf:
+    cache: true
+
+server:
+  address: ${AIRLAB_BIND:127.0.0.1}
+
+logging:
+  level:
+    io.github.rogeriocisi.airlab: INFO
