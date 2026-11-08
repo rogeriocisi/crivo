@@ -1,5 +1,8 @@
 package io.github.rogeriocisi.airlab.study;
 
+import io.github.rogeriocisi.airlab.analysis.AnalysisUnit;
+import io.github.rogeriocisi.airlab.analysis.PrimaryMeasure;
+import io.github.rogeriocisi.airlab.analysis.StoppingRule;
 import io.github.rogeriocisi.airlab.support.CanonicalJson;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;

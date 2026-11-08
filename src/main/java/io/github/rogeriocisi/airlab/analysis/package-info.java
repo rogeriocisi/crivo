@@ -8,5 +8,5 @@
  */
 @org.springframework.modulith.ApplicationModule(
         displayName = "analysis",
-        allowedDependencies = {"audit", "study", "support"})
+        allowedDependencies = {"audit", "support"})
 package io.github.rogeriocisi.airlab.analysis;

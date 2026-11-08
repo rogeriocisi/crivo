@@ -1,7 +1,5 @@
 package io.github.rogeriocisi.airlab.analysis;
 
-import io.github.rogeriocisi.airlab.study.AnalysisUnit;
-import io.github.rogeriocisi.airlab.study.StoppingRule;
 
 /**
  * Decides whether an analysis may be labelled confirmatory (Constitution P2, Epic E7).

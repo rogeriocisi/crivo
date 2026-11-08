@@ -1,4 +1,4 @@
-package io.github.rogeriocisi.airlab.study;
+package io.github.rogeriocisi.airlab.analysis;
 
 /**
  * What counts as one independent observation in the primary analysis.

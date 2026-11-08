@@ -2,8 +2,6 @@ package io.github.rogeriocisi.airlab.analysis;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.github.rogeriocisi.airlab.study.AnalysisUnit;
-import io.github.rogeriocisi.airlab.study.StoppingRule;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

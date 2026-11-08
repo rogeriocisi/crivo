@@ -1,4 +1,4 @@
-package io.github.rogeriocisi.airlab.study;
+package io.github.rogeriocisi.airlab.analysis;
 
 /**
  * When data collection stops, decided before it starts.
