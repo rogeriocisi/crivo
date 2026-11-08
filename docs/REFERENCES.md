@@ -35,7 +35,7 @@
 - **Informa no Crivo:** a regra de redação **um item = uma afirmação verificável** (SPEC, E5) e o registro de condições de sessão (duração e intervalo) como dado do estudo. Também mostra que um bom protocolo precisa funcionar igualmente bem nas mãos de céticos.
 
 ### Kelly & Arcangel (2011)
-**Kelly, E. W., & Arcangel, D.** (2011). An investigation of mediums who claim to give information about deceased persons. *The Journal of Nervous and Mental Disease*, 199(1), 11–17.
+**Kelly, E. W., & Arcangel, D.** (2011). An investigation of mediums who claim to give information about deceased persons. *The Journal of Nervous and Mental Disease*, 199(1), 11–17. DOI: [10.1097/NMD.0b013e31820439da](https://doi.org/10.1097/NMD.0b013e31820439da) · *Conferido no Crossref em 8/11/2026.*
 
 - **O que fez:** investigou médiuns sem triagem prévia quanto ao desempenho em condições experimentais.
 - **Crítica relevante:** o cegamento foi considerado **incompleto**, porque os médiuns receberam **fotografias** dos falecidos.
@@ -44,7 +44,7 @@
 ## 3. Revisões e meta-análises
 
 ### Sarraf, Woodley of Menie & Tressoldi (2021)
-**Sarraf, M., Woodley of Menie, M. A., & Tressoldi, P.** (2021). Anomalous information reception by mediums: A meta-analysis of the scientific evidence. *Explore* (publicado online em 2020). DOI: [10.1016/j.explore.2020.04.002](https://doi.org/10.1016/j.explore.2020.04.002)
+**Sarraf, M., Woodley of Menie, M. A., & Tressoldi, P.** (2021). Anomalous information reception by mediums: A meta-analysis of the scientific evidence. *Explore*, 17(5), 396–402 (publicado online em 2020). DOI: [10.1016/j.explore.2020.04.002](https://doi.org/10.1016/j.explore.2020.04.002) · *Volume, número, paginação e DOI conferidos no Crossref em 8/11/2026.*
 
 - **O que é:** uma meta-análise dos estudos controlados de AIR com médiuns.
 - **Informa no Crivo:** o **cálculo de poder e o tamanho da amostra** (SPEC, questão em aberto 1). O tamanho de efeito agregado e a heterogeneidade reportados aqui são o ponto de partida para o pré-registro. Os números devem ser conferidos no artigo antes de serem fixados.
@@ -87,45 +87,45 @@
 > Esta seção existe porque as referências das seções 1 a 5 são, em boa parte, de grupos que relatam resultados positivos. As críticas abaixo são o teste real do protocolo: um desenho que só convence quem já acredita não serve ao objetivo do projeto (VISION, seção 2).
 
 ### Hyman (2003)
-**Hyman, R.** (2003). How not to test mediums: Critiquing the afterlife experiments. *Skeptical Inquirer*, 27(1), 20–30.
+**Hyman, R.** (2003). How not to test mediums: Critiquing the afterlife experiments. *Skeptical Inquirer*, janeiro/fevereiro de 2003, a partir da p. 20. Reimpressão no acervo do Center for Inquiry: [p20.pdf](https://centerforinquiry.s3.amazonaws.com/wp-content/uploads/sites/29/2003/01/22164733/p20.pdf) · *Conferência parcial (8/11/2026): mês, ano e página inicial confirmados; o volume 27(1) e a página final **não** foram confirmados — o periódico não está indexado no Crossref e a reimpressão é digitalizada. Schwartz respondeu, e Hyman replicou, na edição de maio/junho de 2003.*
 
 - **O que fez:** crítica metodológica detalhada dos estudos de Schwartz e colaboradores (*The Afterlife Experiments*).
 - **Objeções centrais:** cegamento insuficiente; **ausência de regra prévia de parada**, com a coleta podendo terminar quando o resultado é favorável; pontuação sujeita a viés; generalidade das afirmações e validação subjetiva por parte de quem avalia; e a própria **forma de pontuar a precisão** como fonte de resultado espúrio.
 - **Informa no Crivo:** é a crítica que mais pesa no desenho atual. Dela saem três controles implementados: a **regra de parada** e o **tamanho-alvo vinculantes** (`StoppingRule`, `ConfirmatoryAnalysisPolicy`), a **escala de pontuação congelada** no pré-registro antes da coleta, e a escolha forçada contra chamariz como medida principal, por ter probabilidade conhecida sob o acaso. A objeção da validação subjetiva não é eliminável: o chamariz a torna *comparativa*, o que é o máximo que o desenho oferece.
 
 ### Wiseman & O'Keeffe (2001)
-**Wiseman, R., & O'Keeffe, C.** (2001). A critique of Schwartz et al.'s after-death communication studies. *Paranormal Review*, 19, 3–6. *(Conferir volume e páginas no original: periódico de circulação restrita.)*
+**Wiseman, R., & O'Keeffe, C.** (2001). A critique of Schwartz et al.'s after-death communication studies. *Paranormal Review*, n.º 19. Reimpresso em *Skeptical Inquirer*, novembro/dezembro de 2001: [p26.pdf](https://centerforinquiry.s3.amazonaws.com/wp-content/uploads/sites/29/2001/11/22164759/p26.pdf) · *Conferência parcial (8/11/2026): a reimpressão no* Skeptical Inquirer *está confirmada e, pelo acervo do Center for Inquiry, começa na p. 26 da edição de nov/dez de 2001. A paginação na* Paranormal Review **não** *foi confirmada. O número 19 é consistente com a réplica de Schwartz, publicada na* Paranormal Review *n.º 20, de outubro de 2001. Prefira citar a reimpressão, que é acessível.*
 
 - **Objeções centrais:** proteção inadequada contra vazamento sensorial e procedimentos de pontuação enviesados.
 - **Informa no Crivo:** a matriz de cegamento como **invariante de sistema** (P1), imposta na camada de domínio e de dados, e não como procedimento confiado à memória de quem conduz a sessão. Também o `ClueScrubber` (E5) e a renomeação de mídia para identificador aleatório (E4).
 
 ### Hyman (1977)
-**Hyman, R.** (1977). Cold reading: How to convince strangers that you know all about them. *The Zetetic*, 1(2), 18–37.
+**Hyman, R.** (1977). Cold reading: How to convince strangers that you know all about them. *The Zetetic*, 1, 18–37 (edição de primavera/verão; a revista passou depois a se chamar *Skeptical Inquirer*). Cópia: [Hyman-Zetetic.pdf](https://www.deceptionary.com/ftp/Hyman-Zetetic.pdf) · *Conferência parcial (8/11/2026): volume 1 e páginas 18–37 corroborados por registro institucional e pela própria apostila de Hyman; o número da edição **não** foi confirmado.*
 
 - **O que é:** a descrição clássica de como a leitura fria produz acertos convincentes sem nenhuma informação anômala.
 - **Informa no Crivo:** a razão de existir do chamariz. Uma afirmação genérica ("era uma pessoa querida pela família") acerta nos dois alvos do par e, por construção, não pontua a favor de nenhum.
 
 ### French & Stone (2014)
-**French, C. C., & Stone, A.** (2014). *Anomalistic Psychology: Exploring Paranormal Belief and Experience*. Palgrave Macmillan.
+**French, C. C., & Stone, A.** (2014). *Anomalistic Psychology: Exploring Paranormal Belief and Experience*. Palgrave Macmillan. DOI do livro: [10.1007/978-1-137-36806-5](https://doi.org/10.1007/978-1-137-36806-5) · *Conferido no Crossref em 8/11/2026.*
 
 - **O que é:** manual de psicologia anomalística; cobre leitura fria, efeito Barnum, viés de confirmação e validação subjetiva como explicações convencionais.
 - **Informa no Crivo:** o vocabulário neutro (P3) e a decisão de tratar essas explicações como **hipóteses concorrentes a serem excluídas pelo desenho**, não como acusações a refutar na discussão.
 
 ### Milton & Wiseman (1999)
-**Milton, J., & Wiseman, R.** (1999). Does psi exist? Lack of replication of an anomalous process of information transfer. *Psychological Bulletin*, 125(4), 387–391. DOI: [10.1037/0033-2909.125.4.387](https://doi.org/10.1037/0033-2909.125.4.387)
+**Milton, J., & Wiseman, R.** (1999). Does psi exist? Lack of replication of an anomalous process of information transfer. *Psychological Bulletin*, 125(4), 387–391. DOI: [10.1037/0033-2909.125.4.387](https://doi.org/10.1037/0033-2909.125.4.387) · *Conferido no Crossref em 8/11/2026.*
 
 - **O que fez:** meta-análise de replicações de ganzfeld que não encontrou efeito, em contraste com meta-análises anteriores da mesma literatura.
 - **Por que importa aqui:** mostra que **meta-análise não resolve** a questão da replicação: o resultado depende de quais estudos entram e de como se trata a heterogeneidade. Vale para Sarraf et al. (2021) tanto quanto valeu para o ganzfeld.
 - **Informa no Crivo:** o pacote de verificação (P7) e a reexecução da análise por terceiros como resposta mais forte que o acúmulo de estudos próprios.
 
 ### Simmons, Nelson & Simonsohn (2011)
-**Simmons, J. P., Nelson, L. D., & Simonsohn, U.** (2011). False-positive psychology: Undisclosed flexibility in data collection and analysis allows presenting anything as significant. *Psychological Science*, 22(11), 1359–1366. DOI: [10.1177/0956797611417632](https://doi.org/10.1177/0956797611417632)
+**Simmons, J. P., Nelson, L. D., & Simonsohn, U.** (2011). False-positive psychology: Undisclosed flexibility in data collection and analysis allows presenting anything as significant. *Psychological Science*, 22(11), 1359–1366. DOI: [10.1177/0956797611417632](https://doi.org/10.1177/0956797611417632) · *Conferido no Crossref em 8/11/2026.*
 
 - **Tese:** graus de liberdade não declarados — parar a coleta ao ver um resultado favorável, escolher o desfecho depois dos dados, relatar só as análises que deram certo — produzem significância sem efeito real.
 - **Informa no Crivo:** é a base teórica do que o `ConfirmatoryAnalysisPolicy` faz. O software não pode impedir o pesquisador de encerrar a coleta antes do tempo, mas pode **recusar-se a chamar o resultado de confirmatório** quando o N coletado não é o declarado, e imprimir o motivo ao lado. A distinção confirmatório × exploratório deixa de depender de quem escreve o relatório.
 
 ### Beischel (2007) — métodos
-**Beischel, J.** (2007). Contemporary methods used in laboratory-based mediumship research. *Journal of Parapsychology*, 71, 37–68.
+**Beischel, J.** (2007). Contemporary methods used in laboratory-based mediumship research. *Journal of Parapsychology*, 71(1), 37–68. · *Conferido em 8/11/2026 no índice da Parapsychology Press, que registra 71(1), 37–68.*
 
 - **O que é:** descrição sistemática das técnicas de laboratório: *proxy sitter*, consulente ausente, eliminação de contato sensorial, atribuição aleatória das leituras e pontuação cega.
 - **Ressalva de uso:** é fonte **parte interessada** (Windbridge). Serve como descrição de método, não como avaliação da evidência.
@@ -186,4 +186,8 @@ Lido de baixo para cima, este é o argumento do projeto: cada linha é uma obje�
 
 > **Observação de rigor:** os resultados acima foram resumidos a partir dos resumos e de fontes secundárias. Antes de citá-los no pré-registro ou em publicação, confira os números no texto integral de cada artigo.
 >
-> Isso vale em dobro para as referências da seção 6, acrescentadas na versão 0.2: volume, número e paginação de Wiseman & O'Keeffe (2001) e de Hyman (1977, 2003) foram escritos a partir de memória bibliográfica e **não foram conferidos nos originais**. Os DOIs registrados são apenas os de artigos em periódicos indexados.
+> **Conferência bibliográfica de 8/11/2026.** Os dados de todas as referências em periódicos indexados foram conferidos no Crossref, registro por registro. Duas correções resultaram daí: o DOI de Kelly & Arcangel (2011) é `10.1097/NMD.0b013e31820439da`, e a meta-análise de Sarraf et al. saiu em *Explore* 17(5), 396–402, com DOI `10.1016/j.explore.2020.04.002` — o DOI com prefixo `2021` que circulava em rascunho deste projeto está errado.
+>
+> **Continuam sem confirmação**, por não estarem indexados: a paginação de Hyman (2003) na *Skeptical Inquirer* (mês, ano e página inicial confirmados; volume e página final, não), a paginação de Wiseman & O'Keeffe (2001) na *Paranormal Review*, o número da edição de Hyman (1977) e a paginação de Roy & Robertson (2001) no *JSPR*. Para as três primeiras há reimpressão ou cópia acessível, indicada em cada entrada; prefira citá-la. A quarta continua na lista de leituras a incorporar, sem paginação inventada.
+>
+> Também vale corrigir, em qualquer rascunho derivado deste documento: o estudo de Jensen & Cardeña (2009) tem um terceiro autor, **Devin Terhune**, e saiu no *European Journal of Parapsychology*, 24, 53–67.
