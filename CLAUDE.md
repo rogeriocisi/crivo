@@ -6,8 +6,9 @@ Instruções para o Claude Code neste repositório.
 
 1. `docs/CONSTITUTION.md`: princípios inegociáveis P1–P10, arquitetura e implantação. **Prevalece sobre todo o resto.**
 2. `docs/SPEC.md`: especificação macro, com a matriz de cegamento (seção 4) e os épicos E1–E9.
-3. `docs/VISION.md`: contexto, objetivos e não objetivos.
-4. `docs/REFERENCES.md`: fundamentação científica. Ao mudar uma regra do protocolo, verifique se ela contraria alguma decisão mapeada ali.
+3. `docs/PLAN.md`: plano técnico do MVP — módulos, migrações, decisões criptográficas, dependências e **estado de implementação por épico**.
+4. `docs/VISION.md`: contexto, objetivos e não objetivos.
+5. `docs/REFERENCES.md`: fundamentação científica. Ao mudar uma regra do protocolo, verifique se ela contraria alguma decisão mapeada ali.
 
 ## Regras de trabalho
 
@@ -19,6 +20,9 @@ Instruções para o Claude Code neste repositório.
 - **IA (P10)**: nenhum código usa IA para avaliar leituras ou pontuar.
 - **Simplicidade (P8)**: monólito modular; justifique por escrito qualquer dependência nova.
 - **Versões**: confira a LTS atual do Java e a versão estável atual do Spring Boot e do Spring Modulith antes de fixá-las.
+- **Sem Docker (regra arquitetural 8)**: nenhuma etapa obrigatória pode exigir Docker, container ou orquestrador. Em desenvolvimento e teste o PostgreSQL é embarcado pela aplicação (`io.zonky.test:embedded-postgres`); em produção é o do sistema operacional. Não reintroduza Testcontainers nem `docker-compose.yml`.
+- **Paridade Windows/Linux**: todo script e comando precisa funcionar nos dois. Nada de caminho absoluto no estilo `/var/...`; diretórios vêm de configuração. O que é acionável por linha de comando tem versão `.sh` e `.ps1` em `scripts/`.
+- **Execução**: a aplicação sobe por um script único (`scripts/start.sh`, `scripts/start.ps1`), que também sobe o banco. Ao acrescentar um componente obrigatório, inclua-o nesse script ou justifique por escrito.
 
 ## Convenções
 
@@ -27,10 +31,16 @@ Instruções para o Claude Code neste repositório.
 - Commits pequenos, no padrão Conventional Commits.
 - Vocabulário neutro (P3): *reading*, *item*, *target*, *decoy*, *score*. Nunca linguagem que pressuponha a origem da informação.
 
-## Ordem sugerida do MVP
+## Estado e ordem do MVP
 
-1. Plano técnico (estrutura de módulos, migrações Flyway iniciais, esquemas `research`/`identity`/`audit` e papéis do banco)
-2. `audit`: trilha append-only encadeada por hash + CLI `airlab verify` (verificação da cadeia)
-3. `allocation`: sorteio com `SecureRandom`, compromisso → revelação, reprodução pela CLI
-4. Suíte de testes da matriz de cegamento (Testcontainers + PostgreSQL)
-5. Demais épicos, conforme o corte do MVP na SPEC, seção 8
+Já implementado (ver `docs/PLAN.md`, seção 2, para a tabela completa):
+
+1. Plano técnico, migrações `V1`–`V10` dos esquemas `research`/`identity`/`audit` e papel `airlab_app`
+2. `audit`: trilha append-only encadeada por hash + CLI `airlab verify`
+3. `allocation`: sorteio reproduzível (`SecureRandom` para a semente, SHA-256 em modo contador para a expansão), compromisso → revelação, custódia cifrada da semente
+4. `study` (E1) e `participant` (E2), com pareamento
+5. Partes puras de E5 (`ClueScrubber`) e E7 (teste binomial exato)
+
+A fazer, nesta ordem: E4 (sessões), E5 (persistência da redação), E6 (avaliação cega), E7 (desmascaramento e relatório), E8/E9 (carimbo de tempo e pacote de verificação).
+
+A suíte da matriz de cegamento cresce junto: cada linha nova da matriz da SPEC, seção 4, entra como teste antes da tela correspondente.
