@@ -1,0 +1,43 @@
+# Build
+target/
+build/
+.gradle/
+*.class
+*.jar
+!.mvn/wrapper/maven-wrapper.jar
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Segredos e configuração local (Constitution, Implantação, regra 7)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+
+# Dados de participantes e mídia NUNCA vão para o repositório (P6)
+data/
+media/
+uploads/
+backups/
+*.dump
+*.sql.gz
+*.wav
+*.mp3
+*.m4a
+*.ogg
+
+# Logs
+logs/
+*.log
