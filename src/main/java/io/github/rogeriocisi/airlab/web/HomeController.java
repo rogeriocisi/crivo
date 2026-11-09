@@ -38,6 +38,16 @@ class HomeController {
         return "about";
     }
 
+    /**
+     * Page for the person who will rate the readings. Separate from the rest of the site on
+     * purpose: they arrive by an invitation link, usually grieving, and need the procedure and
+     * their rights in plain words, not the argument for the platform (P6).
+     */
+    @GetMapping("/consulente")
+    String participant() {
+        return "consulente";
+    }
+
     @GetMapping("/historia")
     String history() {
         return "historia";

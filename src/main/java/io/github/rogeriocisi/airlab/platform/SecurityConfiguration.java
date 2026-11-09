@@ -38,8 +38,8 @@ class SecurityConfiguration {
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(requests -> requests
-                        .requestMatchers("/", "/sobre", "/historia", "/referencias", "/login",
-                                "/css/**", "/actuator/health").permitAll()
+                        .requestMatchers("/", "/sobre", "/historia", "/referencias",
+                                "/consulente", "/login", "/css/**", "/actuator/health").permitAll()
                         .anyRequest().authenticated())
                 // Custom sign-in page: it has to explain what the account is for and where the
                 // credential comes from, which the default page cannot.
