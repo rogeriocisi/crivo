@@ -12,8 +12,8 @@
 ### Beischel & Schwartz (2007)
 **Beischel, J., & Schwartz, G. E.** (2007). Anomalous information reception by research mediums demonstrated using a novel triple-blind protocol. *Explore*, 3(1), 23–27. DOI: [10.1016/j.explore.2006.10.004](https://doi.org/10.1016/j.explore.2006.10.004)
 
-- **O que fez:** oito estudantes da University of Arizona atuaram como sitters, quatro que tinham perdido um dos pais e quatro que tinham perdido um amigo. Cada falecido foi pareado com outro do mesmo gênero. Os sitters ficaram ausentes, e um experimentador cego às identidades atuou como *proxy*. Cada sitter avaliou duas transcrições itemizadas (a sua e a de controle) e escolheu a que mais se ajustava.
-- **Resultado relatado:** as leituras destinadas ao sitter tiveram notas maiores que as de controle (p = 0,007; tamanho de efeito 0,5), e a escolha forçada também foi significativa (p = 0,01). Os autores ressaltam que o desenho **não distingue** sobrevivência de *super-psi*.
+- **O que fez:** oito estudantes da University of Arizona atuaram como consulentes, quatro que tinham perdido um dos pais e quatro que tinham perdido um amigo. Cada falecido foi pareado com outro do mesmo gênero. Os consulentes ficaram ausentes, e um experimentador cego às identidades atuou como *proxy*. Cada consulente avaliou duas transcrições itemizadas (a sua e a de controle) e escolheu a que mais se ajustava.
+- **Resultado relatado:** as leituras destinadas ao consulente tiveram notas maiores que as de controle (p = 0,007; tamanho de efeito 0,5), e a escolha forçada também foi significativa (p = 0,01). Os autores ressaltam que o desenho **não distingue** sobrevivência de *super-psi*.
 - **Informa no Crivo:** a estrutura central da v1, com *proxy* cego, pares do mesmo gênero, leitura-chamariz, transcrição itemizada, nota global e escolha forçada (SPEC, E4–E6).
 
 ### Beischel, Boccuzzi, Biuso & Rock (2015)
@@ -55,7 +55,7 @@
 - **O que fez:** analisou sete estudos recentes de AIR para entender por que chegaram a resultados conflitantes, com foco em como cada um controlou o vazamento de informação.
 - **Conclusão:** resultados significativos parecem mais prováveis quando o protocolo:
   - seleciona médiuns com evidência prévia consistente;
-  - escolhe sitters motivados;
+  - escolhe consulentes motivados;
   - dá ao médium alguma informação sobre o falecido;
   - permite fala livre combinada com perguntas objetivas;
   - pontua tanto a leitura global quanto os itens;
@@ -127,7 +127,7 @@
 ### Beischel (2007) — métodos
 **Beischel, J.** (2007). Contemporary methods used in laboratory-based mediumship research. *Journal of Parapsychology*, 71(1), 37–68. · *Conferido em 8/11/2026 no índice da Parapsychology Press, que registra 71(1), 37–68.*
 
-- **O que é:** descrição sistemática das técnicas de laboratório: *proxy sitter*, consulente ausente, eliminação de contato sensorial, atribuição aleatória das leituras e pontuação cega.
+- **O que é:** descrição sistemática das técnicas de laboratório: *proxy consulente*, consulente ausente, eliminação de contato sensorial, atribuição aleatória das leituras e pontuação cega.
 - **Ressalva de uso:** é fonte **parte interessada** (Windbridge). Serve como descrição de método, não como avaliação da evidência.
 - **Informa no Crivo:** a nomenclatura dos papéis e a lista de controles que a v1 precisa cobrir inteira.
 
@@ -137,7 +137,7 @@
 [https://pt.wikipedia.org/wiki/Estudos_sobre_mediunidade](https://pt.wikipedia.org/wiki/Estudos_sobre_mediunidade) (consultado em 8 de novembro de 2026)
 
 - **O que é:** verbete enciclopédico. Cobre bem o histórico (Crookes, SPR, Piper, correspondências cruzadas) e as críticas, e registra como consenso que "não há evidências confiáveis de que médiuns possam se comunicar com os mortos".
-- **Valor como fonte:** baixo para método. A seção de metodologia tem um parágrafo, cita cinco técnicas (*proxy sitters*, consulentes cegos, sem contato sensorial, atribuição aleatória, pontuação cega) e **não trata** de chamariz, escolha forçada, pré-registro, tamanho de amostra nem detalhes estatísticos. Não prescreve padrão nenhum. **Não serve como fonte normativa para o protocolo**; serve como termômetro de como o campo é percebido fora dele.
+- **Valor como fonte:** baixo para método. A seção de metodologia tem um parágrafo, cita cinco técnicas (*proxy consulentes*, consulentes cegos, sem contato sensorial, atribuição aleatória, pontuação cega) e **não trata** de chamariz, escolha forçada, pré-registro, tamanho de amostra nem detalhes estatísticos. Não prescreve padrão nenhum. **Não serve como fonte normativa para o protocolo**; serve como termômetro de como o campo é percebido fora dele.
 - **Conferência feita:** as cinco técnicas que o verbete descreve estão cobertas pelo desenho da v1, e o "triplo-cego" que ele atribui ao Windbridge é menos abrangente que a matriz da SPEC, seção 4, que cega cinco papéis — inclusive o redator e, até o desmascaramento, o próprio pesquisador. As críticas que o verbete registra, por outro lado, foram a parte útil: três delas apontavam lacunas reais no Crivo, tratadas na seção 6 acima.
 - **Nota de conflito de interesses:** se o Crivo vier a ser citado em verbete da Wikipédia, a citação deve ser feita por terceiros. Editar o verbete para incluir o próprio projeto é autopromoção pelas regras do site.
 
@@ -169,19 +169,19 @@ Lido de baixo para cima, este é o argumento do projeto: cada linha é uma obje�
 | Pontuação enviesada | Wiseman & O'Keeffe 2001; Hyman 2003 | Escala congelada no pré-registro; pacote bloqueado no envio | SPEC E6 |
 | Interrupção oportunista da coleta (*optional stopping*) | Hyman 2003; Simmons et al. 2011 | `StoppingRule` e tamanho-alvo congelados; `ConfirmatoryAnalysisPolicy` recusa o rótulo confirmatório fora do N declarado; desvios registrados em tabela append-only (`ProtocolDeviation`) | Constitution P2; SPEC E1/E7 |
 | Seleção de médiuns sem critério publicado | Hyman 2003; Silva & Moreira-Almeida 2022 | `mediumInclusionCriteria` é campo obrigatório do pré-registro, hasheado antes da coleta | SPEC E1 |
-| Dependência entre avaliações do mesmo par | SPEC, questão aberta 1 | Unidade confirmatória é o par; o sorteio designa, antes da primeira sessão, qual sitter carrega a observação; a medida primária é a diferença pareada alvo − chamariz (`PairedComparison`, Wilcoxon exato) | SPEC E3/E7 |
+| Dependência entre avaliações do mesmo par | SPEC, questão aberta 1 | Unidade confirmatória é o par; o sorteio designa, antes da primeira sessão, qual consulente carrega a observação; a medida primária é a diferença pareada alvo − chamariz (`PairedComparison`, Wilcoxon exato) | SPEC E3/E7 |
 | Análise escolhida depois dos dados | Nosek et al. 2018; Simmons et al. 2011 | Análise primária única no documento hasheado; o resto é rotulado exploratório | Constitution P2/P3 |
 | Estudo subdimensionado apresentado como resultado nulo | Sarraf et al. 2021 (efeito de 6 a 14 pontos); Beischel & Schwartz 2007 (escolha forçada menos sensível) | `PowerCheck` calcula o mínimo para o efeito declarado e o documento congelado diz se o desenho é suficiente | SPEC E1/E7, questão aberta 1 |
 | Comprimento da leitura como pista e como confundidor | O'Keeffe & Wiseman 2005 (leituras de 6 a 92 afirmações; a mais longa e genérica recebeu as notas mais altas) | Tolerância pré-registrada (`maxItemCountDifference`) e corte da leitura mais longa por subamostra sorteada da semente (`balancedItemSelection`) | SPEC E5/E6 |
 | Pistas temporais que identificam a própria leitura | O'Keeffe & Wiseman 2005 | Itens apresentados em ordem sorteada (`itemPresentationOrder`); slots de sessão contrabalanceados por quadrado latino (`SessionSlot`); `ClueScrubber` recusa datas e referências de sessão | SPEC E4/E6 |
-| Ordem de apresentação desequilibrada dentro do par | Beischel & Schwartz 2007 | Contrabalanceamento no par: um sitter vê a própria leitura primeiro, o outro vê o chamariz, e qual deles é sorteado | SPEC E3/E6 |
+| Ordem de apresentação desequilibrada dentro do par | Beischel & Schwartz 2007 | Contrabalanceamento no par: um consulente vê a própria leitura primeiro, o outro vê o chamariz, e qual deles é sorteado | SPEC E3/E6 |
 | Multiplicar probabilidades de itens como se fossem independentes | Hyslop 1919, criticado em Schouten 1994 e O'Keeffe & Wiseman 2005 | **Análise vedada neste projeto.** A alternativa endossada pelo campo é o teste de permutação de Pratt e Birge, implementado em `PermutationTest`, que não assume independência entre itens | SPEC E7 |
 | Adulteração posterior de dados | — | Trilha append-only encadeada por hash, imposta por *trigger*; CLI `airlab verify` | Constitution P4; SPEC E8 |
 | Sorteio não verificável | Constitution P5 | Semente do `SecureRandom`, expansão determinística, compromisso → revelação | SPEC E3 |
 | Viés de publicação | Sarraf et al. 2021; Hyman 2003 | Mesmo relatório para resultado nulo e positivo; pré-registro público | Constitution P3; SPEC E7 |
 | Meta-análise não substitui replicação | Milton & Wiseman 1999 | Pacote de verificação com análise reexecutável por terceiros | Constitution P7; SPEC E9 |
 | Resultados restritos a periódicos especializados | Wikipédia, consenso relatado | Fora do alcance do software. Depende de onde o estudo é submetido | — |
-| Pesquisa prévia do médium sobre o sitter; fraude ativa | Brandon; West | Parcial: o sistema registra e audita, mas não impede. Mitigação é procedimental (sitter ausente, só primeiro nome) | SPEC seção 4 |
+| Pesquisa prévia do médium sobre o consulente; fraude ativa | Brandon; West | Parcial: o sistema registra e audita, mas não impede. Mitigação é procedimental (consulente ausente, só primeiro nome) | SPEC seção 4 |
 | Condições controladas pelo médium (mediunidade física) | Dunning, sobre Scole | Fora do escopo: a v1 trata só leitura mental pareada | SPEC seção 1 |
 
 ## Leituras a incorporar

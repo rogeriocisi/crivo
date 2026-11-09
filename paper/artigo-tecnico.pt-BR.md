@@ -42,7 +42,7 @@ Relatos de médiuns que fornecem informações corretas sobre pessoas falecidas 
 
 A literatura experimental chama esse fenômeno de *anomalous information reception* (AIR), ou recepção anômala de informação. O termo é propositalmente neutro quanto à origem: descreve a chegada de informação por via não convencional sem afirmar se ela provém da sobrevivência da consciência ou de capacidades psíquicas dos vivos [@beischel2007]. Estudos com cegamento múltiplo relataram desempenho acima do acaso [@beischel2007; @beischel2015]. Outros, com metodologia própria, não encontraram suporte para a capacidade alegada [@okeeffe2005]. Revisões recentes atribuem parte da divergência a diferenças no controle de vazamento de informação e no desenho dos protocolos [@silva2022].
 
-Esse quadro sugere que o gargalo da área é menos a teoria e mais a **execução verificável** de protocolos. Um estudo cego depende de que dezenas de pequenas regras sejam cumpridas: o experimentador não pode conhecer o falecido; o sitter não pode saber qual leitura é a sua; o sorteio não pode ser refeito depois de visto. O cumprimento dessas regras costuma ficar registrado, quando fica, em procedimentos manuais difíceis de auditar. Outra limitação reconhecida é a concentração dos dados em poucos laboratórios [@beischel2015], o que torna a replicação independente especialmente valiosa.
+Esse quadro sugere que o gargalo da área é menos a teoria e mais a **execução verificável** de protocolos. Um estudo cego depende de que dezenas de pequenas regras sejam cumpridas: o experimentador não pode conhecer o falecido; o consulente não pode saber qual leitura é a sua; o sorteio não pode ser refeito depois de visto. O cumprimento dessas regras costuma ficar registrado, quando fica, em procedimentos manuais difíceis de auditar. Outra limitação reconhecida é a concentração dos dados em poucos laboratórios [@beischel2015], o que torna a replicação independente especialmente valiosa.
 
 Este artigo propõe que esses requisitos sejam tratados como **propriedades de um sistema de software**, implementadas e testadas da mesma forma que se testam requisitos de segurança. As contribuições são:
 
@@ -57,7 +57,7 @@ O Crivo está em fase de especificação. Este texto descreve o desenho, não re
 
 ## 2.1 Protocolos de AIR com cegamento
 
-Beischel e Schwartz [-@beischel2007] descreveram um protocolo com cegamento triplo. Os sitters ficaram ausentes e foram representados por um experimentador que desconhecia as identidades (*proxy sitter*). Cada falecido foi pareado com outro do mesmo gênero, e cada sitter pontuou duas transcrições itemizadas, a sua e a de controle, antes de escolher a que mais se ajustava. A replicação e extensão posterior [@beischel2015] envolveu 20 médiuns e 86 leituras por telefone, com o médium recebendo apenas o primeiro nome do falecido. Os autores relataram leituras-alvo avaliadas como mais precisas que os chamarizes em medidas de itens, nota global e escolha forçada.
+Beischel e Schwartz [-@beischel2007] descreveram um protocolo com cegamento triplo. Os consulentes ficaram ausentes e foram representados por um experimentador que desconhecia as identidades (*proxy consulente*). Cada falecido foi pareado com outro do mesmo gênero, e cada consulente pontuou duas transcrições itemizadas, a sua e a de controle, antes de escolher a que mais se ajustava. A replicação e extensão posterior [@beischel2015] envolveu 20 médiuns e 86 leituras por telefone, com o médium recebendo apenas o primeiro nome do falecido. Os autores relataram leituras-alvo avaliadas como mais precisas que os chamarizes em medidas de itens, nota global e escolha forçada.
 
 <!-- TODO: incorporar Roy & Robertson (2001), Robertson & Roy (2004) e Jensen & Cardeña (2009) após leitura integral. -->
 
@@ -69,7 +69,7 @@ O'Keeffe e Wiseman [-@okeeffe2005] revisaram o debate metodológico sobre testes
 
 Sarraf, Woodley of Menie e Tressoldi [-@sarraf2021] conduziram uma meta-análise dos estudos controlados de AIR com médiuns. <!-- TODO: inserir tamanho de efeito agregado e heterogeneidade após leitura do texto integral. --> Silva e Moreira-Almeida [-@silva2022] analisaram sete estudos recentes e concluíram que resultados significativos parecem mais prováveis quando o protocolo:
 - seleciona médiuns com evidência prévia;
-- recruta sitters motivados;
+- recruta consulentes motivados;
 - combina fala livre com perguntas objetivas;
 - pontua tanto leituras globais quanto itens;
 - evita volumes excessivos de leituras e itens.
@@ -96,12 +96,12 @@ Tratamos cada explicação convencional para um acerto como uma **ameaça** a se
 
 | Ameaça | Exemplo | Requisito no Crivo |
 |---|---|---|
-| Pista sensorial ou verbal ao médium | Reações do sitter presente | Sitter ausente; experimentador *proxy* cego [@beischel2007] |
+| Pista sensorial ou verbal ao médium | Reações do consulente presente | Consulente ausente; experimentador *proxy* cego [@beischel2007] |
 | Informação além do mínimo | Fotografia do falecido [@kelly2011] | Médium recebe só o primeiro nome; qualquer outro dado é vazamento |
 | Leitura fria e afirmações genéricas | "Era uma pessoa querida" | Chamariz pareado; só conta o ajuste diferencial alvo × chamariz |
 | Itens ambíguos | Item com várias afirmações [@okeeffe2005] | Redação com uma afirmação verificável por item |
-| Pista na redação | Primeiro nome ou data na transcrição | Redator cego quanto ao sitter; remoção obrigatória de pistas |
-| Viés do avaliador | Sitter sabe qual leitura é a sua | Duas leituras sem rótulo, em ordem sorteada |
+| Pista na redação | Primeiro nome ou data na transcrição | Redator cego quanto ao consulente; remoção obrigatória de pistas |
+| Viés do avaliador | Consulente sabe qual leitura é a sua | Duas leituras sem rótulo, em ordem sorteada |
 | Inferência por metadados | ID sequencial, nome de arquivo, data | IDs aleatórios; remoção de metadados de mídia |
 | Sorteio manipulável | Refazer o sorteio até "dar certo" | Gerador criptográfico com compromisso e revelação |
 | Flexibilidade analítica | Escolher a análise depois de ver os dados [@nosek2018] | Pré-registro congelado por hash e carimbo de tempo |
@@ -117,11 +117,11 @@ Uma **leitura** é o conjunto de afirmações que o médium produz numa sessão 
 ## 4.2 Fluxo
 
 1. O pesquisador redige o pré-registro: hipóteses, critérios de pareamento, escalas, análise primária e secundária, regras de exclusão e tamanho de amostra.
-2. Os sitters consentem e cadastram um falecido-alvo. Os dados identificáveis ficam num repositório separado.
+2. Os consulentes consentem e cadastram um falecido-alvo. Os dados identificáveis ficam num repositório separado.
 3. O sistema forma os pares e sorteia as alocações. O compromisso criptográfico é publicado, e o pré-registro é congelado.
 4. Em cada sessão, o experimentador informa ao médium apenas o primeiro nome do alvo; o médium lê os dois alvos do par.
-5. A leitura é transcrita e redigida por alguém que desconhece a qual sitter ela pertence.
-6. Cada sitter recebe as duas leituras redigidas do seu par, sem rótulo e em ordem sorteada. Ele pontua cada item, atribui nota global a cada leitura e escolhe qual acredita ser a sua.
+5. A leitura é transcrita e redigida por alguém que desconhece a qual consulente ela pertence.
+6. Cada consulente recebe as duas leituras redigidas do seu par, sem rótulo e em ordem sorteada. Ele pontua cada item, atribui nota global a cada leitura e escolhe qual acredita ser a sua.
 7. Depois que todas as avaliações são fechadas, ocorre o desmascaramento, uma operação irreversível e auditada, e a semente do sorteio é revelada.
 8. A análise pré-registrada é executada; análises adicionais são rotuladas como exploratórias.
 
@@ -131,9 +131,9 @@ O cegamento é especificado como uma matriz de papéis × informações (Tabela 
 
 **Tabela 2. Matriz de visibilidade (resumo).**
 
-| Informação | Pesquisador | Experimentador | Médium | Redator | Sitter |
+| Informação | Pesquisador | Experimentador | Médium | Redator | Consulente |
 |---|---|---|---|---|---|
-| Identidade do sitter | sim | não | não | não | só a própria |
+| Identidade do consulente | sim | não | não | não | só a própria |
 | Primeiro nome do alvo | sim | sim | na sessão | não | só o próprio |
 | Ligação leitura → alvo | só após desmascarar | própria sessão | própria sessão | não | só após desmascarar |
 | Leitura redigida | só após desmascarar | não | não | sim | o seu par, sem rótulo |
@@ -143,7 +143,7 @@ O cegamento é especificado como uma matriz de papéis × informações (Tabela 
 
 A análise primária sugerida é a proporção de escolhas forçadas corretas comparada a 0,5, com teste binomial unilateral. As análises secundárias comparam notas globais (alvo × chamariz, Wilcoxon pareado) e proporções de itens corretos.
 
-<!-- TODO: cálculo de poder com base em @sarraf2021; tratamento da dependência entre os dois sitters de um mesmo par (modelo misto? análise por par?). -->
+<!-- TODO: cálculo de poder com base em @sarraf2021; tratamento da dependência entre os dois consulentes de um mesmo par (modelo misto? análise por par?). -->
 
 # 5. Arquitetura
 
@@ -208,7 +208,7 @@ Um software não torna um estudo válido por si só. É necessário explicitar o
 - **vazamento fora do sistema**, como conversas entre participantes, buscas em redes sociais pelo primeiro nome do alvo ou conluio entre experimentador e médium. O software reduz e registra superfícies de vazamento, mas não as elimina;
 - **integridade contra um administrador com acesso total**, que poderia, em tese, reconstruir a cadeia de auditoria inteira. A mitigação é ancorar periodicamente o estado da cadeia em carimbo de tempo externo e publicar os comprovantes (TODO);
 - **validade de construto**: se as escalas e os critérios de pareamento medem o que se pretende medir é uma questão metodológica, não de software;
-- **generalização**: resultados de um estudo dizem respeito aos médiuns, sitters e condições daquele estudo.
+- **generalização**: resultados de um estudo dizem respeito aos médiuns, consulentes e condições daquele estudo.
 
 Essa delimitação é intencional: um sistema que alega mais do que pode garantir compromete a credibilidade que pretende produzir.
 

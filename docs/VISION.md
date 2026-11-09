@@ -59,9 +59,9 @@ O Crivo não existe para provar que a mediunidade é real nem que não é. Ele e
 | Papel | Quem é | O que precisa |
 |---|---|---|
 | **Pesquisador principal** | Rogerio (inicialmente) | Desenhar o estudo, pré-registrar, acompanhar sem quebrar o cegamento |
-| **Experimentador (proxy)** | Pessoa que conduz a sessão com o médium no lugar do sitter | Roteiro padronizado; não conhece nada sobre o falecido |
+| **Experimentador (proxy)** | Pessoa que conduz a sessão com o médium no lugar do consulente | Roteiro padronizado; não conhece nada sobre o falecido |
 | **Médium** | Participante voluntário | Agenda, instruções claras, devolutiva ao final |
-| **Sitter** | Pessoa que conheceu o falecido | Consentimento, privacidade, avaliar as leituras sem saber qual é a dela |
+| **Consulente** (*sitter*) | Pessoa que conheceu o falecido | Consentimento, privacidade, avaliar as leituras sem saber qual é a dela |
 | **Avaliador independente** | Opcional, para protocolos com juízes externos | Formulário cego |
 | **Auditor externo** | Qualquer pesquisador cético ou interessado | Artefatos exportados e verificáveis |
 | **Público do canal** | Audiência do canal de Espiritismo | Comunicação honesta dos resultados |
@@ -89,7 +89,7 @@ O Crivo não existe para provar que a mediunidade é real nem que não é. Ele e
 |---|---|
 | Vazamento de informação que quebre o cegamento (por exemplo, nomes em e-mails ou metadados de arquivos) | Separação de dados por papel, redação obrigatória, testes automatizados de cegamento |
 | Dado sensível de enlutados (causa da morte, crenças religiosas) | LGPD desde o desenho: minimização, pseudonimização, criptografia, consentimento específico |
-| Impacto emocional nos sitters | Termo de consentimento claro, devolutiva cuidadosa, possibilidade de desistir a qualquer momento |
+| Impacto emocional nos consulentes | Termo de consentimento claro, devolutiva cuidadosa, possibilidade de desistir a qualquer momento |
 | Viés do próprio pesquisador | Pré-registro bloqueado; análise exploratória marcada como tal |
 | Escopo crescer demais para um dev solo | MVP restrito a um único protocolo; extensões só depois do piloto |
 | Credibilidade questionada por ser "do canal espírita" | Transparência total: código aberto, dados abertos, convite explícito a auditores céticos |

@@ -32,6 +32,7 @@ Instruções para o Claude Code neste repositório.
 - Código, identificadores e commits em **inglês**; documentação e interface em **português**.
 - Commits pequenos, no padrão Conventional Commits.
 - Vocabulário neutro (P3): *reading*, *item*, *target*, *decoy*, *score*. Nunca linguagem que pressuponha a origem da informação.
+- **Consulente, não *sitter***: em português — documentação, interface, comentários em português — quem avalia as leituras é o **consulente**. A forma inglesa *sitter* fica registrada no glossário da SPEC, por ser o termo da literatura, e permanece nos identificadores do código (`sitterCode`, `sitter_code`, `ParticipantRole.SITTER`), pela regra de código em inglês.
 
 ## Estado e ordem do MVP
 

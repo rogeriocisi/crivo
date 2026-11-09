@@ -106,7 +106,7 @@ O projeto é mantido por um desenvolvedor solo.
 | Migrações | **Flyway** | Versionamento do esquema auditável |
 | Acesso a dados | Spring Data JPA nos agregados + **jOOQ ou JDBC** para consultas estatísticas | JPA no CRUD; SQL explícito onde a precisão importa |
 | Interface | **Thymeleaf + HTMX** | Sem SPA para manter; renderizado no servidor; acessível |
-| Segurança | **Spring Security** | Login com 2FA para pesquisadores; links de uso único e expiráveis para sitters e avaliadores |
+| Segurança | **Spring Security** | Login com 2FA para pesquisadores; links de uso único e expiráveis para consulentes e avaliadores |
 | Estatística | **Apache Commons Statistics / Commons Math** + script de referência em **R** no pacote de verificação | Cálculo no app e validação cruzada independente |
 | Criptografia | JCA (`SecureRandom`, SHA-256) + criptografia de campo para dados identificáveis | Sem dependência exótica |
 | Carimbo de tempo | **RFC 3161 (TSA)** e/ou **OpenTimestamps**; pré-registro também espelhado no **OSF Registries** | Prova de anterioridade verificável por terceiros |

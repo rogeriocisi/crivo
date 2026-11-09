@@ -72,6 +72,12 @@ Flyway, em `src/main/resources/db/migration`. Histórico no esquema `research`.
 | `V10` | Papel `airlab_app` com privilégio mínimo: na trilha, só `SELECT` e `INSERT` |
 | `V11` | Escala de itens de cinco categorias, com justificativa obrigatória imposta por `CHECK` (E6) |
 | `V12` | `research.protocol_deviation`, append-only por *trigger* (E1/E7) |
+| `V13` | Comentários em português passam a dizer **consulente** no lugar de *sitter* (SPEC 0.5) |
+
+**Migração aplicada não se edita**: corrigir o vocabulário dos comentários mudaria o checksum
+do Flyway e quebraria a validação em qualquer banco já migrado — inclusive o do próprio autor.
+Por isso a troca de `sitter` para `consulente` nos comentários veio como `V13`, e não como edição
+das migrações anteriores.
 
 **Garantias no banco, não só no código**: os triggers alcançam qualquer papel, inclusive
 superusuário, de modo que a imposição vale também no perfil local, onde a aplicação conecta
@@ -86,11 +92,11 @@ sistema as trata como regra:
 |---|---|---|
 | Resultados positivos vêm de "médiuns selecionados", sem critérios publicados | `mediumInclusionCriteria` é campo obrigatório do pré-registro, entra no documento com hash antes da coleta | `study.PreregistrationPlan` |
 | Parada opcional: encerrar a coleta quando os números ficam bons | A análise só recebe o rótulo **confirmatória** se o pré-registro estava congelado e o número de unidades coletadas for exatamente o alvo declarado. Fora disso, sai rotulada como exploratória, com o motivo impresso ao lado | `analysis.ConfirmatoryAnalysisPolicy` |
-| Dependência entre os dois sitters de um par, tratados como observações independentes | A unidade da análise confirmatória é o par: entra só a escolha do sitter **sorteado** para aquele par, antes da primeira sessão. A outra escolha é relatada como secundária | `allocation.AllocationPlan.ConfirmatoryUnit`, `analysis.IndependentUnits` |
+| Dependência entre os dois consulentes de um par, tratados como observações independentes | A unidade da análise confirmatória é o par: entra só a escolha do consulente **sorteado** para aquele par, antes da primeira sessão. A outra escolha é relatada como secundária | `allocation.AllocationPlan.ConfirmatoryUnit`, `analysis.IndependentUnits` |
 | Estudo subdimensionado cujo resultado nulo é apresentado como ausência de efeito | O mínimo de pares para o efeito declarado é calculado e **escrito no documento congelado**, com a frase que diz se o desenho atende ou não | `analysis.PowerCheck` |
 | Comprimento da leitura como pista e como confundidor | Tolerância pré-registrada de diferença de itens; a leitura mais longa é cortada por subamostra sorteada da semente | `PreregistrationPlan.maxItemCountDifference`, `AllocationEngine.balancedSubsample` |
-| Pistas temporais que permitem ao sitter reconhecer a própria leitura | Itens apresentados em ordem sorteada; slots de sessão contrabalanceados por quadrado latino, sorteados junto com o resto | `AllocationEngine.itemPresentationOrder`, `AllocationPlan.SessionSlot` |
-| Ordem de apresentação desequilibrada dentro do par | Um sitter vê a própria leitura primeiro e o outro vê o chamariz; qual dos dois é sorteado | `AllocationEngine` (domínio `presentation:`) |
+| Pistas temporais que permitem ao consulente reconhecer a própria leitura | Itens apresentados em ordem sorteada; slots de sessão contrabalanceados por quadrado latino, sorteados junto com o resto | `AllocationEngine.itemPresentationOrder`, `AllocationPlan.SessionSlot` |
+| Ordem de apresentação desequilibrada dentro do par | Um consulente vê a própria leitura primeiro e o outro vê o chamariz; qual dos dois é sorteado | `AllocationEngine` (domínio `presentation:`) |
 | Item que se encaixa em outra pessoa próxima, forçado a virar acerto ou erro | Categoria própria na escala, com explicação escrita obrigatória, imposta também por `CHECK` no banco | `scoring.ItemScoreValue`, `scoring.ItemScoreEntry`, migração `V11` |
 | Execução que se afasta do plano congelado e não aparece no relatório | Desvio de protocolo é entidade própria, append-only, distinta de emenda | `study.ProtocolDeviation`, migração `V12` |
 | Multiplicar probabilidades de itens como se fossem independentes | Análise vedada. A alternativa do campo é o teste de permutação de Pratt e Birge | `analysis.PermutationTest` |
@@ -102,7 +108,7 @@ importa para quem lê o relatório.
 ### Medida primária e poder
 
 Com o par como unidade, as ~70 observações do cálculo original passariam a significar 70
-pares — 140 sitters e 140 sessões. Pior: a meta-análise de Sarraf, Woodley of Menie e
+pares — 140 consulentes e 140 sessões. Pior: a meta-análise de Sarraf, Woodley of Menie e
 Tressoldi (2021) estima o efeito do campo em **6 a 14 pontos acima do acaso**, e a 58% de
 acerto aquelas 70 unidades dariam cerca de **32% de poder**.
 
@@ -164,7 +170,7 @@ sorteio na CLI, nunca para calcular hash.
 | `AllocationEngineTest` | P5 | Unitário: reprodutibilidade, independência da ordem de entrada, compromisso ligado às alocações |
 | `BinomialTestTest` | P9 | Unitário: valores de referência exatos (conferem com `binom.test` do R) |
 | `ConfirmatoryAnalysisPolicyTest` | P2 | Unitário: parada antes e depois do alvo, pré-registro não congelado e unidade dependente viram exploratória |
-| `IndependentUnitsTest` | P9 | Unitário: uma escolha por par, a do sitter sorteado; dado faltante interrompe em vez de encolher a amostra |
+| `IndependentUnitsTest` | P9 | Unitário: uma escolha por par, a do consulente sorteado; dado faltante interrompe em vez de encolher a amostra |
 | `ClueScrubberTest` | P1 | Unitário: primeiro nome, pistas de sessão, datas, item com mais de uma afirmação |
 | `BlindingMatrixTest` | P1 | Estrutural: campo proibido ausente da projeção, não filtrado na view |
 | `PairedPrimaryMeasureTest` | P9 | Wilcoxon exato contra valores de referência; par duplicado recusado |
@@ -196,7 +202,7 @@ Windows e Linux sem Docker e sem banco instalado.
    confirmatória sorteada precisa ser persistida junto com as sessões, para alimentar o E7.
 2. **E5 (redação)**: persistência das leituras redigidas e itens, usando o `ClueScrubber` como
    validação de submissão.
-3. **E6 (avaliação cega)**: links de uso único e expiráveis, formulário do sitter, bloqueio no
+3. **E6 (avaliação cega)**: links de uso único e expiráveis, formulário do consulente, bloqueio no
    envio, mais as linhas da matriz de cegamento que dependem de estado persistido.
 4. **E7 (desmascaramento e análise)**: operação irreversível depois do fechamento de todas as
    avaliações, execução da análise primária, relatório neutro.
