@@ -1,5 +1,6 @@
 package io.github.rogeriocisi.airlab.platform;
 
+import io.github.rogeriocisi.airlab.support.BlindIndex;
 import io.github.rogeriocisi.airlab.support.FieldCipher;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -28,11 +29,25 @@ class CryptoConfiguration {
     private static final Logger log = LoggerFactory.getLogger(CryptoConfiguration.class);
     private static final Path DEV_KEY_FILE = Path.of("./data/dev-identity.key");
 
+    /**
+     * Same key material as the field cipher, different purpose: HMAC for the blind index that
+     * detects one person holding two roles (Epic E10). The domain string passed at each call
+     * keeps the two uses from colliding.
+     */
+    @Bean
+    BlindIndex blindIndex(Environment environment) throws IOException {
+        return new BlindIndex(keyBytes(environment));
+    }
+
     @Bean
     FieldCipher fieldCipher(Environment environment) throws IOException {
+        return new FieldCipher(keyBytes(environment));
+    }
+
+    private byte[] keyBytes(Environment environment) throws IOException {
         String configured = environment.getProperty("airlab.identity.encryption-key", "");
         if (!configured.isBlank()) {
-            return new FieldCipher(Base64.getDecoder().decode(configured.trim()));
+            return Base64.getDecoder().decode(configured.trim());
         }
         boolean local = environment.matchesProfiles("local", "test");
         if (!local) {
@@ -40,7 +55,7 @@ class CryptoConfiguration {
                     "AIRLAB_IDENTITY_KEY nao definida. Em producao a chave de criptografia dos "
                             + "dados identificaveis vem do ambiente; a aplicacao nao inicia sem ela.");
         }
-        return new FieldCipher(developmentKey());
+        return developmentKey();
     }
 
     private byte[] developmentKey() throws IOException {

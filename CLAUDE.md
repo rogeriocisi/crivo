@@ -5,7 +5,7 @@ Instruções para o Claude Code neste repositório.
 ## Leia antes de qualquer tarefa
 
 1. `docs/CONSTITUTION.md`: princípios inegociáveis P1–P10, arquitetura e implantação. **Prevalece sobre todo o resto.**
-2. `docs/SPEC.md`: especificação macro, com a matriz de cegamento (seção 4) e os épicos E1–E9.
+2. `docs/SPEC.md`: especificação macro, com a matriz de cegamento (seção 4) e os épicos E1–E10. O **E10 traz as travas obrigatórias da automação**; nenhuma tela de autoatendimento entra sem elas.
 3. `docs/PLAN.md`: plano técnico do MVP — módulos, migrações, decisões criptográficas, dependências e **estado de implementação por épico**.
 4. `docs/VISION.md`: contexto, objetivos e não objetivos.
 5. `docs/REFERENCES.md`: fundamentação científica. Ao mudar uma regra do protocolo, verifique se ela contraria alguma decisão mapeada ali.
@@ -18,6 +18,8 @@ Instruções para o Claude Code neste repositório.
 - **Auditoria (P4)**: toda operação de domínio emite um evento de auditoria. Operação sem evento é bug.
 - **Privacidade (P6)**: nada de dados pessoais em logs, mensagens de exceção, nomes de arquivo ou fixtures com dados reais. Apenas o módulo `participant` acessa o esquema `identity`.
 - **IA (P10)**: nenhum código usa IA para avaliar leituras ou pontuar.
+- **Nenhum resultado parcial antes do desmascaramento (E10, trava 1)**: nenhuma tela, API ou projeção pode expor função dos escores enquanto o estudo corre. Progresso é contagem de unidades, nunca desempenho; há teste estrutural em `BlindingMatrixTest`.
+- **Um papel por pessoa em cada estudo (E10, trava 2)**: recusado na camada de domínio e registrado na trilha.
 - **Análise vedada**: nunca multiplicar as probabilidades individuais dos itens como se fossem independentes (Hyslop, 1919). Para dados de acurácia de leitura, a análise do campo é o teste de permutação de Pratt e Birge (`analysis.PermutationTest`).
 - **Reprodutibilidade do sorteio (P5)**: tudo que o sorteio decide tem de ser independente da ordem em que as entradas chegam. Ordene em forma canônica antes de usar a semente; há teste que tenta violar isso.
 - **Simplicidade (P8)**: monólito modular; justifique por escrito qualquer dependência nova.

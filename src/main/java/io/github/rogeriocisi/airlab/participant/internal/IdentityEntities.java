@@ -31,6 +31,10 @@ class ParticipantEntity {
     @Column(name = "contact_enc")
     private String contactEnc;
 
+    /** Deterministic fingerprint of the contact; the only field here that can be compared. */
+    @Column(name = "contact_fingerprint", length = 64)
+    private String contactFingerprint;
+
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
@@ -40,10 +44,12 @@ class ParticipantEntity {
     protected ParticipantEntity() {
     }
 
-    ParticipantEntity(String code, String fullNameEnc, String contactEnc, Instant createdAt) {
+    ParticipantEntity(String code, String fullNameEnc, String contactEnc,
+                      String contactFingerprint, Instant createdAt) {
         this.code = code;
         this.fullNameEnc = fullNameEnc;
         this.contactEnc = contactEnc;
+        this.contactFingerprint = contactFingerprint;
         this.createdAt = createdAt;
     }
 
@@ -51,11 +57,16 @@ class ParticipantEntity {
     void erase(Instant at) {
         this.fullNameEnc = "";
         this.contactEnc = null;
+        this.contactFingerprint = null;
         this.withdrawnAt = at;
     }
 
     String code() {
         return code;
+    }
+
+    String contactFingerprint() {
+        return contactFingerprint;
     }
 
     String fullNameEnc() {

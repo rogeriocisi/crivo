@@ -53,6 +53,30 @@ class BlindingMatrixTest {
     }
 
     @Test
+    @DisplayName("o progresso da coleta nao carrega nenhum campo de desfecho")
+    void progress_carries_no_outcome_field() {
+        // Epico E10, trava 1: automatizar o estudo poe este numero na frente do pesquisador
+        // todos os dias. Se ele vier acompanhado do resultado, a parada opcional deixa de ser
+        // uma tentacao ocasional e vira rotina.
+        assertNoFieldsNamedLike(io.github.rogeriocisi.airlab.analysis.CollectionProgress.class,
+                "hit", "acerto", "score", "nota", "accuracy", "acuracia", "proportion",
+                "proporcao", "pvalue", "correct", "result", "effect", "difference", "diferenca");
+    }
+
+    @Test
+    @DisplayName("o resumo mostrado ao pesquisador conta unidades, nunca desempenho")
+    void progress_summary_reports_counts_only() {
+        io.github.rogeriocisi.airlab.analysis.CollectionProgress progress =
+                new io.github.rogeriocisi.airlab.analysis.CollectionProgress(1L, 18, 30);
+
+        assertThat(progress.remainingUnits()).isEqualTo(12);
+        assertThat(progress.targetReached()).isFalse();
+        assertThat(progress.summary())
+                .contains("18 de 30")
+                .contains("Nenhum resultado");
+    }
+
+    @Test
     @DisplayName("dados pessoais nao vazam por toString")
     void personal_data_does_not_leak_through_to_string() {
         assertThat(new io.github.rogeriocisi.airlab.participant.PersonalData("Maria", "maria@exemplo")

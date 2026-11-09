@@ -10,6 +10,7 @@ import io.github.rogeriocisi.airlab.participant.ParticipantService;
 import io.github.rogeriocisi.airlab.participant.PersonalData;
 import io.github.rogeriocisi.airlab.participant.TargetProfile;
 import io.github.rogeriocisi.airlab.participant.TargetRegistration;
+import io.github.rogeriocisi.airlab.support.BlindIndex;
 import io.github.rogeriocisi.airlab.support.Codes;
 import io.github.rogeriocisi.airlab.support.FieldCipher;
 import java.time.Clock;
@@ -32,6 +33,7 @@ class DefaultParticipantService implements ParticipantService {
     private final TargetRepository targets;
     private final PairRepository pairs;
     private final FieldCipher cipher;
+    private final BlindIndex blindIndex;
     private final AuditTrail auditTrail;
     private final Clock clock;
 
@@ -42,6 +44,7 @@ class DefaultParticipantService implements ParticipantService {
                               TargetRepository targets,
                               PairRepository pairs,
                               FieldCipher cipher,
+                              BlindIndex blindIndex,
                               AuditTrail auditTrail,
                               Clock clock) {
         this.participants = participants;
@@ -51,6 +54,7 @@ class DefaultParticipantService implements ParticipantService {
         this.targets = targets;
         this.pairs = pairs;
         this.cipher = cipher;
+        this.blindIndex = blindIndex;
         this.auditTrail = auditTrail;
         this.clock = clock;
     }
@@ -59,10 +63,14 @@ class DefaultParticipantService implements ParticipantService {
     @Transactional
     public String enrol(long studyId, ParticipantRole role, PersonalData personalData,
                         ConsentDeclaration consent, String actorCode) {
+        String fingerprint = fingerprintOf(personalData);
+        refuseConflictingRole(studyId, role, fingerprint, actorCode);
+
         String code = Codes.of(prefixFor(role));
         participants.save(new ParticipantEntity(code,
                 cipher.encrypt(personalData.fullName()),
                 cipher.encrypt(personalData.contact()),
+                fingerprint,
                 clock.instant()));
         roles.save(new ParticipantRoleEntity(studyId, code, role));
         consents.save(new ConsentEntity(code, consent.termVersion(),
@@ -82,6 +90,58 @@ class DefaultParticipantService implements ParticipantService {
                 "study:" + studyId, consentPayload);
 
         return code;
+    }
+
+    /**
+     * Epic E10, lock 2: nobody holds two roles in the same study, and a second enrolment in the
+     * same role is refused too.
+     *
+     * <p>With open enrolment this is the fraud that matters: the same person signing up as
+     * medium and as consulente would hand the study a result that looks clean and means nothing.
+     * The refusal is recorded in the trail, because a blocked attempt is information — a burst of
+     * them says something is going on.
+     *
+     * <p>The check needs a contact to compare. An enrolment without one is allowed and flagged in
+     * the trail, so that a study which skipped the check cannot later claim it was applied.
+     */
+    private void refuseConflictingRole(long studyId, ParticipantRole role, String fingerprint,
+                                       String actorCode) {
+        if (fingerprint == null) {
+            Map<String, Object> payload = new LinkedHashMap<>();
+            payload.put("role", role.name());
+            payload.put("conflictCheck", "SKIPPED_NO_CONTACT");
+            auditTrail.append(AuditEventType.PARTICIPANT_ENROLLED, ActorRole.RESEARCHER, actorCode,
+                    "study:" + studyId, payload);
+            return;
+        }
+
+        List<String> knownCodes = new ArrayList<>();
+        participants.findByContactFingerprint(fingerprint)
+                .forEach(existing -> knownCodes.add(existing.code()));
+        if (knownCodes.isEmpty()) {
+            return;
+        }
+
+        for (ParticipantRoleEntity held : roles.findByStudyIdAndCodeIn(studyId, knownCodes)) {
+            Map<String, Object> payload = new LinkedHashMap<>();
+            payload.put("attemptedRole", role.name());
+            payload.put("heldRole", held.role().name());
+            payload.put("heldBy", held.code());
+            auditTrail.append(AuditEventType.ROLE_CONFLICT_REFUSED, ActorRole.SYSTEM, actorCode,
+                    "study:" + studyId, payload);
+            // No personal data in the message (P6): the codes are pseudonymous.
+            throw new IllegalStateException(
+                    "this person already holds the role " + held.role().name() + " in study "
+                            + studyId + " (as " + held.code() + "); one role per person per study");
+        }
+    }
+
+    private String fingerprintOf(PersonalData personalData) {
+        String contact = personalData.contact();
+        if (contact == null || contact.isBlank()) {
+            return null;
+        }
+        return blindIndex.of("participant-contact", contact);
     }
 
     @Override

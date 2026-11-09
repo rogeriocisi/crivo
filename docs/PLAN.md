@@ -44,7 +44,7 @@ quem pode depender; `ModularityTest` verifica isso no build.
 | `redaction` | E5 | Parcial: `ClueScrubber` (guarda de pistas). Persistência e telas pendentes |
 | `analysis` | E7 | Parcial: Wilcoxon pareado exato (medida primária), binomial exato, permutação de Pratt e Birge, `PowerCheck`, política de rótulo e redução às unidades independentes. Persistência e relatório pendentes |
 | `session` | E4 | Pendente (tabelas prontas; os slots contrabalanceados já saem do sorteio) |
-| `scoring` | E6 | Parcial: escala de cinco categorias com justificativa obrigatória. Pacotes, links de uso único e telas pendentes |
+| `scoring` | E6 | Parcial: escala de cinco categorias com justificativa obrigatória e a lógica do link de uso único (`AccessLink`). Pacotes e telas pendentes |
 | `unblinding` | E7 | Pendente (tabelas prontas) |
 | `cli` | E8 | **Implementado**: `airlab verify` |
 | `support`, `platform`, `web` | — | Infraestrutura e páginas públicas |
@@ -73,6 +73,7 @@ Flyway, em `src/main/resources/db/migration`. Histórico no esquema `research`.
 | `V11` | Escala de itens de cinco categorias, com justificativa obrigatória imposta por `CHECK` (E6) |
 | `V12` | `research.protocol_deviation`, append-only por *trigger* (E1/E7) |
 | `V13` | Comentários em português passam a dizer **consulente** no lugar de *sitter* (SPEC 0.5) |
+| `V14` | Índice cego do contato em `identity.participant`, para detectar papel duplo sem guardar contato em claro (E10) |
 
 **Migração aplicada não se edita**: corrigir o vocabulário dos comentários mudaria o checksum
 do Flyway e quebraria a validação em qualquer banco já migrado — inclusive o do próprio autor.
@@ -100,6 +101,9 @@ sistema as trata como regra:
 | Item que se encaixa em outra pessoa próxima, forçado a virar acerto ou erro | Categoria própria na escala, com explicação escrita obrigatória, imposta também por `CHECK` no banco | `scoring.ItemScoreValue`, `scoring.ItemScoreEntry`, migração `V11` |
 | Execução que se afasta do plano congelado e não aparece no relatório | Desvio de protocolo é entidade própria, append-only, distinta de emenda | `study.ProtocolDeviation`, migração `V12` |
 | Multiplicar probabilidades de itens como se fossem independentes | Análise vedada. A alternativa do campo é o teste de permutação de Pratt e Birge | `analysis.PermutationTest` |
+| Painel de progresso que vira análise interina contínua | A projeção de progresso não tem campo de desfecho, e um teste estrutural reprova o build se alguém acrescentar um | `analysis.CollectionProgress` |
+| Conluio na inscrição aberta: a mesma pessoa como médium e como consulente | Um papel por pessoa em cada estudo, reconhecida por índice cego do contato; a recusa vai para a trilha | `support.BlindIndex`, migração `V14` |
+| Link de avaliação reaproveitado, vazado ou reaberto depois do envio | Token de uso único guardado só como hash, com prazo, comparação em tempo constante e recusa definitiva após o envio | `scoring.AccessLink` |
 
 O sistema não pretende impedir que uma coleta seja interrompida — isso está fora do alcance de
 software. O que ele faz é recusar o rótulo de confirmatória nesse caso, o que é a parte que

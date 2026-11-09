@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 interface ParticipantEntityRepository extends JpaRepository<ParticipantEntity, Long> {
     Optional<ParticipantEntity> findByCode(String code);
+
+    List<ParticipantEntity> findByContactFingerprint(String contactFingerprint);
 }
 
 interface TargetDetailRepository extends JpaRepository<TargetDetailEntity, Long> {
@@ -21,6 +23,8 @@ interface ParticipantRoleRepository extends JpaRepository<ParticipantRoleEntity,
     List<ParticipantRoleEntity> findByStudyIdAndRoleAndActiveTrue(Long studyId, ParticipantRole role);
 
     List<ParticipantRoleEntity> findByCode(String code);
+
+    List<ParticipantRoleEntity> findByStudyIdAndCodeIn(Long studyId, List<String> codes);
 }
 
 interface TargetRepository extends JpaRepository<TargetEntity, Long> {

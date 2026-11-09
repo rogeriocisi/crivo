@@ -3,7 +3,7 @@
 > Spec de alto nível. Cada épico abaixo vira uma spec detalhada própria antes da implementação.
 > Conformidade obrigatória com `CONSTITUTION.md`. Contexto e motivação em `VISION.md`. Fundamentação científica em `REFERENCES.md`.
 >
-> Versão 0.5 · novembro/2026 · 0.2: seção 2.1 "O que é uma leitura", regra "um item = uma afirmação" e referências · 0.3: critérios de inclusão de médiuns no pré-registro, regra de parada vinculante e unidade de análise por par (seções 5 e 9) · 0.4: medida primária pareada com Wilcoxon exato, teste de permutação de Pratt e Birge, controles de comprimento e de pistas temporais, escala de itens de cinco categorias e desvios de protocolo — derivados dos artigos em `references/` · 0.5: *sitter* passa a ser **consulente** em todo o texto em português, com a forma inglesa registrada no glossário e mantida nos identificadores do código
+> Versão 0.6 · novembro/2026 · 0.2: seção 2.1 "O que é uma leitura", regra "um item = uma afirmação" e referências · 0.3: critérios de inclusão de médiuns no pré-registro, regra de parada vinculante e unidade de análise por par (seções 5 e 9) · 0.4: medida primária pareada com Wilcoxon exato, teste de permutação de Pratt e Birge, controles de comprimento e de pistas temporais, escala de itens de cinco categorias e desvios de protocolo — derivados dos artigos em `references/` · 0.5: *sitter* passa a ser **consulente** em todo o texto em português, com a forma inglesa registrada no glossário e mantida nos identificadores do código · 0.6: épico E10, autoatendimento e automação, com as travas obrigatórias
 
 ---
 
@@ -183,6 +183,67 @@ Esta matriz é a **especificação de segurança central**. Cada célula "✗" v
 **Objetivo**: publicar o pacote de verificação.
 - O pacote contém: pré-registro, comprovantes de carimbo de tempo, semente, alocações, leituras redigidas, avaliações anonimizadas, trilha de auditoria e script de análise.
 - Os dados identificáveis **nunca** entram no pacote; uma checagem automática bloqueia a exportação se detectar um campo do esquema `identity`.
+
+### E10. Autoatendimento e automação do estudo
+
+**Objetivo**: permitir que um estudo rode de ponta a ponta pela internet — consulentes se
+inscrevem, consentem e cadastram o alvo; médiuns se cadastram e recebem o primeiro nome pelo
+sistema; a avaliação acontece no site por link de uso único; a análise roda sozinha ao atingir o
+N pré-registrado — **sem que a automação enfraqueça nenhuma garantia do protocolo**.
+
+O critério que decide o que entra neste épico é um só: *automatizar o que fecha uma via de
+vazamento ou remove um grau de liberdade do pesquisador; não automatizar o que só reduz esforço
+à custa de validade.*
+
+#### O que a automação fortalece (entra)
+
+- **Liberação do primeiro nome sem intermediário.** Quanto menos gente vê o dado, menor a
+  superfície de vazamento. A entrega pelo sistema é mais cega do que a entrega por uma pessoa.
+- **Link de uso único e expirável** para a avaliação, com o token guardado apenas como hash.
+- **Pareamento, sorteio e ordem de apresentação** sem intervenção manual — já implementados.
+- **Qualificação cega de médiuns**: rodada prévia de leituras avaliadas pelo mesmo mecanismo,
+  antes da entrada no estudo. É a triagem que a literatura associa mais fortemente a resultado,
+  e é integralmente automatizável.
+- **Fechamento automático** quando o N pré-registrado é atingido, com a análise rodando sob a
+  política de rótulo confirmatório já existente.
+
+#### O que a automação enfraquece (fica de fora)
+
+- **A sessão não vira formulário.** Substituir o experimentador *proxy* por um campo de texto
+  elimina a variável que mais separa os estudos positivos dos nulos na comparação de Silva e
+  Moreira-Almeida (2022): dos dois estudos em que o médium não interagiu com ninguém, ambos
+  deram nulo. O agendamento, a liberação do nome, o upload do áudio e a transcrição são
+  automatizados; a sessão permanece síncrona, com *proxy*. Um braço assíncrono só é admissível
+  como variante **declarada no pré-registro**, nunca como padrão.
+- **Nenhuma avaliação automática de conteúdo**, em nenhuma etapa (P10).
+
+#### Travas obrigatórias
+
+1. **Nenhum resultado parcial antes do desmascaramento.** O sistema mostra *progresso* —
+   quantas unidades independentes faltam para o alvo — e nunca taxa de acerto, diferença entre
+   alvo e chamariz, ou qualquer função dos escores. A projeção de progresso não tem campo de
+   desfecho, por construção, e há teste estrutural que verifica isso. Sem esta trava, a
+   automação reintroduz a parada opcional que o P2 existe para impedir.
+2. **Papel único por pessoa em cada estudo.** Ninguém é médium e consulente no mesmo estudo, e
+   experimentador e redator são pessoas diferentes. A tentativa é recusada no domínio e
+   registrada na trilha. Com cadastro aberto, o conluio é o risco de fraude mais sério, e é o
+   único que destrói o resultado sem deixar rastro óbvio.
+3. **Identidade verificada antes da inscrição valer.** Confirmação de e-mail no mínimo; para
+   estudo com fim de publicação, verificação mais forte definida no pré-registro. Contas
+   ligadas (mesmo contato, mesmo alvo cadastrado duas vezes) são sinalizadas para revisão
+   humana, não bloqueadas em silêncio.
+4. **Comitê de ética antes do ar, não depois.** Recrutamento público de pessoas enlutadas, com
+   coleta de dado sensível, exige aprovação do CEP/Plataforma Brasil **antes** de a inscrição
+   ser aberta. O sistema registra a referência da aprovação no pré-registro.
+5. **Um humano alcançável.** Alguém pode se inscrever em luto agudo. A inscrição exibe um canal
+   de contato humano e o estudo registra quem é a pessoa responsável; resposta automática não
+   substitui isso.
+6. **Consentimento sempre na versão corrente.** Uma inscrição feita sob versão antiga do termo
+   não é aceita sem novo aceite, e a versão aceita fica gravada com a inscrição.
+
+**Aceite**: um estudo completo roda sem intervenção manual exceto a sessão e a revisão de
+sinalizações; em nenhum momento, antes do desmascaramento, qualquer tela ou API expõe função
+dos escores; e a tentativa de acumular papéis conflitantes é recusada e auditada.
 
 ## 6. Modelo de domínio (macro)
 
