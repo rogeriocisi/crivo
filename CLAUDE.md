@@ -18,6 +18,8 @@ Instruções para o Claude Code neste repositório.
 - **Auditoria (P4)**: toda operação de domínio emite um evento de auditoria. Operação sem evento é bug.
 - **Privacidade (P6)**: nada de dados pessoais em logs, mensagens de exceção, nomes de arquivo ou fixtures com dados reais. Apenas o módulo `participant` acessa o esquema `identity`.
 - **IA (P10)**: nenhum código usa IA para avaliar leituras ou pontuar.
+- **Análise vedada**: nunca multiplicar as probabilidades individuais dos itens como se fossem independentes (Hyslop, 1919). Para dados de acurácia de leitura, a análise do campo é o teste de permutação de Pratt e Birge (`analysis.PermutationTest`).
+- **Reprodutibilidade do sorteio (P5)**: tudo que o sorteio decide tem de ser independente da ordem em que as entradas chegam. Ordene em forma canônica antes de usar a semente; há teste que tenta violar isso.
 - **Simplicidade (P8)**: monólito modular; justifique por escrito qualquer dependência nova.
 - **Versões**: confira a LTS atual do Java e a versão estável atual do Spring Boot e do Spring Modulith antes de fixá-las.
 - **Sem Docker (regra arquitetural 8)**: nenhuma etapa obrigatória pode exigir Docker, container ou orquestrador. Em desenvolvimento e teste o PostgreSQL é embarcado pela aplicação (`io.zonky.test:embedded-postgres`); em produção é o do sistema operacional. Não reintroduza Testcontainers nem `docker-compose.yml`.
@@ -35,11 +37,12 @@ Instruções para o Claude Code neste repositório.
 
 Já implementado (ver `docs/PLAN.md`, seção 2, para a tabela completa):
 
-1. Plano técnico, migrações `V1`–`V10` dos esquemas `research`/`identity`/`audit` e papel `airlab_app`
+1. Plano técnico, migrações `V1`–`V12` dos esquemas `research`/`identity`/`audit` e papel `airlab_app`
 2. `audit`: trilha append-only encadeada por hash + CLI `airlab verify`
 3. `allocation`: sorteio reproduzível (`SecureRandom` para a semente, SHA-256 em modo contador para a expansão), compromisso → revelação, custódia cifrada da semente
 4. `study` (E1) e `participant` (E2), com pareamento
-5. Partes puras de E5 (`ClueScrubber`) e E7 (teste binomial exato)
+5. Partes puras de E5 (`ClueScrubber`) e E7 (Wilcoxon pareado exato como medida primária, binomial exato, permutação de Pratt e Birge, `PowerCheck`)
+6. Escala de itens de cinco categorias com justificativa obrigatória (E6) e desvios de protocolo append-only (E1/E7)
 
 A fazer, nesta ordem: E4 (sessões), E5 (persistência da redação), E6 (avaliação cega), E7 (desmascaramento e relatório), E8/E9 (carimbo de tempo e pacote de verificação).
 

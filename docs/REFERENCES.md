@@ -163,14 +163,19 @@ Lido de baixo para cima, este é o argumento do projeto: cada linha é uma obje�
 
 | Crítica | De quem | Controle no Crivo | Onde |
 |---|---|---|---|
-| Leitura fria e afirmações genéricas | Hyman 1977, 2003 | Chamariz do par; escolha forçada; um item = uma afirmação | SPEC E5/E6 |
+| Leitura fria e afirmações genéricas | Hyman 1977, 2003 | Chamariz do par; um item = uma afirmação; escala com `PARTIAL_OR_INTERPRETED_FIT` e `FITS_SOMEONE_ELSE`, que exigem explicação escrita (`ItemScoreEntry`) | SPEC E5/E6 |
 | Vazamento sensorial | Wiseman & O'Keeffe 2001 | Cegamento na camada de domínio e de dados; `ClueScrubber`; mídia com identificador aleatório | Constitution P1; SPEC E4/E5 |
 | Foto do falecido quebra o cegamento | Kelly & Arcangel 2011 | Só o primeiro nome, liberado por via única e auditada (`releaseFirstName`) | SPEC seção 4 |
 | Pontuação enviesada | Wiseman & O'Keeffe 2001; Hyman 2003 | Escala congelada no pré-registro; pacote bloqueado no envio | SPEC E6 |
-| Interrupção oportunista da coleta (*optional stopping*) | Hyman 2003; Simmons et al. 2011 | `StoppingRule` e tamanho-alvo congelados; `ConfirmatoryAnalysisPolicy` recusa o rótulo confirmatório fora do N declarado | Constitution P2; SPEC E1/E7 |
+| Interrupção oportunista da coleta (*optional stopping*) | Hyman 2003; Simmons et al. 2011 | `StoppingRule` e tamanho-alvo congelados; `ConfirmatoryAnalysisPolicy` recusa o rótulo confirmatório fora do N declarado; desvios registrados em tabela append-only (`ProtocolDeviation`) | Constitution P2; SPEC E1/E7 |
 | Seleção de médiuns sem critério publicado | Hyman 2003; Silva & Moreira-Almeida 2022 | `mediumInclusionCriteria` é campo obrigatório do pré-registro, hasheado antes da coleta | SPEC E1 |
-| Dependência entre avaliações do mesmo par | SPEC, questão aberta 1 | Unidade confirmatória é o par; o sorteio designa, antes da primeira sessão, qual sitter carrega a observação | SPEC E3/E7 |
+| Dependência entre avaliações do mesmo par | SPEC, questão aberta 1 | Unidade confirmatória é o par; o sorteio designa, antes da primeira sessão, qual sitter carrega a observação; a medida primária é a diferença pareada alvo − chamariz (`PairedComparison`, Wilcoxon exato) | SPEC E3/E7 |
 | Análise escolhida depois dos dados | Nosek et al. 2018; Simmons et al. 2011 | Análise primária única no documento hasheado; o resto é rotulado exploratório | Constitution P2/P3 |
+| Estudo subdimensionado apresentado como resultado nulo | Sarraf et al. 2021 (efeito de 6 a 14 pontos); Beischel & Schwartz 2007 (escolha forçada menos sensível) | `PowerCheck` calcula o mínimo para o efeito declarado e o documento congelado diz se o desenho é suficiente | SPEC E1/E7, questão aberta 1 |
+| Comprimento da leitura como pista e como confundidor | O'Keeffe & Wiseman 2005 (leituras de 6 a 92 afirmações; a mais longa e genérica recebeu as notas mais altas) | Tolerância pré-registrada (`maxItemCountDifference`) e corte da leitura mais longa por subamostra sorteada da semente (`balancedItemSelection`) | SPEC E5/E6 |
+| Pistas temporais que identificam a própria leitura | O'Keeffe & Wiseman 2005 | Itens apresentados em ordem sorteada (`itemPresentationOrder`); slots de sessão contrabalanceados por quadrado latino (`SessionSlot`); `ClueScrubber` recusa datas e referências de sessão | SPEC E4/E6 |
+| Ordem de apresentação desequilibrada dentro do par | Beischel & Schwartz 2007 | Contrabalanceamento no par: um sitter vê a própria leitura primeiro, o outro vê o chamariz, e qual deles é sorteado | SPEC E3/E6 |
+| Multiplicar probabilidades de itens como se fossem independentes | Hyslop 1919, criticado em Schouten 1994 e O'Keeffe & Wiseman 2005 | **Análise vedada neste projeto.** A alternativa endossada pelo campo é o teste de permutação de Pratt e Birge, implementado em `PermutationTest`, que não assume independência entre itens | SPEC E7 |
 | Adulteração posterior de dados | — | Trilha append-only encadeada por hash, imposta por *trigger*; CLI `airlab verify` | Constitution P4; SPEC E8 |
 | Sorteio não verificável | Constitution P5 | Semente do `SecureRandom`, expansão determinística, compromisso → revelação | SPEC E3 |
 | Viés de publicação | Sarraf et al. 2021; Hyman 2003 | Mesmo relatório para resultado nulo e positivo; pré-registro público | Constitution P3; SPEC E7 |

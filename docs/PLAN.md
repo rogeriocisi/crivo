@@ -42,9 +42,9 @@ quem pode depender; `ModularityTest` verifica isso no build.
 | `study` | E1 | **Implementado**: estudo, documento canônico do pré-registro, congelamento, emendas |
 | `participant` | E2 | **Implementado**: participantes, consentimento, alvos, pareamento, desistência |
 | `redaction` | E5 | Parcial: `ClueScrubber` (guarda de pistas). Persistência e telas pendentes |
-| `analysis` | E7 | Parcial: teste binomial exato, política de rótulo confirmatório/exploratório e redução às unidades independentes. Persistência e relatório pendentes |
-| `session` | E4 | Pendente (tabelas prontas) |
-| `scoring` | E6 | Pendente (tabelas prontas) |
+| `analysis` | E7 | Parcial: Wilcoxon pareado exato (medida primária), binomial exato, permutação de Pratt e Birge, `PowerCheck`, política de rótulo e redução às unidades independentes. Persistência e relatório pendentes |
+| `session` | E4 | Pendente (tabelas prontas; os slots contrabalanceados já saem do sorteio) |
+| `scoring` | E6 | Parcial: escala de cinco categorias com justificativa obrigatória. Pacotes, links de uso único e telas pendentes |
 | `unblinding` | E7 | Pendente (tabelas prontas) |
 | `cli` | E8 | **Implementado**: `airlab verify` |
 | `support`, `platform`, `web` | — | Infraestrutura e páginas públicas |
@@ -70,6 +70,8 @@ Flyway, em `src/main/resources/db/migration`. Histórico no esquema `research`.
 | `V8` | Pacotes de avaliação, pontuações, escolha forçada (E6) |
 | `V9` | Desmascaramento (append-only) e execuções de análise (E7) |
 | `V10` | Papel `airlab_app` com privilégio mínimo: na trilha, só `SELECT` e `INSERT` |
+| `V11` | Escala de itens de cinco categorias, com justificativa obrigatória imposta por `CHECK` (E6) |
+| `V12` | `research.protocol_deviation`, append-only por *trigger* (E1/E7) |
 
 **Garantias no banco, não só no código**: os triggers alcançam qualquer papel, inclusive
 superusuário, de modo que a imposição vale também no perfil local, onde a aplicação conecta
@@ -77,7 +79,7 @@ como proprietária do banco.
 
 ## 4. Decisões metodológicas impostas pelo código
 
-Três críticas recorrentes a esta literatura não se resolvem com disciplina do pesquisador; o
+Críticas recorrentes a esta literatura que não se resolvem com disciplina do pesquisador; o
 sistema as trata como regra:
 
 | Crítica | Como o sistema responde | Onde |
@@ -85,16 +87,47 @@ sistema as trata como regra:
 | Resultados positivos vêm de "médiuns selecionados", sem critérios publicados | `mediumInclusionCriteria` é campo obrigatório do pré-registro, entra no documento com hash antes da coleta | `study.PreregistrationPlan` |
 | Parada opcional: encerrar a coleta quando os números ficam bons | A análise só recebe o rótulo **confirmatória** se o pré-registro estava congelado e o número de unidades coletadas for exatamente o alvo declarado. Fora disso, sai rotulada como exploratória, com o motivo impresso ao lado | `analysis.ConfirmatoryAnalysisPolicy` |
 | Dependência entre os dois sitters de um par, tratados como observações independentes | A unidade da análise confirmatória é o par: entra só a escolha do sitter **sorteado** para aquele par, antes da primeira sessão. A outra escolha é relatada como secundária | `allocation.AllocationPlan.ConfirmatoryUnit`, `analysis.IndependentUnits` |
+| Estudo subdimensionado cujo resultado nulo é apresentado como ausência de efeito | O mínimo de pares para o efeito declarado é calculado e **escrito no documento congelado**, com a frase que diz se o desenho atende ou não | `analysis.PowerCheck` |
+| Comprimento da leitura como pista e como confundidor | Tolerância pré-registrada de diferença de itens; a leitura mais longa é cortada por subamostra sorteada da semente | `PreregistrationPlan.maxItemCountDifference`, `AllocationEngine.balancedSubsample` |
+| Pistas temporais que permitem ao sitter reconhecer a própria leitura | Itens apresentados em ordem sorteada; slots de sessão contrabalanceados por quadrado latino, sorteados junto com o resto | `AllocationEngine.itemPresentationOrder`, `AllocationPlan.SessionSlot` |
+| Ordem de apresentação desequilibrada dentro do par | Um sitter vê a própria leitura primeiro e o outro vê o chamariz; qual dos dois é sorteado | `AllocationEngine` (domínio `presentation:`) |
+| Item que se encaixa em outra pessoa próxima, forçado a virar acerto ou erro | Categoria própria na escala, com explicação escrita obrigatória, imposta também por `CHECK` no banco | `scoring.ItemScoreValue`, `scoring.ItemScoreEntry`, migração `V11` |
+| Execução que se afasta do plano congelado e não aparece no relatório | Desvio de protocolo é entidade própria, append-only, distinta de emenda | `study.ProtocolDeviation`, migração `V12` |
+| Multiplicar probabilidades de itens como se fossem independentes | Análise vedada. A alternativa do campo é o teste de permutação de Pratt e Birge | `analysis.PermutationTest` |
 
 O sistema não pretende impedir que uma coleta seja interrompida — isso está fora do alcance de
 software. O que ele faz é recusar o rótulo de confirmatória nesse caso, o que é a parte que
 importa para quem lê o relatório.
 
-**Custo da decisão da unidade de análise**: com o par como unidade, as ~70 observações
-independentes do cálculo de referência passam a significar 70 pares — 140 sitters e 140
-sessões. A alternativa (usar as duas escolhas com correção para agrupamento) recupera poder,
-mas exige um método que a v1 não implementa. A decisão e a recomendação estão registradas na
-`SPEC.md`, seção 9, questão 1, e o cálculo de poder formal continua pendente.
+### Medida primária e poder
+
+Com o par como unidade, as ~70 observações do cálculo original passariam a significar 70
+pares — 140 sitters e 140 sessões. Pior: a meta-análise de Sarraf, Woodley of Menie e
+Tressoldi (2021) estima o efeito do campo em **6 a 14 pontos acima do acaso**, e a 58% de
+acerto aquelas 70 unidades dariam cerca de **32% de poder**.
+
+Mínimos para α = 0,05 unilateral e poder de 0,80, conforme `PowerCheck` (com valores de
+referência nos testes):
+
+| Medida primária | Efeito declarado | Pares necessários |
+|---|---|---|
+| Escolha forçada | 56% de acerto | 428 |
+| Escolha forçada | 58% | 240 |
+| Escolha forçada | 60% | 153 |
+| Escolha forçada | 65% | 67 |
+| Diferença pareada | d = 0,49 | 30 |
+| Diferença pareada | d = 0,50 | 29 |
+| Diferença pareada | d = 0,57 | 22 |
+| Diferença pareada | d = 0,75 | 13 |
+
+Daí a decisão da v0.4 da SPEC: **a medida primária passa a ser a diferença pareada
+alvo − chamariz**, testada com Wilcoxon exato, o que mantém o par como unidade independente e
+recupera o poder. A escolha forçada continua coletada e relatada como secundária. Beischel e
+Schwartz já esperavam que ela fosse o indicador menos sensível, e os números deles
+confirmaram (notas globais p = 0,007; escolha forçada p = 0,01).
+
+O que resta decidir é qual efeito declarar: os efeitos por seção de leitura em Beischel et al.
+(2015) vão de d = 0,49 a 0,75.
 
 ## 5. Decisões criptográficas
 
@@ -134,6 +167,10 @@ sorteio na CLI, nunca para calcular hash.
 | `IndependentUnitsTest` | P9 | Unitário: uma escolha por par, a do sitter sorteado; dado faltante interrompe em vez de encolher a amostra |
 | `ClueScrubberTest` | P1 | Unitário: primeiro nome, pistas de sessão, datas, item com mais de uma afirmação |
 | `BlindingMatrixTest` | P1 | Estrutural: campo proibido ausente da projeção, não filtrado na view |
+| `PairedPrimaryMeasureTest` | P9 | Wilcoxon exato contra valores de referência; par duplicado recusado |
+| `PowerCheckTest` | P9 | A tabela de poder da seção 4, como teste |
+| `PermutationTestTest` | P9 | Permutação exata; reproduz o resultado nulo publicado por O'Keeffe e Wiseman |
+| `ItemScoreEntryTest` | P1, E6 | Justificativa obrigatória nos valores interpretativos; só o encaixe óbvio conta |
 | `ModularityTest` | Regra 1 e 2 | Fronteiras de módulo |
 
 Os testes de integração usam o mesmo PostgreSQL embarcado, então `./mvnw test` funciona em

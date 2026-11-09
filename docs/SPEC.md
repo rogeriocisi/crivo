@@ -3,7 +3,7 @@
 > Spec de alto nível. Cada épico abaixo vira uma spec detalhada própria antes da implementação.
 > Conformidade obrigatória com `CONSTITUTION.md`. Contexto e motivação em `VISION.md`. Fundamentação científica em `REFERENCES.md`.
 >
-> Versão 0.3 · novembro/2026 · 0.2: seção 2.1 "O que é uma leitura", regra "um item = uma afirmação" e referências · 0.3: critérios de inclusão de médiuns no pré-registro, regra de parada vinculante e unidade de análise por par (seções 5 e 9)
+> Versão 0.3 · novembro/2026 · 0.2: seção 2.1 "O que é uma leitura", regra "um item = uma afirmação" e referências · 0.3: critérios de inclusão de médiuns no pré-registro, regra de parada vinculante e unidade de análise por par (seções 5 e 9) · 0.4: medida primária pareada com Wilcoxon exato, teste de permutação de Pratt e Birge, controles de comprimento e de pistas temporais, escala de itens de cinco categorias e desvios de protocolo — derivados dos artigos em `references/`
 
 ---
 
@@ -99,7 +99,9 @@ Esta matriz é a **especificação de segurança central**. Cada célula "✗" v
 
 ### E1. Estudo e pré-registro
 **Objetivo**: criar um estudo e congelar o pré-registro de forma verificável.
-- Criar o estudo com título, protocolo (v1: pareado), hipóteses, **critérios de recrutamento e triagem de médiuns**, critérios de pareamento, escalas de pontuação, análise primária e secundária, regras de exclusão, **unidade de análise**, **regra de parada** e tamanho-alvo da amostra.
+- Criar o estudo com título, protocolo (v1: pareado), hipóteses, **critérios de recrutamento e triagem de médiuns**, critérios de pareamento, escalas de pontuação, análise primária e secundária, regras de exclusão, **medida primária**, **efeito esperado**, **unidade de análise**, **regra de parada**, tamanho-alvo da amostra e **diferença máxima de itens entre as duas leituras de um par**.
+- O documento congelado declara o **poder estatístico** do desenho: o mínimo de unidades para o efeito declarado e se o tamanho-alvo o atende. Um desenho subdimensionado não é recusado — um piloto é legítimo — mas fica dito no próprio pré-registro, para que um resultado nulo não possa depois ser apresentado como ausência de efeito.
+- **Desvios de protocolo** são registrados contra a versão congelada, com data e motivo, em tabela *append-only*, e aparecem no relatório ao lado do resultado. Desvio não é emenda: a emenda muda o plano e cria nova versão, o desvio registra que a execução se afastou do plano que já estava congelado (Nosek et al., 2018).
 - Os critérios de inclusão de médiuns são pré-registrados porque selecionar médiuns por desempenho anterior infla o efeito. Os resultados positivos da literatura vêm de "médiuns selecionados" sem que os critérios de seleção tenham sido publicados; aqui eles entram no documento com hash, antes da coleta.
 - Gerar o documento canônico do pré-registro (Markdown/JSON normalizado) → SHA-256 → carimbo de tempo (RFC 3161/OpenTimestamps) → espelho opcional no OSF.
 - Emendas versionadas, com justificativa; as versões anteriores continuam visíveis.
@@ -125,7 +127,8 @@ Esta matriz é a **especificação de segurança central**. Cada célula "✗" v
 
 ### E4. Sessões
 **Objetivo**: conduzir as leituras sem vazamento.
-- Agenda de sessões; o experimentador vê apenas o primeiro nome do alvo e um roteiro padronizado.
+- Agenda de sessões **contrabalanceada**: o sorteio atribui índices de dia e de horário, de modo que nenhum par ocupe sistematicamente o primeiro ou o último horário do dia. É a defesa contra pistas temporais — uma referência ao tempo dentro da leitura ("aquele acidente de hoje") permite ao sitter deduzir qual leitura é a dele. O'Keeffe e Wiseman (2005) foram os primeiros a controlar isso.
+- O experimentador vê apenas o primeiro nome do alvo e um roteiro padronizado.
 - Upload do áudio com renomeação para ID aleatório e remoção de metadados.
 - Registro de ocorrências (por exemplo, "o médium perguntou algo", "a ligação caiu").
 - Transcrição local opcional (whisper.cpp), com revisão humana.
@@ -144,7 +147,9 @@ Esta matriz é a **especificação de segurança central**. Cada célula "✗" v
 ### E6. Avaliação cega
 **Objetivo**: o sitter avalia as duas leituras do par sem saber qual é a dele.
 - Acesso por link de uso único e expirável (sem conta permanente).
-- Para cada item: escala pré-registrada (por exemplo, *correto / parcialmente / incorreto / não sei avaliar*).
+- Para cada item: escala pré-registrada de cinco categorias — *encaixe óbvio / encaixe parcial ou interpretado / sem encaixe / **encaixa em outra pessoa próxima** / não sei avaliar*. As duas categorias intermediárias exigem que o avaliador **escreva a interpretação**, e só o encaixe óbvio conta para a acurácia da medida primária. A categoria "encaixa em outra pessoa" existe porque, sem ela, o item que descreve um parente vivo é forçado a virar acerto ou erro, e em qualquer dos dois casos a explicação alternativa desaparece da conta.
+- Os itens são apresentados em **ordem sorteada**, derivada da semente, para que uma pista num item não contamine a leitura da lista inteira.
+- As duas leituras de um par chegam com **comprimento comparável**: se a diferença de itens passar da tolerância pré-registrada, a mais longa é cortada por subamostra sorteada da semente. Nos dados de O'Keeffe e Wiseman as leituras iam de 6 a 92 afirmações, e a mais longa e mais genérica recebeu as notas mais altas de todos os sitters — comprimento, por si só, é pista e é confundidor.
 - Nota global de 0 a 6 para cada leitura e escolha forçada entre as duas, com grau de confiança.
 - Ao enviar, a avaliação é bloqueada.
 
@@ -154,7 +159,10 @@ Esta matriz é a **especificação de segurança central**. Cada célula "✗" v
 **Objetivo**: revelar e analisar exatamente como foi pré-registrado.
 - Desmascaramento permitido só quando todas as avaliações estiverem fechadas (ou o prazo pré-registrado tiver expirado). É uma ação explícita e irreversível.
 - Revelação da semente.
-- Análise primária: proporção de escolhas corretas comparada a 0,5, com teste binomial exato unilateral.
+- **Análise primária**: diferença pareada alvo − chamariz, uma observação por par, com **teste de Wilcoxon exato unilateral**. A diferença é medida na nota global ou no percentual de itens com encaixe óbvio, conforme declarado no pré-registro.
+- **Análises secundárias**: proporção de escolhas forçadas corretas comparada a 0,5 (binomial exato), e **teste de permutação de Pratt e Birge** sobre a matriz de notas, que é a análise mais endossada no campo por não assumir independência entre os itens de uma leitura.
+- A escolha forçada **deixa de ser a medida primária**. Ela descarta o tamanho da diferença, e Beischel e Schwartz já esperavam que fosse o indicador menos sensível — os números deles confirmaram (notas globais p = 0,007; escolha forçada p = 0,01). Com o efeito que a meta-análise de Sarraf et al. (2021) reporta, a troca decide a viabilidade do estudo: ver a tabela em `docs/PLAN.md`, seção 4.
+- **Análise vedada**: multiplicar as probabilidades individuais dos itens como se fossem independentes (Hyslop, 1919). Infla a acurácia, porque os itens de uma leitura são correlacionados por construção, e já foi refutada na própria literatura do campo.
 - **Unidade de análise: o par.** Os dois sitters de um par avaliam o mesmo material, em espelho, e por isso as duas escolhas não são independentes. Entra na análise confirmatória apenas a escolha do sitter que o sorteio designou para aquele par, definida antes da primeira sessão. A escolha do outro sitter é coletada e relatada como análise secundária.
 - **Regra de parada vinculante.** A coleta para no tamanho-alvo pré-registrado, sem análise interina. Se os dados não corresponderem ao que foi declarado — coleta interrompida antes, continuada depois, ou pré-registro não congelado —, o sistema **rotula o resultado como exploratório** e imprime o motivo ao lado. Isso responde à crítica de parada opcional (*optional stopping*).
 - Análises secundárias: nota global alvo × chamariz (Wilcoxon pareado) e proporção de itens corretos alvo × chamariz.
@@ -214,7 +222,7 @@ Incident ──* Session (affected)
 
 ## 9. Questões em aberto
 
-1. **Tamanho da amostra**: precisa de cálculo de poder formal, e agora com uma consequência prática em cima da mesa. A dependência entre os dois sitters de um par **está decidida** (unidade de análise = par, ver E7), e isso tem custo: as cerca de 70 escolhas independentes necessárias para detectar 65% contra 50% (α = 0,05 unilateral, poder de 80%) passam a significar **70 pares, ou seja 140 sitters e 140 sessões**, não 70 sitters. A alternativa é usar as duas escolhas de cada par com um método que corrija o agrupamento (por exemplo GEE ou erro-padrão robusto por cluster), o que recupera parte do poder mas exige uma decisão estatística e uma implementação que a v1 não tem. **Recomendação**: manter a unidade por par no piloto, que é a opção conservadora e exata, e refazer o cálculo de poder antes de definir o tamanho do estudo real.
+1. **Tamanho da amostra**: precisa de cálculo de poder formal, e agora com uma consequência prática em cima da mesa. A dependência entre os dois sitters de um par **está decidida** (unidade de análise = par, ver E7), e isso tem custo: as cerca de 70 escolhas independentes necessárias para detectar 65% contra 50% (α = 0,05 unilateral, poder de 80%) passam a significar **70 pares, ou seja 140 sitters e 140 sessões**, não 70 sitters. A alternativa é usar as duas escolhas de cada par com um método que corrija o agrupamento (por exemplo GEE ou erro-padrão robusto por cluster), o que recupera parte do poder mas exige uma decisão estatística e uma implementação que a v1 não tem. **Decidido na v0.4**: a medida primária passa a ser a diferença pareada contínua, que mantém o par como unidade e recupera o poder — cerca de 30 pares para d = 0,5, contra 240 pares para 58% de acerto na escolha forçada. O cálculo está implementado (`PowerCheck`) e entra no documento congelado. **O que resta decidir**: qual efeito declarar. Os efeitos por seção de leitura em Beischel et al. (2015) vão de d = 0,49 a 0,75, e a seção escolhida muda o tamanho do estudo.
 2. **Escala de itens**: qual escala usar e como tratar o "não sei avaliar".
 3. **Primeiro nome**: dar ao médium o nome real ou um pseudônimo? (Isso afeta a ética e a validade.)
 4. **Recrutamento de médiuns**: o campo de critérios já existe no pré-registro e é obrigatório; falta decidir o conteúdo — quais critérios de inclusão e se haverá triagem prévia. Se houver triagem por desempenho, ela precisa estar descrita ali, porque é exatamente o ponto que a crítica usa para explicar resultados positivos.
