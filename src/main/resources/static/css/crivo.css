@@ -601,6 +601,179 @@ code,
     max-width: none;
 }
 
+.definicao {
+    margin: 1.75rem 0;
+    padding: 1.25rem 1.5rem;
+    border-left: 3px solid var(--verdete);
+    background: color-mix(in srgb, var(--verdete) 7%, transparent);
+    max-width: 44rem;
+}
+
+.definicao p {
+    margin: 0;
+    max-width: none;
+}
+
+.definicao .rotulo {
+    margin-bottom: 0.5rem;
+}
+
+.definicao-papel {
+    border-left-color: var(--sepia);
+    background: color-mix(in srgb, var(--sepia) 8%, transparent);
+}
+
+#o-que-e h3 {
+    margin-top: 2.25rem;
+    font-size: 1.1rem;
+}
+
+/* ---------- bibliografia ---------- */
+
+.bibliografia {
+    list-style: none;
+    margin: 2rem 0 0;
+    padding: 0;
+    counter-reset: fonte;
+}
+
+.bibliografia > li {
+    position: relative;
+    padding: 0 0 1.75rem 3rem;
+    margin-bottom: 1.75rem;
+    border-bottom: 1px solid var(--fio);
+    counter-increment: fonte;
+}
+
+.bibliografia > li:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.bibliografia > li::before {
+    content: "[" counter(fonte) "]";
+    position: absolute;
+    left: 0;
+    top: 0.15rem;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--verdete);
+}
+
+.citacao {
+    margin: 0 0 0.6rem;
+    max-width: 44rem;
+}
+
+.citacao a {
+    font-family: var(--mono);
+    font-size: 0.78em;
+    white-space: nowrap;
+}
+
+.informa {
+    margin: 0;
+    max-width: 44rem;
+    color: var(--tinta-suave);
+    font-size: 0.97rem;
+    padding-left: 0.9rem;
+    border-left: 2px solid var(--fio);
+}
+
+.informa::before {
+    content: "Informa no Crivo: ";
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--verdete);
+}
+
+/* ---------- repositório ---------- */
+
+.repositorio {
+    margin: 1.5rem 0 0;
+    font-size: clamp(1.1rem, 0.95rem + 0.8vw, 1.6rem);
+    font-family: var(--mono);
+    max-width: none;
+}
+
+.passos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+    gap: 2.5rem;
+    margin-top: 2.5rem;
+}
+
+.passos article > p:last-child {
+    margin-bottom: 0;
+}
+
+.passos .comando {
+    margin-top: 0.4rem;
+}
+
+/* ---------- formulário de entrada ---------- */
+
+.formulario {
+    margin: 2rem 0 0;
+    max-width: 22rem;
+    display: grid;
+    gap: 0.35rem;
+}
+
+.formulario label {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--tinta-suave);
+    margin-top: 0.75rem;
+}
+
+.formulario input {
+    font-family: var(--mono);
+    font-size: 0.95rem;
+    padding: 0.6rem 0.7rem;
+    border: 1px solid var(--fio-forte);
+    background: var(--papel);
+    color: var(--tinta);
+}
+
+.formulario input:focus-visible {
+    outline: 2px solid var(--verdete);
+    outline-offset: 1px;
+    border-color: var(--verdete);
+}
+
+.formulario button {
+    margin-top: 1.25rem;
+    justify-self: start;
+    cursor: pointer;
+    font-family: var(--mono);
+}
+
+.erro,
+.aviso {
+    margin: 0;
+    padding: 0.6rem 0.8rem;
+    font-size: 0.9rem;
+    border-left: 3px solid var(--sepia);
+    background: color-mix(in srgb, var(--sepia) 10%, transparent);
+}
+
+.aviso {
+    border-left-color: var(--verdete);
+    background: color-mix(in srgb, var(--verdete) 10%, transparent);
+}
+
+.credencial {
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--fio);
+    max-width: 40rem;
+}
+
 /* ---------- avisos e rodapé ---------- */
 
 .nota {

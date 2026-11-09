@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Entrar — Crivo</title>
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="/css/crivo.css">
+</head>
+<body>
+<a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+<div class="faixa">
+  <header th:replace="~{fragments/site :: topo}"></header>
+</div>
+
+<main id="conteudo">
+  <section class="abertura">
+    <div class="faixa">
+      <p class="rotulo">Área do pesquisador</p>
+      <h1>Entrar</h1>
+      <p class="chamada">
+        Esta entrada é para quem <strong>conduz</strong> um estudo nesta instalação. Não é para
+        participantes: quem vai avaliar leituras recebe um link de uso único por mensagem, e nunca
+        precisa de conta.
+      </p>
+
+      <div class="ressalva">
+        <p>
+          <strong>Hoje o login ainda não leva a lugar nenhum.</strong> As telas do pesquisador —
+          cadastro de estudo, pré-registro, sessões, avaliação — ainda não existem. A conta e a
+          proteção já estão de pé para o que vem a seguir; por enquanto, tudo o que a plataforma
+          mostra está nas páginas públicas, e o trabalho real se faz pela linha de comando.
+        </p>
+      </div>
+
+      <form class="formulario" method="post" th:action="@{/login}">
+        <p class="erro" th:if="${param.error}" role="alert">
+          Usuário ou senha incorretos.
+        </p>
+        <p class="aviso" th:if="${param.logout}" role="status">
+          Sessão encerrada.
+        </p>
+
+        <label for="username">Usuário</label>
+        <input id="username" name="username" type="text" autocomplete="username" required
+               autocapitalize="none" spellcheck="false">
+
+        <label for="password">Senha</label>
+        <input id="password" name="password" type="password" autocomplete="current-password" required>
+
+        <button class="botao botao-cheio" type="submit">Entrar</button>
+      </form>
+
+      <div class="credencial" th:if="${localProfile}">
+        <p class="rotulo">Onde está a credencial, no perfil local</p>
+        <p>
+          O usuário é <code>pesquisador</code>. A senha é <strong>gerada a cada execução</strong> e
+          aparece uma vez no log da aplicação, numa linha de aviso como esta:
+        </p>
+        <code class="comando">Perfil local: usuario "pesquisador" com senha temporaria desta execucao: …</code>
+        <p class="nota">
+          Nenhuma senha vai para o repositório, e nenhuma fica salva entre execuções — por isso ela
+          muda toda vez que você sobe a aplicação. Para fixar a sua, defina
+          <code>AIRLAB_RESEARCHER_USER</code> e <code>AIRLAB_RESEARCHER_PASSWORD_HASH</code>
+          (um hash bcrypt) no arquivo <code>.env</code>, que não é versionado.
+        </p>
+      </div>
+
+      <div class="credencial" th:unless="${localProfile}">
+        <p class="rotulo">Credencial em produção</p>
+        <p class="nota">
+          O usuário e o hash bcrypt da senha vêm do ambiente
+          (<code>AIRLAB_RESEARCHER_USER</code> e <code>AIRLAB_RESEARCHER_PASSWORD_HASH</code>).
+          Sem eles a aplicação não inicia, de propósito: subir com credencial padrão seria pior do
+          que não subir.
+        </p>
+      </div>
+
+      <p class="nota nota-espacada"><a href="/">Voltar ao início</a></p>
+    </div>
+  </section>
+</main>
+
+<footer th:replace="~{fragments/site :: rodape}"></footer>
+</body>
+</html>

@@ -34,7 +34,16 @@ Windows (prompt de comando):
 scripts\start.cmd
 ```
 
-O script valida o JDK, constrói o JAR, sobe o PostgreSQL embarcado em `~/.airlab/pgdata`, aplica as migrações e inicia a aplicação em <http://127.0.0.1:8080>. `Ctrl+C` encerra tudo. No perfil `local` a senha do usuário `pesquisador` é gerada a cada execução e aparece no log.
+O script valida o JDK, constrói o JAR, sobe o PostgreSQL embarcado em `~/.airlab/pgdata`, aplica as migrações e inicia a aplicação em <http://127.0.0.1:8080>. `Ctrl+C` encerra tudo.
+
+### Entrar na aplicação
+
+A entrada em `/login` é para quem **conduz** o estudo, não para participantes — estes recebem link de uso único e nunca têm conta. Hoje ela ainda não leva a telas de pesquisador: a conta existe para proteger o que vem a seguir.
+
+- **Usuário**: `pesquisador`.
+- **Senha, no perfil local**: gerada a cada execução e impressa uma vez no log, numa linha de aviso `Perfil local: usuario "pesquisador" com senha temporaria desta execucao: …`. Nada fica salvo entre execuções, e nenhuma credencial vai para o repositório.
+- **Para fixar a sua**: defina `AIRLAB_RESEARCHER_USER` e `AIRLAB_RESEARCHER_PASSWORD_HASH` (hash bcrypt) no `.env`, que não é versionado.
+- **Em produção**: as duas variáveis são obrigatórias; sem elas a aplicação não inicia.
 
 Opções úteis: `--profile prod` (`-AppProfile prod` no PowerShell), `--port 9090`, `--rebuild` (build com a suíte de testes), `--skip-build`.
 
@@ -61,6 +70,14 @@ Os testes de cegamento e de integridade da trilha rodam contra um PostgreSQL rea
 ### Produção
 
 Perfil `prod`: PostgreSQL do sistema operacional escutando só em `127.0.0.1`, aplicação como serviço (`systemd` no Linux, serviço do Windows), Caddy na borda com HTTPS automático. Os segredos vêm do ambiente ou de um `.env` não versionado — ver [`.env.example`](.env.example). As regras completas estão na Constitution, em *Implantação por fase*.
+
+## Contribuir
+
+```bash
+git clone https://github.com/rogeriocisi/crivo.git
+```
+
+Faça o *fork* pelo GitHub, trabalhe num ramo, rode `./mvnw test` e abra o *pull request*. Commits pequenos, no padrão Conventional Commits, e nenhuma funcionalidade sem a especificação correspondente — as regras estão no [`CLAUDE.md`](CLAUDE.md). Objeções metodológicas valem tanto quanto código: abra uma [issue](https://github.com/rogeriocisi/crivo/issues).
 
 ## Documentação
 
