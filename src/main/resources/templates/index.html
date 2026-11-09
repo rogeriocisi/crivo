@@ -3,39 +3,316 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Crivo</title>
+  <title>Crivo — protocolos cegos para pesquisa de mediunidade</title>
+  <meta name="description"
+        content="Plataforma aberta para conduzir estudos de mediunidade com cegamento múltiplo,
+                 sorteio verificável, pré-registro imutável e trilha de auditoria encadeada por hash.">
   <link rel="stylesheet" href="/css/crivo.css">
 </head>
 <body>
-<main>
-  <h1>Crivo</h1>
-  <p class="lead">Protocolos cegos para pesquisa de mediunidade.</p>
+<a class="pular" href="#conteudo">Pular para o conteúdo</a>
 
-  <p>
-    Esta instalacao conduz estudos com cegamento multiplo, sorteio verificavel,
-    pre-registro imutavel e trilha de auditoria encadeada por hash. O objetivo nao e
-    provar que a mediunidade existe nem que nao existe: e que a resposta, qualquer que
-    seja, possa ser conferida por terceiros.
-  </p>
+<div class="faixa">
+  <header th:replace="~{fragments/site :: topo}"></header>
+</div>
 
-  <section>
-    <h2>Estado da trilha de auditoria</h2>
-    <dl>
-      <dt>Eventos registrados</dt>
-      <dd th:text="${auditEvents}">0</dd>
-      <dt>Hash do ultimo evento</dt>
-      <dd><code th:text="${auditHead}">0</code></dd>
-      <dt>Estudos cadastrados</dt>
-      <dd th:text="${studyCount}">0</dd>
-    </dl>
-    <p class="note">
-      A integridade da cadeia e verificavel por linha de comando, fora da aplicacao:
-      <code>./scripts/airlab.sh verify</code> no Linux,
-      <code>.\scripts\airlab.ps1 verify</code> no Windows.
-    </p>
+<main id="conteudo">
+
+  <section class="abertura">
+    <div class="faixa">
+      <p class="rotulo aparece">Protocolos cegos para pesquisa de mediunidade</p>
+      <h1 class="aparece">Crivo</h1>
+      <p class="chamada aparece">
+        Uma plataforma aberta para que estudos sobre recepção anômala de informação
+        possam ser conferidos por quem não estava na sala.
+      </p>
+      <p class="tese aparece">
+        O Crivo não existe para provar que a mediunidade é real, nem que não é.
+        Ele existe para que <strong>a resposta, qualquer que seja, seja defensável</strong> —
+        diante de um cético, de um comitê de ética ou de um revisor que leia o estudo
+        dez anos depois.
+      </p>
+      <div class="acoes aparece">
+        <a class="botao botao-cheio" href="#protocolo">Como o protocolo funciona</a>
+        <a class="botao botao-vazio" href="#participar">Quero participar</a>
+      </div>
+      <blockquote class="epigrafe aparece">Passar pelo crivo da razão.</blockquote>
+    </div>
   </section>
 
-  <p><a href="/sobre">Sobre o protocolo</a> · <a href="/login">Entrar</a></p>
+  <section id="problema">
+    <div class="faixa">
+      <p class="rotulo">O problema</p>
+      <h2>Não falta relato. Falta método que resista à dúvida.</h2>
+      <p>
+        Relatos de médiuns que acertam informações sobre pessoas falecidas são numerosos, e quase
+        nunca são produzidos em condições que excluam as explicações convencionais: pistas visuais e
+        verbais, leitura fria, pesquisa prévia sobre o participante, viés de quem avalia, fraude e
+        seleção posterior dos acertos. A literatura mostra que dá para estudar isso com rigor — o que
+        torna esses protocolos difíceis é logística e disciplina: controlar quem sabe o quê, quando,
+        e <em>provar isso depois</em>. Esse é um problema de software.
+      </p>
+
+      <div class="confronto">
+        <div class="hoje"><p>O cegamento depende da boa vontade e da memória das pessoas.</p></div>
+        <div class="crivo"><p>O cegamento é imposto pelo sistema: cada papel só enxerga o que pode enxergar, na camada de dados, não só na tela.</p></div>
+
+        <div class="hoje"><p>Sorteios feitos à mão, sem registro.</p></div>
+        <div class="crivo"><p>Sorteio por gerador criptográfico, com o compromisso publicado antes e a semente revelada no fim.</p></div>
+
+        <div class="hoje"><p>Hipóteses e análise ajustadas depois de ver os dados.</p></div>
+        <div class="crivo"><p>Pré-registro congelado e com hash antes da primeira sessão. Emenda cria nova versão; a anterior continua visível.</p></div>
+
+        <div class="hoje"><p>Impossível provar a ordem dos acontecimentos.</p></div>
+        <div class="crivo"><p>Trilha de eventos encadeada por hash, que o banco de dados recusa alterar ou apagar.</p></div>
+
+        <div class="hoje"><p>Resultados nulos não são publicados.</p></div>
+        <div class="crivo"><p>Mesmo relatório, mesmo destaque, qualquer que seja o resultado.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="protocolo">
+    <div class="faixa">
+      <p class="rotulo">Como funciona</p>
+      <h2>Oito etapas, cada uma presa à anterior</h2>
+      <p>
+        O protocolo da primeira versão é a <strong>leitura pareada com cegamento múltiplo</strong>.
+        Dois falecidos de perfil semelhante formam um par, e a leitura de cada um serve de
+        <em>chamariz</em> para o outro. Só conta como evidência aquilo que se ajusta ao alvo
+        verdadeiro mais do que ao chamariz, de forma consistente e acima do acaso.
+      </p>
+
+      <ol class="corrente">
+        <li>
+          <h3>Pré-registro</h3>
+          <p>
+            O pesquisador declara hipóteses, critérios de triagem, escala de pontuação, medida
+            primária, regra de parada e tamanho da amostra — e o documento é congelado com hash.
+          </p>
+          <span class="selo">o poder estatístico do desenho fica declarado no próprio documento</span>
+        </li>
+        <li>
+          <h3>Consentimento e cadastro</h3>
+          <p>
+            Cada participante consente de forma específica e destacada. Os dados identificáveis ficam
+            cifrados, em um esquema separado do banco; a pesquisa trabalha só com códigos.
+          </p>
+        </li>
+        <li>
+          <h3>Pareamento</h3>
+          <p>Os alvos são pareados pelos critérios declarados antes da coleta, nunca depois.</p>
+        </li>
+        <li>
+          <h3>Sorteio verificável</h3>
+          <p>
+            O sistema sorteia médium, experimentador, ordem das leituras, horários e ordem de
+            apresentação, e publica o compromisso criptográfico do resultado.
+          </p>
+          <span class="selo">compromisso → revelação: qualquer pessoa refaz o sorteio no fim</span>
+        </li>
+        <li>
+          <h3>Sessões</h3>
+          <p>
+            O experimentador conduz a sessão conhecendo apenas o primeiro nome do alvo, liberado por
+            uma via única e auditada. O médium nunca tem contato com quem avalia.
+          </p>
+        </li>
+        <li>
+          <h3>Redação em itens</h3>
+          <p>
+            A leitura vira uma lista numerada, um item por afirmação verificável, feita por quem não
+            sabe a quem a leitura pertence. Nomes, datas e referências à sessão saem.
+          </p>
+        </li>
+        <li>
+          <h3>Avaliação cega</h3>
+          <p>
+            Cada participante recebe duas leituras sem rótulo — a sua e o chamariz — pontua item a
+            item, dá uma nota global a cada uma e escolhe qual acredita ser a sua. Ao enviar, trava.
+          </p>
+        </li>
+        <li>
+          <h3>Desmascaramento e análise</h3>
+          <p>
+            Fechadas todas as avaliações, a operação irreversível revela a semente. A análise
+            pré-registrada roda, e o relatório sai no mesmo formato para qualquer resultado.
+          </p>
+          <span class="selo">tudo isso deixa rastro na trilha encadeada por hash</span>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="publicos">
+    <div class="faixa">
+      <p class="rotulo">Para quem</p>
+      <h2>Dois públicos que costumam se evitar</h2>
+      <p>
+        O projeto só faz sentido se servir aos dois ao mesmo tempo. O rigor que convence um é o que
+        dá valor ao resultado do outro.
+      </p>
+
+      <div class="publicos">
+        <article class="publico">
+          <h3>Pesquisadores, céticos e comitês</h3>
+          <p>O que você recebe:</p>
+          <ul>
+            <li>Pré-registro com hash e carimbo de tempo, anterior ao primeiro dado.</li>
+            <li>Sorteio reproduzível na sua máquina, a partir da semente revelada.</li>
+            <li>Trilha de eventos que o banco impede de alterar, verificável por linha de comando.</li>
+            <li>Análise exata e determinística, validada contra valores de referência.</li>
+            <li>Pacote de verificação exportável: dados anonimizados e script de análise.</li>
+          </ul>
+        </article>
+
+        <article class="publico espiritual">
+          <h3>Grupos espíritas, médiuns e famílias</h3>
+          <p>O que o protocolo protege:</p>
+          <ul>
+            <li>Vocabulário neutro: <em>leitura</em>, <em>item</em>, <em>alvo</em>. Nada é apresentado como mensagem de um espírito.</li>
+            <li>Privacidade por desenho: dados sensíveis cifrados, pseudonimização, LGPD.</li>
+            <li>Desistência a qualquer momento, sem precisar justificar.</li>
+            <li>Cuidado com pessoas enlutadas, da linguagem à devolutiva ao final do estudo.</li>
+            <li>Um resultado que ninguém poderá descartar dizendo que o método era frouxo.</li>
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="garantias">
+    <div class="faixa">
+      <p class="rotulo">O que o sistema garante</p>
+      <h2>Garantias impostas pelo código, não pela boa vontade</h2>
+
+      <div class="garantias">
+        <div class="garantia">
+          <h3>Cegamento</h3>
+          <p>
+            Cada papel tem projeções próprias: o campo proibido não existe na consulta, em vez de ser
+            escondido na tela. Cada regra tem um teste que tenta violá-la.
+          </p>
+        </div>
+        <div class="garantia">
+          <h3>Sorteio verificável</h3>
+          <p>
+            Semente de 32 bytes do gerador criptográfico, expandida por SHA-256 em modo contador, para
+            que o sorteio seja refeito em qualquer máquina e sistema operacional.
+          </p>
+        </div>
+        <div class="garantia">
+          <h3>Pré-registro imutável</h3>
+          <p>
+            Depois de congelado, o documento não muda — o banco recusa. Emendas criam nova versão, e
+            desvios de execução são registrados à parte, também sem apagamento.
+          </p>
+        </div>
+        <div class="garantia">
+          <h3>Trilha append-only</h3>
+          <p>
+            Cada evento carrega o hash do anterior. <em>Update</em> e <em>delete</em> são bloqueados
+            por gatilho no banco, inclusive para o administrador.
+          </p>
+        </div>
+        <div class="garantia">
+          <h3>Análise sem escapatória</h3>
+          <p>
+            A análise só recebe o rótulo de confirmatória se o pré-registro estava congelado e a
+            amostra é a declarada. Fora disso, sai marcada como exploratória, com o motivo ao lado.
+          </p>
+        </div>
+        <div class="garantia">
+          <h3>Nenhuma IA no julgamento</h3>
+          <p>
+            Nenhum modelo avalia leitura nem atribui pontuação. A avaliação é humana e cega; a IA pode,
+            no máximo, transcrever áudio localmente.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="verificar">
+    <div class="faixa">
+      <p class="rotulo">Esta instalação</p>
+      <h2>O estado desta instância, agora</h2>
+      <p>
+        Qualquer pessoa pode conferir a integridade da cadeia sem pedir permissão a ninguém e sem
+        confiar nesta página: a verificação roda fora da aplicação, pelo mesmo artefato.
+      </p>
+
+      <div class="painel">
+        <dl class="leituras">
+          <div>
+            <dt>Eventos na trilha</dt>
+            <dd th:text="${auditEvents}">0</dd>
+          </div>
+          <div>
+            <dt>Estudos cadastrados</dt>
+            <dd th:text="${studyCount}">0</dd>
+          </div>
+        </dl>
+        <dl class="cadeia">
+          <dt>Hash do último evento</dt>
+          <dd><code th:text="${auditHead}">0</code></dd>
+        </dl>
+        <p class="nota nota-espacada">Verificação por linha de comando:</p>
+        <code class="comando">./scripts/airlab.sh verify</code>
+        <code class="comando">.\scripts\airlab.ps1 verify</code>
+        <p class="nota">
+          O comando confere a cadeia de hashes, o hash de cada versão do pré-registro e,
+          nos estudos já desmascarados, refaz o sorteio a partir da semente. Sai com código
+          diferente de zero se algo não conferir.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section id="participar">
+    <div class="faixa">
+      <p class="rotulo">Participar</p>
+      <h2>Três formas de entrar nisso</h2>
+
+      <div class="caminhos">
+        <article class="caminho">
+          <h3>Conduzir um estudo</h3>
+          <p>
+            Grupos de pesquisa, centros espíritas e universidades podem rodar a plataforma na própria
+            infraestrutura: ela é software livre e sobe com um comando, sem container e sem serviço
+            em nuvem. Para publicação acadêmica, o protocolo passa antes por comitê de ética.
+          </p>
+        </article>
+        <article class="caminho">
+          <h3>Auditar</h3>
+          <p>
+            Céticos são bem-vindos, e não por gentileza: um protocolo que ninguém tentou quebrar não
+            vale muito. O pacote de verificação permite refazer a análise do zero e chegar ao mesmo
+            número — ou mostrar que não chega.
+          </p>
+        </article>
+        <article class="caminho">
+          <h3>Contribuir com o código</h3>
+          <p>
+            O repositório é público, com a especificação, o plano técnico e a fundamentação científica
+            versionados junto. Críticas metodológicas valem tanto quanto código.
+          </p>
+        </article>
+      </div>
+
+      <div class="ressalva">
+        <p>
+          <strong>Estado honesto do projeto.</strong> O núcleo de confiança está implementado e testado:
+          trilha de auditoria, sorteio verificável, pré-registro e análise. As etapas de campo —
+          sessões, redação, avaliação cega e desmascaramento — têm esquema de banco e regras definidas,
+          mas ainda não têm interface. A plataforma ainda não foi usada com participantes reais.
+        </p>
+      </div>
+    </div>
+  </section>
+
 </main>
+
+<footer th:replace="~{fragments/site :: rodape}"></footer>
 </body>
 </html>

@@ -3,36 +3,149 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Sobre o protocolo</title>
+  <title>Vocabulário e protocolo — Crivo</title>
+  <meta name="description"
+        content="O que é uma leitura, por que existe o chamariz, quem enxerga o quê e por que
+                 o vocabulário do Crivo é deliberadamente neutro.">
   <link rel="stylesheet" href="/css/crivo.css">
 </head>
 <body>
-<main>
-  <h1>Sobre o protocolo</h1>
+<a class="pular" href="#conteudo">Pular para o conteúdo</a>
 
-  <p>
-    O estudo trabalha com <strong>leituras</strong> e <strong>itens</strong>. Uma leitura e
-    o que o medium produz numa sessao sobre um alvo; a leitura redigida e a mesma leitura
-    convertida em uma lista numerada de afirmacoes verificaveis, sem pistas de sessao.
-  </p>
+<div class="faixa">
+  <header th:replace="~{fragments/site :: topo}"></header>
+</div>
 
-  <ol>
-    <li>O pesquisador cria o estudo e congela o pre-registro.</li>
-    <li>Os alvos sao pareados por criterios definidos antes da coleta.</li>
-    <li>O sistema sorteia as alocacoes e publica o compromisso (hash) do sorteio.</li>
-    <li>As sessoes acontecem: o experimentador conhece apenas o primeiro nome do alvo.</li>
-    <li>A leitura e redigida em itens por quem nao sabe a qual sitter ela pertence.</li>
-    <li>Cada sitter avalia duas leituras, sem rotulo, e escolhe qual acredita ser a sua.</li>
-    <li>Fechadas as avaliacoes, o desmascaramento revela a semente do sorteio.</li>
-    <li>A analise pre-registrada e executada e o relatorio e publicado, qualquer que seja o resultado.</li>
-  </ol>
+<main id="conteudo">
+  <section class="abertura">
+    <div class="faixa">
+      <p class="rotulo aparece">Vocabulário e protocolo</p>
+      <h1 class="aparece">Palavras que não presumem a resposta</h1>
+      <p class="chamada aparece">
+        Boa parte da discussão sobre mediunidade se perde no vocabulário. Aqui, cada termo é
+        escolhido para descrever o que aconteceu, sem afirmar de onde a informação veio.
+      </p>
+    </div>
+  </section>
 
-  <p>
-    Nenhum modelo de inteligencia artificial participa da avaliacao das leituras ou da
-    pontuacao.
-  </p>
+  <section class="leitura">
+    <div class="faixa">
+      <p class="rotulo">Termos</p>
+      <h2>O vocabulário do estudo</h2>
 
-  <p><a href="/">Voltar</a></p>
+      <dl class="vocabulario">
+        <div>
+          <dt>Leitura</dt>
+          <dd>
+            Tudo o que o médium produz numa sessão a respeito de um alvo. Vem do inglês
+            <em>reading</em>, usado na literatura científica. No vocabulário espírita, o mais próximo
+            seria “comunicação” — a troca é deliberada: “comunicação” já pressupõe que alguém está se
+            comunicando, enquanto “leitura” descreve apenas o que se observou.
+          </dd>
+        </div>
+        <div>
+          <dt>Item</dt>
+          <dd>
+            Uma única afirmação verificável extraída da leitura. “Era um homem alto, de mãos grandes”
+            é um item; duas afirmações no mesmo item tornam a pontuação ambígua e já renderam crítica
+            publicada a estudos anteriores.
+          </dd>
+        </div>
+        <div>
+          <dt>Alvo</dt>
+          <dd>A pessoa falecida indicada por quem avalia. O médium recebe apenas o primeiro nome.</dd>
+        </div>
+        <div>
+          <dt>Chamariz</dt>
+          <dd>
+            A leitura do outro alvo do par, apresentada como alternativa. É o que separa acerto de
+            afirmação genérica: uma frase que serve para qualquer pessoa serve também para o chamariz.
+          </dd>
+        </div>
+        <div>
+          <dt>Par</dt>
+          <dd>
+            Dois alvos de perfil semelhante, pelos critérios declarados antes da coleta. Cada um é o
+            chamariz do outro.
+          </dd>
+        </div>
+        <div>
+          <dt>Experimentador</dt>
+          <dd>
+            Quem conduz a sessão no lugar de quem avalia. Conhece só o primeiro nome do alvo, para que
+            não possa transmitir pistas nem ser acusado disso.
+          </dd>
+        </div>
+        <div>
+          <dt>Desmascaramento</dt>
+          <dd>
+            A revelação de qual leitura era de qual alvo, depois que todas as avaliações estão
+            fechadas. Explícita, única e irreversível.
+          </dd>
+        </div>
+        <div>
+          <dt>Pacote de verificação</dt>
+          <dd>
+            O conjunto exportado que permite a um terceiro auditar o estudo e reexecutar a análise:
+            pré-registro, sementes, alocações, avaliações anonimizadas e trilha de auditoria.
+          </dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="leitura">
+    <div class="faixa">
+      <p class="rotulo">Ciclo de vida</p>
+      <h2>O que acontece com uma leitura</h2>
+      <ol>
+        <li>
+          <strong>Sessão.</strong> O experimentador diz ao médium apenas o primeiro nome do alvo. O
+          médium fala livremente e responde a perguntas objetivas, e tudo é gravado.
+        </li>
+        <li><strong>Leitura bruta.</strong> A gravação e sua transcrição.</li>
+        <li>
+          <strong>Leitura redigida.</strong> A transcrição vira uma lista numerada de itens. Saem o
+          primeiro nome, as datas e as referências ao experimentador.
+        </li>
+        <li>
+          <strong>Avaliação cega.</strong> Quem avalia recebe duas leituras do par, sem rótulo e em
+          ordem sorteada, pontua cada item, dá uma nota global a cada leitura e escolhe qual acredita
+          ser a sua.
+        </li>
+      </ol>
+
+      <h2>Quem enxerga o quê</h2>
+      <p>
+        Esta é a especificação de segurança central do projeto, e cada célula proibida vira um teste
+        automatizado que tenta violá-la.
+      </p>
+      <ul>
+        <li>O médium e o experimentador nunca sabem quem é o participante que avaliará.</li>
+        <li>Quem redige a leitura em itens não sabe a quem ela pertence.</li>
+        <li>Quem avalia não sabe qual das duas leituras é a sua, nem pela ordem, nem pela data.</li>
+        <li>
+          O próprio pesquisador não enxerga a ligação entre leitura e alvo antes do desmascaramento,
+          e não tem como ler a semente do sorteio: ela fica sob custódia cifrada.
+        </li>
+        <li>Experimentador e redator devem ser pessoas diferentes; se não forem, isso vira limitação registrada.</li>
+      </ul>
+
+      <div class="ressalva">
+        <p>
+          Nenhum modelo de inteligência artificial participa da avaliação das leituras, da pontuação
+          ou da decisão de acerto. A avaliação é humana e cega.
+        </p>
+      </div>
+
+      <p class="nota nota-espacada">
+        <a href="/">Voltar ao início</a> ·
+        <a href="https://github.com/rogeriocisi/crivo">Ver a especificação completa no repositório</a>
+      </p>
+    </div>
+  </section>
 </main>
+
+<footer th:replace="~{fragments/site :: rodape}"></footer>
 </body>
 </html>

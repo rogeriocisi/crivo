@@ -1,88 +1,705 @@
+/*
+ * Crivo — folha de estilo única.
+ *
+ * Registro visual: caderno de laboratório impresso. Tipografia serifada para o texto,
+ * monoespaçada para tudo que é dado (hashes, contagens, rótulos de seção), fios finos
+ * no lugar de caixas, e a malha da peneira como textura de fundo — crivo, afinal.
+ *
+ * Sem dependência externa: a política de segurança da aplicação é default-src 'self',
+ * então nada de fontes ou scripts de CDN. As famílias abaixo são pilhas locais.
+ */
+
 :root {
     color-scheme: light dark;
-    --bg: #fbfaf7;
-    --fg: #1d1d1b;
-    --muted: #5d5c57;
-    --rule: #d9d6cd;
-    --accent: #2f5d50;
+
+    --papel: #f7f4ec;
+    --papel-fundo: #efebe0;
+    --tinta: #15181a;
+    --tinta-suave: #585a52;
+    --fio: #d8d2c2;
+    --fio-forte: #b9b2a0;
+
+    /* Verdete: o lado do método. Sépia: o lado de quem participa. */
+    --verdete: #1e5c4b;
+    --verdete-claro: #2d7a64;
+    --sepia: #8a5424;
+
+    --medida: 34rem;
+    --serifada: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua",
+        "URW Palladio L", Georgia, "Times New Roman", serif;
+    --mono: ui-monospace, "Cascadia Mono", "Cascadia Code", Consolas, "SF Mono",
+        "DejaVu Sans Mono", monospace;
 }
 
 @media (prefers-color-scheme: dark) {
     :root {
-        --bg: #16171a;
-        --fg: #eceae4;
-        --muted: #a6a39a;
-        --rule: #32343a;
-        --accent: #8fc4b2;
+        --papel: #121417;
+        --papel-fundo: #0d0f11;
+        --tinta: #e8e4da;
+        --tinta-suave: #9d9a90;
+        --fio: #2a2d31;
+        --fio-forte: #3d4147;
+        --verdete: #71bda6;
+        --verdete-claro: #8fd3bd;
+        --sepia: #c99465;
     }
 }
 
-* {
+*,
+*::before,
+*::after {
     box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+    }
 }
 
 body {
     margin: 0;
-    background: var(--bg);
-    color: var(--fg);
-    font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--papel);
+    /* A malha da peneira: pontos finos, quase imperceptíveis, que densificam no topo. */
+    background-image:
+        radial-gradient(circle at center, var(--fio) 0.6px, transparent 0.7px),
+        linear-gradient(var(--papel-fundo), var(--papel) 60rem);
+    background-size: 14px 14px, 100% 100%;
+    color: var(--tinta);
+    font-family: var(--serifada);
+    font-size: 1.0625rem;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
 }
 
-main {
-    max-width: 44rem;
+/* ---------- estrutura ---------- */
+
+.pular {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    background: var(--tinta);
+    color: var(--papel);
+    padding: 0.6rem 1rem;
+    z-index: 10;
+}
+
+.pular:focus {
+    left: 0.5rem;
+    top: 0.5rem;
+}
+
+.faixa {
+    max-width: 62rem;
     margin: 0 auto;
-    padding: 3rem 1rem 4rem;
+    padding: 0 1.5rem;
 }
 
-h1 {
-    font-size: 2rem;
-    letter-spacing: -0.01em;
-    margin-bottom: 0.25rem;
-}
-
-h2 {
-    font-size: 1.1rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--muted);
-    margin-top: 2.5rem;
-}
-
-.lead {
-    color: var(--muted);
-    margin-top: 0;
-}
-
-.note {
-    color: var(--muted);
-    font-size: 0.9rem;
+@media (max-width: 40rem) {
+    .faixa {
+        padding: 0 1rem;
+    }
 }
 
 section {
-    border-top: 1px solid var(--rule);
-    padding-top: 0.5rem;
+    padding: 3.5rem 0;
+    border-top: 1px solid var(--fio);
 }
 
-dl {
-    display: grid;
-    grid-template-columns: minmax(10rem, auto) 1fr;
-    gap: 0.35rem 1rem;
+.rotulo {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--tinta-suave);
+    margin: 0 0 0.75rem;
 }
 
-dt {
-    color: var(--muted);
+h1,
+h2,
+h3 {
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    line-height: 1.15;
+    text-wrap: balance;
 }
 
-dd {
-    margin: 0;
+h2 {
+    font-size: clamp(1.5rem, 1.1rem + 1.6vw, 2.1rem);
+    margin: 0 0 1.25rem;
 }
 
-code {
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-    font-size: 0.85em;
-    overflow-wrap: anywhere;
+h3 {
+    font-size: 1.15rem;
+    margin: 0 0 0.5rem;
+}
+
+p {
+    max-width: var(--medida);
 }
 
 a {
-    color: var(--accent);
+    color: inherit;
+    text-decoration-color: var(--verdete);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.22em;
+    transition: color 160ms ease;
+}
+
+a:hover {
+    color: var(--verdete);
+}
+
+a:focus-visible {
+    outline: 2px solid var(--verdete);
+    outline-offset: 3px;
+    border-radius: 2px;
+}
+
+code,
+.mono {
+    font-family: var(--mono);
+    font-size: 0.85em;
+}
+
+/* ---------- cabeçalho ---------- */
+
+.topo {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.25rem 0;
+    border-bottom: 1px solid var(--fio);
+    flex-wrap: wrap;
+}
+
+.marca {
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-decoration: none;
+}
+
+.marca span {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--tinta-suave);
+    margin-left: 0.6rem;
+}
+
+.navegacao {
+    display: flex;
+    gap: 1.25rem;
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+}
+
+/* ---------- abertura ---------- */
+
+.abertura {
+    padding: 4.5rem 0 3.5rem;
+    border-top: none;
+}
+
+.abertura h1 {
+    font-size: clamp(2.6rem, 1.6rem + 4.4vw, 4.4rem);
+    margin: 0 0 0.5rem;
+}
+
+.chamada {
+    font-size: clamp(1.1rem, 1rem + 0.5vw, 1.35rem);
+    color: var(--tinta-suave);
+    max-width: 30rem;
+    margin: 0 0 2rem;
+}
+
+.tese {
+    font-size: 1.1rem;
+    max-width: 36rem;
+}
+
+.tese strong {
+    font-weight: 600;
+    box-shadow: inset 0 -0.45em 0 color-mix(in srgb, var(--verdete) 16%, transparent);
+}
+
+.epigrafe {
+    margin: 2.5rem 0 0;
+    padding-left: 1.25rem;
+    border-left: 2px solid var(--verdete);
+    font-style: italic;
+    color: var(--tinta-suave);
+    max-width: 28rem;
+}
+
+.acoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 2.5rem;
+}
+
+.botao {
+    display: inline-block;
+    padding: 0.7rem 1.3rem;
+    border: 1px solid var(--tinta);
+    text-decoration: none;
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    transition: background-color 160ms ease, color 160ms ease, border-color 160ms ease;
+}
+
+.botao-cheio {
+    background: var(--tinta);
+    color: var(--papel);
+}
+
+.botao-cheio:hover {
+    background: var(--verdete);
+    border-color: var(--verdete);
+    color: #fff;
+}
+
+.botao-vazio:hover {
+    border-color: var(--verdete);
+    color: var(--verdete);
+}
+
+/* ---------- aparecer ---------- */
+
+.aparece {
+    animation: subir 620ms cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+
+.aparece:nth-child(2) { animation-delay: 70ms; }
+.aparece:nth-child(3) { animation-delay: 140ms; }
+.aparece:nth-child(4) { animation-delay: 210ms; }
+.aparece:nth-child(5) { animation-delay: 280ms; }
+
+@keyframes subir {
+    from {
+        opacity: 0;
+        transform: translateY(0.6rem);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+/* ---------- problema e resposta ---------- */
+
+.confronto {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 2.5rem;
+    border-top: 1px solid var(--fio);
+    margin-top: 2rem;
+}
+
+.confronto > div {
+    padding: 1.1rem 0;
+    border-bottom: 1px solid var(--fio);
+}
+
+.confronto .hoje {
+    color: var(--tinta-suave);
+}
+
+.confronto .hoje::before {
+    content: "hoje";
+    display: block;
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--fio-forte);
+    margin-bottom: 0.3rem;
+}
+
+.confronto .crivo::before {
+    content: "no Crivo";
+    display: block;
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--verdete);
+    margin-bottom: 0.3rem;
+}
+
+.confronto p {
+    margin: 0;
+    max-width: none;
+}
+
+@media (max-width: 44rem) {
+    .confronto {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .confronto .hoje {
+        border-bottom: none;
+        padding-bottom: 0.4rem;
+    }
+}
+
+/* ---------- a corrente do protocolo ---------- */
+
+.corrente {
+    list-style: none;
+    margin: 2rem 0 0;
+    padding: 0;
+    counter-reset: etapa;
+}
+
+.corrente li {
+    position: relative;
+    padding: 0 0 1.9rem 3.25rem;
+    counter-increment: etapa;
+}
+
+.corrente li::before {
+    content: counter(etapa, decimal-leading-zero);
+    position: absolute;
+    left: 0;
+    top: 0.1rem;
+    width: 2rem;
+    height: 2rem;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--fio-forte);
+    border-radius: 50%;
+    background: var(--papel);
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--verdete);
+}
+
+/* O elo: cada etapa aponta para a anterior, como a trilha de auditoria. */
+.corrente li::after {
+    content: "";
+    position: absolute;
+    left: 1rem;
+    top: 2.2rem;
+    bottom: 0.3rem;
+    width: 1px;
+    background: repeating-linear-gradient(
+        var(--fio-forte) 0 4px,
+        transparent 4px 8px
+    );
+}
+
+.corrente li:last-child::after {
+    display: none;
+}
+
+.corrente h3 {
+    margin: 0 0 0.25rem;
+    font-size: 1.05rem;
+}
+
+.corrente p {
+    margin: 0;
+    color: var(--tinta-suave);
+}
+
+.corrente .selo {
+    display: inline-block;
+    margin-top: 0.4rem;
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    color: var(--verdete);
+    border: 1px dashed color-mix(in srgb, var(--verdete) 45%, transparent);
+    padding: 0.1rem 0.45rem;
+}
+
+/* ---------- dois públicos ---------- */
+
+.publicos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.publico {
+    border-top: 3px solid var(--verdete);
+    padding-top: 1.1rem;
+}
+
+.publico.espiritual {
+    border-top-color: var(--sepia);
+}
+
+.publico h3 {
+    font-size: 1.2rem;
+}
+
+.publico p,
+.publico li {
+    color: var(--tinta-suave);
+    max-width: none;
+}
+
+.publico ul {
+    margin: 0.75rem 0 0;
+    padding-left: 1.1rem;
+}
+
+.publico li {
+    margin-bottom: 0.4rem;
+}
+
+/* ---------- garantias ---------- */
+
+.garantias {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: 1px;
+    background: var(--fio);
+    border: 1px solid var(--fio);
+    margin-top: 2rem;
+}
+
+.garantia {
+    background: var(--papel);
+    padding: 1.4rem 1.25rem;
+}
+
+.garantia h3 {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--verdete);
+    margin-bottom: 0.5rem;
+}
+
+.garantia p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: var(--tinta-suave);
+    max-width: none;
+}
+
+/* ---------- painel desta instalação ---------- */
+
+.painel {
+    border: 1px solid var(--fio-forte);
+    padding: 1.5rem;
+    margin-top: 2rem;
+    background: color-mix(in srgb, var(--papel) 70%, transparent);
+}
+
+.leituras {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    gap: 1.5rem;
+    margin: 0;
+}
+
+.leituras dt {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--tinta-suave);
+}
+
+.leituras dd {
+    margin: 0.2rem 0 0;
+    font-size: 2rem;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.1;
+}
+
+.cadeia {
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px dashed var(--fio);
+}
+
+.cadeia dt {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--tinta-suave);
+    margin-bottom: 0.4rem;
+}
+
+.cadeia dd {
+    margin: 0;
+}
+
+.cadeia code {
+    display: block;
+    overflow-wrap: anywhere;
+    line-height: 1.5;
+    color: var(--verdete);
+}
+
+.comando {
+    display: block;
+    margin-top: 0.6rem;
+    padding: 0.55rem 0.8rem;
+    background: color-mix(in srgb, var(--tinta) 6%, transparent);
+    border-left: 2px solid var(--verdete);
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    overflow-x: auto;
+}
+
+/* ---------- participação ---------- */
+
+.caminhos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+    counter-reset: caminho;
+}
+
+.caminho h3 {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+}
+
+.caminho h3::before {
+    counter-increment: caminho;
+    content: counter(caminho);
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--verdete);
+    border-bottom: 1px solid var(--verdete);
+}
+
+.caminho p {
+    color: var(--tinta-suave);
+    max-width: none;
+}
+
+/* ---------- avisos e rodapé ---------- */
+
+.nota {
+    font-size: 0.9rem;
+    color: var(--tinta-suave);
+}
+
+.nota-espacada {
+    margin-top: 1.5rem;
+}
+
+.ressalva {
+    margin-top: 2rem;
+    padding: 1rem 1.25rem;
+    border-left: 3px solid var(--sepia);
+    background: color-mix(in srgb, var(--sepia) 7%, transparent);
+    font-size: 0.95rem;
+}
+
+.ressalva p {
+    margin: 0;
+    max-width: none;
+}
+
+.rodape {
+    border-top: 1px solid var(--fio);
+    padding: 2.5rem 0 3.5rem;
+    font-size: 0.9rem;
+    color: var(--tinta-suave);
+}
+
+.rodape p {
+    max-width: 40rem;
+}
+
+.rodape ul {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+    padding: 0;
+    margin: 0 0 1.25rem;
+    font-family: var(--mono);
+    font-size: 0.78rem;
+}
+
+/* ---------- texto corrido das páginas internas ---------- */
+
+.leitura h2 {
+    margin-top: 2.5rem;
+}
+
+.leitura ol,
+.leitura ul {
+    max-width: var(--medida);
+}
+
+.leitura li {
+    margin-bottom: 0.5rem;
+}
+
+.vocabulario {
+    border-top: 1px solid var(--fio);
+    margin-top: 1.5rem;
+}
+
+.vocabulario div {
+    display: grid;
+    grid-template-columns: 11rem 1fr;
+    gap: 1.5rem;
+    padding: 0.9rem 0;
+    border-bottom: 1px solid var(--fio);
+}
+
+.vocabulario dt {
+    font-weight: 600;
+}
+
+.vocabulario dd {
+    margin: 0;
+    color: var(--tinta-suave);
+}
+
+@media (max-width: 40rem) {
+    .vocabulario div {
+        grid-template-columns: 1fr;
+        gap: 0.2rem;
+    }
+}
+
+@media print {
+    body {
+        background: #fff;
+        color: #000;
+    }
+
+    .topo,
+    .acoes,
+    .pular {
+        display: none;
+    }
 }

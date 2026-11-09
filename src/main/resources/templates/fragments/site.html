@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <title>Fragmentos</title>
+</head>
+<body>
+
+<header th:fragment="topo" class="topo">
+  <a class="marca" href="/">Crivo <span>AIR Lab</span></a>
+  <nav class="navegacao" aria-label="Navegação principal">
+    <a href="/#protocolo">Protocolo</a>
+    <a href="/#garantias">Garantias</a>
+    <a href="/#participar">Participar</a>
+    <a href="/sobre">Vocabulário</a>
+    <a href="/login">Entrar</a>
+  </nav>
+</header>
+
+<footer th:fragment="rodape" class="rodape">
+  <div class="faixa">
+    <ul>
+      <li><a href="https://github.com/rogeriocisi/crivo">Código-fonte</a></li>
+      <li><a href="/sobre">Vocabulário e protocolo</a></li>
+      <li><a href="/#verificar">Como auditar</a></li>
+      <li><a href="/login">Entrar</a></li>
+    </ul>
+    <p>
+      O Crivo é software livre, desenvolvido por Rogerio Cisi. Nome público <strong>Crivo</strong>;
+      codinome técnico <strong>AIR Lab</strong>, de <em>Anomalous Information Reception</em>.
+    </p>
+    <p>
+      A plataforma não afirma nem nega a existência do fenômeno estudado, não interpreta
+      resultados do ponto de vista doutrinário e não usa inteligência artificial para avaliar
+      leituras ou atribuir pontuação.
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>
