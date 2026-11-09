@@ -628,6 +628,141 @@ code,
     font-size: 1.1rem;
 }
 
+.atestado {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.atestado h3 {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--verdete);
+}
+
+.atestado .nao h3 {
+    border-bottom-color: var(--sepia);
+}
+
+.atestado ul {
+    margin: 0.9rem 0 0;
+    padding-left: 1.1rem;
+    color: var(--tinta-suave);
+}
+
+.atestado li {
+    margin-bottom: 0.45rem;
+}
+
+/* ---------- linha do tempo ---------- */
+
+.linha-tempo {
+    list-style: none;
+    margin: 2rem 0 0;
+    padding: 0;
+}
+
+.linha-tempo > li {
+    position: relative;
+    padding: 0 0 2.25rem 8.5rem;
+}
+
+.linha-tempo > li::before {
+    content: "";
+    position: absolute;
+    left: 7.1rem;
+    top: 0.55rem;
+    width: 9px;
+    height: 9px;
+    border: 1px solid var(--verdete);
+    border-radius: 50%;
+    background: var(--papel);
+}
+
+/* O fio que liga as entradas: a mesma ideia da corrente do protocolo. */
+.linha-tempo > li::after {
+    content: "";
+    position: absolute;
+    left: 7.5rem;
+    top: 1.4rem;
+    bottom: 0;
+    width: 1px;
+    background: var(--fio-forte);
+}
+
+.linha-tempo > li:last-child::after {
+    display: none;
+}
+
+.linha-tempo .ano {
+    position: absolute;
+    left: 0;
+    top: 0.15rem;
+    width: 6.6rem;
+    margin: 0;
+    text-align: right;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    color: var(--tinta-suave);
+}
+
+.linha-tempo h3 {
+    margin: 0 0 0.35rem;
+    font-size: 1.1rem;
+}
+
+.linha-tempo p {
+    margin: 0 0 0.5rem;
+}
+
+.linha-tempo .licao {
+    display: block;
+    margin-top: 0.6rem;
+    padding-left: 0.9rem;
+    border-left: 2px solid var(--sepia);
+    font-size: 0.95rem;
+    color: var(--tinta-suave);
+    max-width: 40rem;
+}
+
+.niveis {
+    margin: 0.75rem 0 0.75rem 0;
+    padding-left: 1.2rem;
+    max-width: 42rem;
+}
+
+.niveis li {
+    margin-bottom: 0.3rem;
+    color: var(--tinta-suave);
+}
+
+@media (max-width: 44rem) {
+    .linha-tempo > li {
+        padding-left: 1.5rem;
+    }
+
+    .linha-tempo > li::before {
+        left: 0;
+    }
+
+    .linha-tempo > li::after {
+        left: 0.4rem;
+    }
+
+    .linha-tempo .ano {
+        position: static;
+        width: auto;
+        text-align: left;
+        margin-bottom: 0.2rem;
+        color: var(--verdete);
+    }
+}
+
 /* ---------- bibliografia ---------- */
 
 .bibliografia {

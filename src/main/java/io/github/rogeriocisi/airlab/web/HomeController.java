@@ -38,6 +38,11 @@ class HomeController {
         return "about";
     }
 
+    @GetMapping("/historia")
+    String history() {
+        return "historia";
+    }
+
     @GetMapping("/referencias")
     String references() {
         return "references";
