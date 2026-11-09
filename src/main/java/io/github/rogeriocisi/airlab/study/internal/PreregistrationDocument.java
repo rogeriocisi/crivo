@@ -1,5 +1,7 @@
 package io.github.rogeriocisi.airlab.study.internal;
 
+import io.github.rogeriocisi.airlab.analysis.PowerAssessment;
+import io.github.rogeriocisi.airlab.analysis.PowerCheck;
 import io.github.rogeriocisi.airlab.study.PreregistrationPlan;
 import java.util.List;
 
@@ -46,6 +48,9 @@ final class PreregistrationDocument {
         line(out, "");
         line(out, plan.primaryAnalysis());
         line(out, "");
+        line(out, "- Medida primaria: " + plan.primaryMeasure().name());
+        line(out, "- Efeito esperado (base do calculo de amostra): " + plan.expectedEffect());
+        line(out, "");
         section(out, "Analises secundarias", plan.secondaryAnalyses());
         section(out, "Regras de exclusao", plan.exclusionRules());
         line(out, "## Unidade de analise e regra de parada");
@@ -53,6 +58,19 @@ final class PreregistrationDocument {
         line(out, "- Unidade de analise: " + plan.analysisUnit().name());
         line(out, "- Regra de parada: " + plan.stoppingRule().name());
         line(out, "- Tamanho-alvo da amostra: " + plan.targetSampleSize() + " unidade(s) independente(s)");
+        line(out, "- Diferenca maxima de itens entre as duas leituras de um par: "
+                + plan.maxItemCountDifference());
+        line(out, "");
+        // Poder: declarado no proprio documento congelado, para que um resultado nulo nao possa
+        // depois ser apresentado como ausencia de efeito se o desenho nunca pudesse detecta-lo.
+        PowerAssessment power = PowerCheck.assess(
+                plan.primaryMeasure(), plan.expectedEffect(), plan.targetSampleSize());
+        line(out, "## Poder estatistico declarado");
+        line(out, "");
+        line(out, "- Minimo para o efeito declarado (alfa 0,05 unilateral, poder 0,80): "
+                + power.requiredPairs() + " unidade(s)");
+        line(out, "- Suficiente: " + (power.adequate() ? "sim" : "NAO"));
+        line(out, "- " + power.detail());
         line(out, "");
         line(out, "## Forma canonica do plano");
         line(out, "");

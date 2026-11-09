@@ -13,6 +13,7 @@ import io.github.rogeriocisi.airlab.support.FieldCipher;
 import io.github.rogeriocisi.airlab.support.Hashes;
 import java.time.Clock;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.context.ApplicationEventPublisher;
@@ -99,6 +100,32 @@ class DefaultAllocationService implements AllocationService {
         auditTrail.append(AuditEventType.SEED_REVEALED, ActorRole.RESEARCHER, actorCode,
                 "study:" + studyId, payload);
         return seedHex;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Integer> itemPresentationOrder(long studyId, String redactedReadingCode,
+                                               int itemCount) {
+        return AllocationEngine.itemPresentationOrder(
+                sealedSeed(studyId), redactedReadingCode, itemCount);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Integer> balancedItemSelection(long studyId, String redactedReadingCode,
+                                               int itemCount, int keep) {
+        return AllocationEngine.balancedSubsample(
+                sealedSeed(studyId), redactedReadingCode, itemCount, keep);
+    }
+
+    /**
+     * Reads the escrowed seed for an internal derivation. Private on purpose: the seed leaves
+     * this module only through {@link #revealSeed}, at the unblinding (P1, P5).
+     */
+    private String sealedSeed(long studyId) {
+        AllocationSet set = sets.findByStudyId(studyId)
+                .orElseThrow(() -> new IllegalStateException("no draw for study " + studyId));
+        return cipher.decrypt(set.seedEscrow());
     }
 
     @Override

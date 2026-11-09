@@ -5,12 +5,14 @@ import io.github.rogeriocisi.airlab.audit.AuditEventType;
 import io.github.rogeriocisi.airlab.audit.AuditTrail;
 import io.github.rogeriocisi.airlab.study.PreregistrationPlan;
 import io.github.rogeriocisi.airlab.study.PreregistrationSnapshot;
+import io.github.rogeriocisi.airlab.study.ProtocolDeviation;
 import io.github.rogeriocisi.airlab.study.StudyService;
 import io.github.rogeriocisi.airlab.study.StudyStatus;
 import io.github.rogeriocisi.airlab.study.StudySummary;
 import io.github.rogeriocisi.airlab.support.Codes;
 import io.github.rogeriocisi.airlab.support.Hashes;
 import java.time.Clock;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -29,15 +31,18 @@ class DefaultStudyService implements StudyService {
 
     private final StudyRepository studies;
     private final PreregistrationVersionRepository versions;
+    private final ProtocolDeviationRepository deviations;
     private final AuditTrail auditTrail;
     private final Clock clock;
 
     DefaultStudyService(StudyRepository studies,
                         PreregistrationVersionRepository versions,
+                        ProtocolDeviationRepository deviations,
                         AuditTrail auditTrail,
                         Clock clock) {
         this.studies = studies;
         this.versions = versions;
+        this.deviations = deviations;
         this.auditTrail = auditTrail;
         this.clock = clock;
     }
@@ -166,6 +171,41 @@ class DefaultStudyService implements StudyService {
     public List<PreregistrationSnapshot> preregistrationHistory(long studyId) {
         List<PreregistrationSnapshot> out = new ArrayList<>();
         versions.findByStudyIdOrderByVersionAsc(studyId).forEach(v -> out.add(snapshot(v)));
+        return out;
+    }
+
+    @Override
+    @Transactional
+    public ProtocolDeviation recordDeviation(long studyId, ProtocolDeviation.Kind kind,
+                                             String description, Instant occurredAt,
+                                             String actorCode) {
+        int version = versions.findFirstByStudyIdOrderByVersionDesc(studyId)
+                .map(PreregistrationVersionEntity::version)
+                .orElseThrow(() -> new IllegalStateException(
+                        "study " + studyId + " has no preregistration to deviate from"));
+
+        ProtocolDeviationEntity entity = deviations.save(new ProtocolDeviationEntity(
+                studyId, version, kind, description, occurredAt, clock.instant(), actorCode));
+
+        Map<String, Object> payload = new LinkedHashMap<>();
+        payload.put("kind", kind.name());
+        payload.put("preregistrationVersion", version);
+        payload.put("occurredAt", occurredAt.toString());
+        // The text itself is hashed rather than copied: the trail is public (P7) and a
+        // deviation may describe a participant's withdrawal.
+        payload.put("descriptionSha256", Hashes.sha256Hex(description));
+        auditTrail.append(AuditEventType.PROTOCOL_DEVIATION_RECORDED, ActorRole.RESEARCHER,
+                actorCode, "study:" + studyId, payload);
+
+        return entity.toRecord();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ProtocolDeviation> deviations(long studyId) {
+        List<ProtocolDeviation> out = new ArrayList<>();
+        deviations.findByStudyIdOrderByOccurredAtAsc(studyId)
+                .forEach(entity -> out.add(entity.toRecord()));
         return out;
     }
 

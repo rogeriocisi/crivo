@@ -18,7 +18,12 @@ interface PreregistrationVersionRepository extends JpaRepository<Preregistration
     List<PreregistrationVersionEntity> findByStudyIdOrderByVersionAsc(Long studyId);
 }
 
-/** Holder so the two repositories can share one file; never instantiated. */
+interface ProtocolDeviationRepository extends JpaRepository<ProtocolDeviationEntity, Long> {
+
+    List<ProtocolDeviationEntity> findByStudyIdOrderByOccurredAtAsc(Long studyId);
+}
+
+/** Holder so the repositories can share one file; never instantiated. */
 final class StudyRepositories {
 
     private StudyRepositories() {

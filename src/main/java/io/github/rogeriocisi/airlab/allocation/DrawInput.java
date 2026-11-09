@@ -13,11 +13,14 @@ import java.util.List;
  * @param pairs            pairs of targets formed by the preregistered criteria
  * @param mediumCodes      mediums available for this study
  * @param experimenterCodes experimenters available for this study
+ * @param sessionSlotsPerDay how many session slots a day holds, which is what the schedule is
+ *                           counterbalanced over
  */
 public record DrawInput(String studyCode,
                         List<PairInput> pairs,
                         List<String> mediumCodes,
-                        List<String> experimenterCodes) {
+                        List<String> experimenterCodes,
+                        int sessionSlotsPerDay) {
 
     public DrawInput {
         if (pairs == null || pairs.isEmpty()) {
@@ -28,6 +31,9 @@ public record DrawInput(String studyCode,
         }
         if (experimenterCodes == null || experimenterCodes.isEmpty()) {
             throw new IllegalArgumentException("a draw needs at least one experimenter");
+        }
+        if (sessionSlotsPerDay < 1) {
+            throw new IllegalArgumentException("a day needs at least one session slot");
         }
         pairs = List.copyOf(pairs);
         mediumCodes = List.copyOf(mediumCodes);
@@ -62,6 +68,7 @@ public record DrawInput(String studyCode,
         root.put("pairs", pairList);
         root.put("mediumCodes", mediumCodes);
         root.put("experimenterCodes", experimenterCodes);
+        root.put("sessionSlotsPerDay", sessionSlotsPerDay);
         return io.github.rogeriocisi.airlab.support.CanonicalJson.write(root);
     }
 }

@@ -41,4 +41,15 @@ public interface StudyService {
 
     /** Every version, oldest first: an amendment never hides what came before it. */
     List<PreregistrationSnapshot> preregistrationHistory(long studyId);
+
+    /**
+     * Records a departure from the frozen plan. Append-only, and the report must show it
+     * beside the result (Nosek et al., 2018).
+     */
+    ProtocolDeviation recordDeviation(long studyId, ProtocolDeviation.Kind kind,
+                                      @NotBlank String description, java.time.Instant occurredAt,
+                                      String actorCode);
+
+    /** Every deviation of a study, oldest first. Nothing here can be removed. */
+    List<ProtocolDeviation> deviations(long studyId);
 }

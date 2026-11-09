@@ -16,12 +16,14 @@ import java.util.Map;
 public record AllocationPlan(String studyCode,
                              List<SessionAllocation> sessions,
                              List<PresentationOrder> presentations,
-                             List<ConfirmatoryUnit> confirmatoryUnits) {
+                             List<ConfirmatoryUnit> confirmatoryUnits,
+                             List<SessionSlot> sessionSlots) {
 
     public AllocationPlan {
         sessions = List.copyOf(sessions);
         presentations = List.copyOf(presentations);
         confirmatoryUnits = List.copyOf(confirmatoryUnits);
+        sessionSlots = List.copyOf(sessionSlots);
     }
 
     /**
@@ -55,6 +57,19 @@ public record AllocationPlan(String studyCode,
     public record ConfirmatoryUnit(String pairCode, String targetCode) {
     }
 
+    /**
+     * When a session happens, as counterbalanced indices rather than dates: the researcher
+     * maps day 0, 1, 2 and slot 0, 1, 2 onto the calendar when scheduling.
+     *
+     * <p>O'Keeffe and Wiseman found a leak nobody had controlled before: a sitter can work
+     * out which reading is theirs from a temporal reference in it, such as a remark about the
+     * weather or about the news of that day. Their answer was to counterbalance the sitters'
+     * slots across days, which is what these indices are for. Drawn with everything else, so
+     * the schedule is part of the commitment and cannot be arranged after the fact.
+     */
+    public record SessionSlot(String pairCode, String targetCode, int dayIndex, int slotIndex) {
+    }
+
     /** Canonical JSON of the plan: the exact bytes the commitment is computed over. */
     public String canonicalForm() {
         List<Object> sessionList = new ArrayList<>();
@@ -81,11 +96,21 @@ public record AllocationPlan(String studyCode,
             row.put("target", unit.targetCode());
             confirmatoryList.add(row);
         }
+        List<Object> slotList = new ArrayList<>();
+        for (SessionSlot slot : sessionSlots) {
+            Map<String, Object> row = new LinkedHashMap<>();
+            row.put("pair", slot.pairCode());
+            row.put("target", slot.targetCode());
+            row.put("day", slot.dayIndex());
+            row.put("slot", slot.slotIndex());
+            slotList.add(row);
+        }
         Map<String, Object> root = new LinkedHashMap<>();
         root.put("study", studyCode);
         root.put("sessions", sessionList);
         root.put("presentations", presentationList);
         root.put("confirmatoryUnits", confirmatoryList);
+        root.put("sessionSlots", slotList);
         return CanonicalJson.write(root);
     }
 }

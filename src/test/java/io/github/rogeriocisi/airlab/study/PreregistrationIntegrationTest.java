@@ -5,6 +5,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.github.rogeriocisi.airlab.allocation.AllocationService;
 import io.github.rogeriocisi.airlab.allocation.DrawInput;
+import io.github.rogeriocisi.airlab.analysis.AnalysisUnit;
+import io.github.rogeriocisi.airlab.analysis.PrimaryMeasure;
+import io.github.rogeriocisi.airlab.analysis.StoppingRule;
+import io.github.rogeriocisi.airlab.study.ProtocolDeviation;
 import io.github.rogeriocisi.airlab.support.Hashes;
 import java.util.List;
 import javax.sql.DataSource;
@@ -35,14 +39,18 @@ class PreregistrationIntegrationTest {
     private static PreregistrationPlan plan() {
         return new PreregistrationPlan(
                 List.of("Sitters escolhem a propria leitura acima do acaso"),
-                "Mediuns voluntarios maiores de 18 anos, sem triagem por desempenho previo",
+                "Mediuns com evidencia previa e consistente de AIR, triados antes do estudo",
                 "Mesmo genero e mesma faixa de idade ao obito",
-                List.of("correto", "parcialmente", "incorreto", "nao sei avaliar"),
-                "Proporcao de escolhas corretas comparada a 0,5, teste binomial unilateral",
+                List.of("encaixe obvio", "encaixe parcial ou interpretado", "sem encaixe",
+                        "encaixa em outra pessoa", "nao sei avaliar"),
+                "Diferenca pareada alvo menos chamariz na nota global, Wilcoxon unilateral",
+                PrimaryMeasure.PAIRED_GLOBAL_SCORE,
+                0.5,
                 AnalysisUnit.PAIR,
                 StoppingRule.FIXED_SAMPLE_SIZE,
-                70,
-                List.of(),
+                30,
+                5,
+                List.of("Proporcao de escolhas forcadas corretas, teste binomial"),
                 List.of("Sessao interrompida e excluida"));
     }
 
@@ -70,7 +78,8 @@ class PreregistrationIntegrationTest {
                 study.code(),
                 List.of(new DrawInput.PairInput("PR-0001", "TGT-A", "TGT-B")),
                 List.of("MED-1"),
-                List.of("EXP-1")));
+                List.of("EXP-1"),
+                2));
 
         PreregistrationSnapshot frozen = studies.freeze(study.id(), commitment, "RES-0001");
 
@@ -92,7 +101,8 @@ class PreregistrationIntegrationTest {
                 study.code(),
                 List.of(new DrawInput.PairInput("PR-0001", "TGT-A", "TGT-B")),
                 List.of("MED-1"),
-                List.of("EXP-1")));
+                List.of("EXP-1"),
+                2));
         studies.freeze(study.id(), commitment, "RES-0001");
 
         JdbcTemplate jdbc = new JdbcTemplate(dataSource);
@@ -110,7 +120,8 @@ class PreregistrationIntegrationTest {
                 study.code(),
                 List.of(new DrawInput.PairInput("PR-0001", "TGT-A", "TGT-B")),
                 List.of("MED-1"),
-                List.of("EXP-1")));
+                List.of("EXP-1"),
+                2));
         PreregistrationSnapshot first = studies.freeze(study.id(), commitment, "RES-0001");
 
         studies.amend(study.id(), plan(), "Acrescimo de criterio de exclusao", "RES-0001");
@@ -129,11 +140,62 @@ class PreregistrationIntegrationTest {
                 study.code(),
                 List.of(new DrawInput.PairInput("PR-0001", "TGT-A", "TGT-B")),
                 List.of("MED-1"),
-                List.of("EXP-1"));
+                List.of("EXP-1"),
+                2);
         allocations.draw(study.id(), input);
 
         assertThatThrownBy(() -> allocations.draw(study.id(), input))
                 .isInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    @DisplayName("um desvio de protocolo e registrado, aparece na lista e nao pode ser apagado")
+    void a_protocol_deviation_is_recorded_and_cannot_be_erased() {
+        StudySummary study = studies.create("Estudo piloto", plan(), "RES-0001");
+
+        ProtocolDeviation deviation = studies.recordDeviation(
+                study.id(),
+                ProtocolDeviation.Kind.SAMPLE_SIZE,
+                "A coleta parou em 18 dos 30 pares por indisponibilidade de mediuns",
+                java.time.Instant.parse("2026-11-01T12:00:00Z"),
+                "RES-0001");
+
+        assertThat(deviation.preregistrationVersion()).isEqualTo(1);
+        assertThat(studies.deviations(study.id()))
+                .singleElement()
+                .satisfies(d -> {
+                    assertThat(d.kind()).isEqualTo(ProtocolDeviation.Kind.SAMPLE_SIZE);
+                    assertThat(d.description()).contains("18 dos 30");
+                });
+
+        JdbcTemplate jdbc = new JdbcTemplate(dataSource);
+        assertThatThrownBy(() -> jdbc.update(
+                "delete from research.protocol_deviation where study_id = ?", study.id()))
+                .hasMessageContaining("append-only");
+        assertThatThrownBy(() -> jdbc.update(
+                "update research.protocol_deviation set description = 'nada' where study_id = ?",
+                study.id()))
+                .hasMessageContaining("append-only");
+    }
+
+    @Test
+    @DisplayName("o documento congelado declara a medida primaria e o poder do desenho")
+    void the_frozen_document_states_the_measure_and_the_power() {
+        StudySummary study = studies.create("Estudo piloto", plan(), "RES-0001");
+        String commitment = allocations.draw(study.id(), new DrawInput(
+                study.code(),
+                List.of(new DrawInput.PairInput("PR-0001", "TGT-A", "TGT-B")),
+                List.of("MED-1"),
+                List.of("EXP-1"),
+                2));
+
+        PreregistrationSnapshot frozen = studies.freeze(study.id(), commitment, "RES-0001");
+
+        assertThat(frozen.document())
+                .contains("PAIRED_GLOBAL_SCORE")
+                .contains("Poder estatistico declarado")
+                .contains("Suficiente: sim")
+                .contains("Diferenca maxima de itens");
     }
 
     @Test
@@ -144,7 +206,8 @@ class PreregistrationIntegrationTest {
                 study.code(),
                 List.of(new DrawInput.PairInput("PR-0001", "TGT-A", "TGT-B")),
                 List.of("MED-1"),
-                List.of("EXP-1")));
+                List.of("EXP-1"),
+                2));
 
         assertThat(allocations.snapshot(study.id()).orElseThrow().seedHex()).isEmpty();
 

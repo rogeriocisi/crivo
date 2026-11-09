@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,9 +31,22 @@ import java.util.Map;
  * @param pairingCriteria         how two targets are judged to be of similar profile
  * @param scoringScale            the item scale, exactly as the sitter will see it
  * @param primaryAnalysis         the single analysis that counts as confirmatory
+ * @param primaryMeasure          the quantity that analysis tests
+ * @param expectedEffect          the effect the sample size was computed for: the expected
+ *                                hit rate for a forced choice, the expected standardised
+ *                                difference d for a paired measure. Declared in advance so
+ *                                that {@link PowerCheck} can state, in the frozen document,
+ *                                what the design can and cannot detect
  * @param analysisUnit            what counts as one independent observation
  * @param stoppingRule            when collection stops
  * @param targetSampleSize        planned number of independent units, in the unit above
+ * @param maxItemCountDifference  how many items the two readings of a pair may differ by
+ *                                before the longer one is cut to length by a seed-drawn
+ *                                subsample. Declared in advance because the length of a
+ *                                reading drives the ratings on its own: in O'Keeffe and
+ *                                Wiseman's data the readings ran from 6 to 92 statements and
+ *                                the longest, most general one was rated highest by every
+ *                                sitter
  * @param secondaryAnalyses       analyses also declared in advance
  * @param exclusionRules          when a session or a packet is excluded, decided in advance
  */
@@ -41,9 +55,12 @@ public record PreregistrationPlan(@NotEmpty List<@NotBlank String> hypotheses,
                                   @NotBlank String pairingCriteria,
                                   @NotEmpty List<@NotBlank String> scoringScale,
                                   @NotBlank String primaryAnalysis,
+                                  @NotNull PrimaryMeasure primaryMeasure,
+                                  @Positive double expectedEffect,
                                   @NotNull AnalysisUnit analysisUnit,
                                   @NotNull StoppingRule stoppingRule,
                                   @Min(1) int targetSampleSize,
+                                  @Min(0) int maxItemCountDifference,
                                   List<String> secondaryAnalyses,
                                   List<String> exclusionRules) {
 
@@ -62,9 +79,12 @@ public record PreregistrationPlan(@NotEmpty List<@NotBlank String> hypotheses,
         root.put("pairingCriteria", pairingCriteria);
         root.put("scoringScale", scoringScale);
         root.put("primaryAnalysis", primaryAnalysis);
+        root.put("primaryMeasure", primaryMeasure.name());
+        root.put("expectedEffect", expectedEffect);
         root.put("analysisUnit", analysisUnit.name());
         root.put("stoppingRule", stoppingRule.name());
         root.put("targetSampleSize", targetSampleSize);
+        root.put("maxItemCountDifference", maxItemCountDifference);
         root.put("secondaryAnalyses", secondaryAnalyses);
         root.put("exclusionRules", exclusionRules);
         return CanonicalJson.write(root);

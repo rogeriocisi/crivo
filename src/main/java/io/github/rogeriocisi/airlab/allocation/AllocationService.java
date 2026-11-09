@@ -1,5 +1,6 @@
 package io.github.rogeriocisi.airlab.allocation;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -33,4 +34,25 @@ public interface AllocationService {
 
     /** Snapshot for the verification CLI and the verification package (P7, Epic E8/E9). */
     Optional<AllocationSnapshot> snapshot(long studyId);
+
+    /**
+     * Order in which the items of a redacted reading are shown to the sitter, so that a
+     * revealing item cannot colour the whole list (Epic E6).
+     *
+     * <p>Uses the escrowed seed internally and never returns it: the order is available during
+     * the study, while the seed stays sealed until the unblinding (P1, P5).
+     */
+    List<Integer> itemPresentationOrder(long studyId, String redactedReadingCode, int itemCount);
+
+    /**
+     * Which items to keep so that the two readings of a pair reach the sitter with comparable
+     * length, when the difference exceeds what the preregistration allows (Epic E5).
+     *
+     * <p>Also seed-derived and also without exposing the seed, so the cut is reproducible by
+     * an auditor afterwards and is made by nobody who has read the content.
+     *
+     * @param keep how many items to keep, decided by the preregistered tolerance
+     */
+    List<Integer> balancedItemSelection(long studyId, String redactedReadingCode,
+                                        int itemCount, int keep);
 }

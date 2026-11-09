@@ -19,7 +19,8 @@ class AllocationEngineTest {
             List.of(new DrawInput.PairInput("PR-0001", "TGT-A", "TGT-B"),
                     new DrawInput.PairInput("PR-0002", "TGT-C", "TGT-D")),
             List.of("MED-1", "MED-2"),
-            List.of("EXP-1", "EXP-2"));
+            List.of("EXP-1", "EXP-2"),
+            2);
 
     private static final String SEED =
             "6f1c3a9d2b4e5f60718293a4b5c6d7e8f90a1b2c3d4e5f60718293a4b5c6d7e8";
@@ -43,7 +44,8 @@ class AllocationEngineTest {
                 List.of(new DrawInput.PairInput("PR-0002", "TGT-D", "TGT-C"),
                         new DrawInput.PairInput("PR-0001", "TGT-B", "TGT-A")),
                 List.of("MED-2", "MED-1"),
-                List.of("EXP-2", "EXP-1"));
+                List.of("EXP-2", "EXP-1"),
+                2);
 
         assertThat(AllocationEngine.plan(SEED, shuffled).canonicalForm())
                 .isEqualTo(AllocationEngine.plan(SEED, INPUT).canonicalForm());
@@ -95,6 +97,84 @@ class AllocationEngineTest {
     }
 
     @Test
+    @DisplayName("dentro de um par, um sitter ve a propria leitura primeiro e o outro ve o chamariz")
+    void presentation_order_is_counterbalanced_within_the_pair() {
+        AllocationPlan plan = AllocationEngine.plan(SEED, INPUT);
+
+        for (DrawInput.PairInput pair : INPUT.pairs()) {
+            String firstForA = firstShownFor(plan, pair.targetA());
+            String firstForB = firstShownFor(plan, pair.targetB());
+
+            // Both sitters of a pair see the same reading first, which is exactly what makes
+            // one of them see their own first and the other see the decoy first.
+            assertThat(firstForA).isEqualTo(firstForB);
+            assertThat(firstForA).isIn(pair.targetA(), pair.targetB());
+
+            boolean aSeesOwnFirst = firstForA.equals(pair.targetA());
+            boolean bSeesOwnFirst = firstForB.equals(pair.targetB());
+            assertThat(aSeesOwnFirst).isNotEqualTo(bSeesOwnFirst);
+        }
+    }
+
+    @Test
+    @DisplayName("os slots de sessao sao contrabalanceados e nao repetem dentro de um medium")
+    void session_slots_are_counterbalanced() {
+        AllocationPlan plan = AllocationEngine.plan(SEED, INPUT);
+
+        assertThat(plan.sessionSlots()).hasSize(4);
+        for (AllocationPlan.SessionSlot slot : plan.sessionSlots()) {
+            assertThat(slot.dayIndex()).isGreaterThanOrEqualTo(0);
+            assertThat(slot.slotIndex()).isBetween(0, 1);
+        }
+
+        // As duas leituras de um par nunca caem no mesmo dia e horario.
+        for (DrawInput.PairInput pair : INPUT.pairs()) {
+            List<AllocationPlan.SessionSlot> ofPair = plan.sessionSlots().stream()
+                    .filter(s -> s.pairCode().equals(pair.pairCode()))
+                    .toList();
+            assertThat(ofPair).hasSize(2);
+            assertThat(ofPair.get(0).dayIndex() != ofPair.get(1).dayIndex()
+                    || ofPair.get(0).slotIndex() != ofPair.get(1).slotIndex()).isTrue();
+        }
+
+        assertThat(plan.canonicalForm()).contains("sessionSlots");
+    }
+
+    @Test
+    @DisplayName("a ordem dos itens apresentada ao sitter vem da semente e e estavel")
+    void item_presentation_order_is_seeded_and_stable() {
+        List<Integer> first = AllocationEngine.itemPresentationOrder(SEED, "RDG-0001", 12);
+        List<Integer> again = AllocationEngine.itemPresentationOrder(SEED, "RDG-0001", 12);
+        List<Integer> other = AllocationEngine.itemPresentationOrder(SEED, "RDG-0002", 12);
+
+        assertThat(first).hasSize(12).containsExactlyInAnyOrderElementsOf(
+                java.util.stream.IntStream.range(0, 12).boxed().toList());
+        assertThat(again).isEqualTo(first);
+        assertThat(other).isNotEqualTo(first);
+        // Uma lista embaralhada, nao a ordem de redacao.
+        assertThat(first).isNotEqualTo(java.util.stream.IntStream.range(0, 12).boxed().toList());
+    }
+
+    @Test
+    @DisplayName("o corte de comprimento mantem a quantidade pedida, em ordem, e e reproduzivel")
+    void length_balancing_is_reproducible() {
+        List<Integer> kept = AllocationEngine.balancedSubsample(SEED, "RDG-0001", 60, 9);
+
+        assertThat(kept).hasSize(9).isSorted().doesNotHaveDuplicates();
+        assertThat(kept).allMatch(i -> i >= 0 && i < 60);
+        assertThat(AllocationEngine.balancedSubsample(SEED, "RDG-0001", 60, 9)).isEqualTo(kept);
+        assertThat(AllocationEngine.balancedSubsample(SEED, "RDG-0002", 60, 9)).isNotEqualTo(kept);
+    }
+
+    private static String firstShownFor(AllocationPlan plan, String targetCode) {
+        return plan.presentations().stream()
+                .filter(p -> p.targetCode().equals(targetCode))
+                .map(AllocationPlan.PresentationOrder::firstShownTargetCode)
+                .findFirst()
+                .orElseThrow();
+    }
+
+    @Test
     @DisplayName("o compromisso muda se qualquer alocacao mudar")
     void commitment_binds_the_allocations() {
         AllocationPlan plan = AllocationEngine.plan(SEED, INPUT);
@@ -105,7 +185,8 @@ class AllocationEngineTest {
                                 "MED-OTHER", s.experimenterCode(), s.readingOrder()))
                         .toList(),
                 plan.presentations(),
-                plan.confirmatoryUnits());
+                plan.confirmatoryUnits(),
+                plan.sessionSlots());
 
         assertThat(AllocationEngine.commitment(SEED, tampered))
                 .isNotEqualTo(AllocationEngine.commitment(SEED, plan));
@@ -146,7 +227,8 @@ class AllocationEngineTest {
                 plan.confirmatoryUnits().stream()
                         .map(u -> new AllocationPlan.ConfirmatoryUnit(u.pairCode(),
                                 otherTargetOfPair(u.pairCode(), u.targetCode())))
-                        .toList());
+                        .toList(),
+                plan.sessionSlots());
 
         assertThat(swapped.confirmatoryUnits()).isNotEqualTo(plan.confirmatoryUnits());
 
