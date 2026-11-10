@@ -34,16 +34,22 @@ Linux ou macOS:
 ./scripts/start.sh
 ```
 
-Windows (PowerShell):
+Windows (PowerShell ou prompt de comando) — este é o caminho recomendado, e funciona em máquina recém-instalada:
+
+```bat
+scripts\start.cmd
+```
+
+Windows, chamando o script do PowerShell direto:
 
 ```powershell
 .\scripts\start.ps1
 ```
 
-Windows (prompt de comando):
+Esta última forma depende da política de execução do seu usuário. No Windows ela vem como `Restricted` por padrão, e o PowerShell recusa qualquer script não assinado — inclusive este. O `start.cmd` existe justamente para isso: ele chama o `start.ps1` com `-ExecutionPolicy Bypass`, sem mexer na configuração da máquina. Se preferir liberar scripts locais de uma vez, o comando é seu para rodar:
 
-```bat
-scripts\start.cmd
+```powershell
+Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
 ```
 
 O script valida o JDK, constrói o JAR, sobe o PostgreSQL embarcado em `~/.airlab/pgdata`, aplica as migrações e inicia a aplicação em <http://127.0.0.1:8080>. `Ctrl+C` encerra tudo.

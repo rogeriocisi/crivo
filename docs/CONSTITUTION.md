@@ -159,8 +159,8 @@ A aplicação é acionada por **um único script**, que sobe todos os componente
 | Sistema | Comando |
 |---|---|
 | Linux / macOS | `./scripts/start.sh` |
-| Windows (PowerShell) | `.\scripts\start.ps1` |
-| Windows (cmd) | `scripts\start.cmd` |
+| Windows | `scripts\start.cmd` |
+| Windows (chamando o PowerShell direto) | `.\scripts\start.ps1` |
 
 Regras:
 
@@ -169,6 +169,8 @@ Regras:
 3. **Mesmo script em produção**: `--profile prod` usa o PostgreSQL do sistema, lê os segredos do ambiente (ou do `.env` não versionado) e não sobe banco embarcado; a falta de qualquer variável obrigatória interrompe a inicialização com mensagem clara, nunca com um padrão silencioso.
 4. **CLI de auditoria**: a verificação do P4/P5 também é linha de comando e o mesmo artefato — `./scripts/airlab.sh verify` e `.\scripts\airlab.ps1 verify` — e precisa rodar nos dois sistemas operacionais, porque o auditor externo não escolhe a plataforma.
 5. **Sem passo oculto**: qualquer etapa que o script não faça sozinho (criar papéis no PostgreSQL de produção, gerar segredos) está documentada no `README.md` como comando explícito.
+6. **O caminho recomendado no Windows é o `.cmd`**, não o `.ps1`. A política de execução do PowerShell vem como `Restricted` numa instalação limpa e recusa script não assinado; o `start.cmd` chama o `start.ps1` com `-ExecutionPolicy Bypass` e não altera configuração nenhuma da máquina. Alterar a política de execução do usuário é decisão dele, nunca do projeto nem de quem o instala.
+7. **Nada de `2>&1` em executável nativo dentro de script PowerShell.** Redirecionar a saída de erro de um `.exe` faz o PowerShell embrulhar cada linha num `ErrorRecord`, e com `$ErrorActionPreference = 'Stop'` isso aborta o script com um erro inventado — foi o que aconteceu com `java -version`, que escreve na saída de erro. Use a forma que escreve na saída padrão (`java --version`) ou capture sem redirecionar.
 
 #### Parte pública (separada da aplicação)
 

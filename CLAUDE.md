@@ -28,6 +28,7 @@ Instruções para o Claude Code neste repositório.
 - **Versões**: confira a LTS atual do Java e a versão estável atual do Spring Boot e do Spring Modulith antes de fixá-las.
 - **Sem Docker (regra arquitetural 8)**: nenhuma etapa obrigatória pode exigir Docker, container ou orquestrador. Em desenvolvimento e teste o PostgreSQL é embarcado pela aplicação (`io.zonky.test:embedded-postgres`); em produção é o do sistema operacional. Não reintroduza Testcontainers nem `docker-compose.yml`.
 - **Paridade Windows/Linux**: todo script e comando precisa funcionar nos dois. Nada de caminho absoluto no estilo `/var/...`; diretórios vêm de configuração. O que é acionável por linha de comando tem versão `.sh` e `.ps1` em `scripts/`.
+- **Script PowerShell**: nunca redirecione a saída de erro de executável nativo (`algum.exe ... 2>&1`). O PowerShell embrulha cada linha num `ErrorRecord` e, com `$ErrorActionPreference = 'Stop'`, aborta o script por causa de uma saída perfeitamente normal. Foi assim que `java -version` derrubou o `start.cmd`; a forma correta é `java --version`, que escreve na saída padrão. No Windows, o caminho recomendado é o `scripts\start.cmd`: ele chama o `.ps1` com `-ExecutionPolicy Bypass`, porque a política padrão do Windows recusa script não assinado. Nunca altere a política de execução da máquina do usuário.
 - **Execução**: a aplicação sobe por um script único (`scripts/start.sh`, `scripts/start.ps1`), que também sobe o banco. Ao acrescentar um componente obrigatório, inclua-o nesse script ou justifique por escrito.
 
 ## Convenções

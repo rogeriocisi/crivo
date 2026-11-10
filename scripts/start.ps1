@@ -58,11 +58,16 @@ if (-not $java) {
     Stop-WithError 'nenhum JDK encontrado. Instale um JDK 21 (ou mais novo) ou defina JAVA_HOME.'
 }
 
-$versionLine = (& $java -version 2>&1 | Select-Object -First 1)
+# "java --version" escreve na saida padrao; o antigo "java -version" escreve na saida de erro,
+# e redirecionar a saida de erro de um executavel nativo faz o PowerShell embrulhar cada linha
+# num ErrorRecord (NativeCommandError). Com $ErrorActionPreference = 'Stop', isso aborta o
+# script ao detectar um JDK perfeitamente valido. Dai a forma com dois hifens, sem redirecao.
+$versionLine = (& $java --version | Select-Object -First 1)
 $major = 0
-if ($versionLine -match 'version "(\d+)') { $major = [int]$Matches[1] }
+if ($versionLine -match '(\d+)') { $major = [int]$Matches[1] }
 if ($major -lt 21) {
-    Stop-WithError "e necessario um JDK 21 ou mais novo (encontrado: $versionLine)."
+    $encontrado = if ($versionLine) { $versionLine } else { 'versao nao reconhecida' }
+    Stop-WithError "e necessario um JDK 21 ou mais novo (encontrado: $encontrado)."
 }
 Write-Step "JDK $major em $java"
 
