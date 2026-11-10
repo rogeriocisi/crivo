@@ -48,6 +48,8 @@ import org.springframework.test.web.servlet.MockMvc;
 class TrialRunControllerTest {
 
     private static final String SEED = "a1b2c3d4e5f6".repeat(5) + "a1b2";
+    private static final String SERVER_SEED = "f6e5d4c3b2a1".repeat(5) + "f6e5";
+    private static final String NONCE = "22".repeat(16);
 
     @Autowired
     MockMvc mvc;
@@ -179,7 +181,46 @@ class TrialRunControllerTest {
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("data-alvos=\"2,3\"")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString(SEED)))
                 .andExpect(content().string(
-                        org.hamcrest.Matchers.containsString("/js/verificador-alvos.js")));
+                        org.hamcrest.Matchers.containsString("/js/verificador-alvos.js")))
+                .andExpect(content().string(
+                        org.hamcrest.Matchers.containsString("id=\"comprovante-sessao\"")));
+    }
+
+    @Test
+    @DisplayName("o comprovante JSON traz semente, alvos e respostas, e nao fecha o script")
+    void the_receipt_carries_the_closed_session() throws Exception {
+        SessionOutcome base = outcome(TrialProtocol.PRECOGNITIVE_FORCED_CHOICE, List.of());
+        SessionOutcome hostile = new SessionOutcome(base.sessionCode(), base.protocol(),
+                base.state(), base.declaredTrials(), base.lockedTrials(), base.hits(),
+                base.chanceNumerator(), base.chanceDenominator(), base.pValue(),
+                base.seedCommitment(), base.serverSeedHex(), base.participantNonce(),
+                base.seedHex(), base.targetPoolVersion(), base.startedAt(), base.closedAt(),
+                base.trials(), "</script><b>x</b>");
+
+        String json = TrialRunController.receipt(hostile);
+
+        org.assertj.core.api.Assertions.assertThat(json)
+                .contains("\"formato\" : \"" + TrialRunController.RECEIPT_FORMAT + "\"")
+                .contains(SEED).contains(SERVER_SEED).contains(NONCE)
+                .contains("\"alvo\" : 3")
+                .doesNotContain("<");
+        var tree = new com.fasterxml.jackson.databind.ObjectMapper().readTree(json);
+        org.assertj.core.api.Assertions.assertThat(tree.get("natureza").asText())
+                .isEqualTo("</script><b>x</b>");
+        org.assertj.core.api.Assertions.assertThat(tree.get("tentativas").size()).isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("a navegacao marca a secao atual com aria-current")
+    void the_navigation_marks_the_current_section() throws Exception {
+        mvc.perform(get("/testes"))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString(
+                        "href=\"/testes\" aria-current=\"page\"")))
+                .andExpect(content().string(org.hamcrest.Matchers.not(
+                        org.hamcrest.Matchers.containsString(
+                                "href=\"/historia\" aria-current=\"page\""))))
+                .andExpect(content().string(
+                        org.hamcrest.Matchers.containsString("property=\"og:title\"")));
     }
 
     private static SessionOutcome outcome(TrialProtocol protocol, List<String> figuras) {
@@ -187,7 +228,7 @@ class TrialRunControllerTest {
                 new TrialOutcome(1, 2, 2, true, figuras, Optional.empty(), Optional.empty()),
                 new TrialOutcome(2, 1, 3, false, figuras, Optional.empty(), Optional.empty()));
         return new SessionOutcome("TS-TEST0001", protocol, SessionState.FINISHED, 2, 2, 1,
-                1, 4, new java.math.BigDecimal("0.4375"), "0".repeat(64), SEED,
+                1, 4, new java.math.BigDecimal("0.4375"), "0".repeat(64), SERVER_SEED, NONCE, SEED,
                 "v1", Instant.parse("2026-01-01T00:00:00Z"), Instant.parse("2026-01-01T00:10:00Z"),
                 trials, "Dados exploratórios.");
     }
@@ -199,6 +240,6 @@ class TrialRunControllerTest {
     private static SessionProgress progress(TrialProtocol protocol) {
         return new SessionProgress("TS-TEST0001", protocol, 12, 0, 1, "0".repeat(64),
                 Instant.parse("2026-01-01T00:00:00Z"), SessionState.ACTIVE,
-                protocol.impressionRequired());
+                false, protocol.impressionRequired());
     }
 }

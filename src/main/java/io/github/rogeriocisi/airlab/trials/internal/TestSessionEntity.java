@@ -43,6 +43,12 @@ class TestSessionEntity {
     @Column(name = "seed_escrow", nullable = false)
     private String seedEscrow;
 
+    @Column(name = "participant_nonce", length = 64)
+    private String participantNonce;
+
+    @Column(name = "server_seed_hex", length = 64)
+    private String serverSeedHex;
+
     @Column(name = "seed_hex", length = 64)
     private String seedHex;
 
@@ -78,11 +84,25 @@ class TestSessionEntity {
         this.startedAt = startedAt;
     }
 
-    void close(SessionState finalState, String plainSeedHex, Instant at) {
+    /**
+     * Records the participant's half. Accepted once, before any trial exists, and only after
+     * the commitment to the server's half is already published.
+     */
+    void contributeNonce(String nonceHex) {
+        if (this.participantNonce != null) {
+            throw new IllegalStateException(
+                    "a sessao " + code + " ja recebeu a parte do participante");
+        }
+        this.participantNonce = nonceHex;
+    }
+
+    void close(SessionState finalState, String plainServerSeedHex, String plainSeedHex,
+               Instant at) {
         if (this.state != SessionState.ACTIVE) {
             throw new IllegalStateException("session " + code + " is already closed");
         }
         this.state = finalState;
+        this.serverSeedHex = plainServerSeedHex;
         this.seedHex = plainSeedHex;
         this.seedRevealedAt = at;
         this.closedAt = at;
@@ -110,6 +130,14 @@ class TestSessionEntity {
 
     String seedEscrow() {
         return seedEscrow;
+    }
+
+    String participantNonce() {
+        return participantNonce;
+    }
+
+    String serverSeedHex() {
+        return serverSeedHex;
     }
 
     String seedHex() {

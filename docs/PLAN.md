@@ -1,6 +1,6 @@
 # Plano técnico do MVP — Crivo (AIR Lab)
 
-> Derivado de `CONSTITUTION.md` (prevalece) e de `SPEC.md`. Versão 1.1 · novembro/2026.
+> Derivado de `CONSTITUTION.md` (prevalece) e de `SPEC.md`. Versão 1.2 · novembro/2026.
 > Este documento registra as decisões de implementação do MVP: estrutura de módulos,
 > esquemas e migrações, execução por linha de comando e justificativa de cada dependência.
 
@@ -77,6 +77,7 @@ Flyway, em `src/main/resources/db/migration`. Histórico no esquema `research`.
 | `V13` | Comentários em português passam a dizer **consulente** no lugar de *sitter* (SPEC 0.5) |
 | `V14` | Índice cego do contato em `identity.participant`, para detectar papel duplo sem guardar contato em claro (E10) |
 | `V15` | `research.test_session` e `research.test_trial` dos testes de autoatendimento, com `CHECK` que impede alvo antes do travamento e *trigger* que torna a tentativa travada imutável (E11/E12) |
+| `V16` | Entropia do participante: `participant_nonce` e `server_seed_hex`, *trigger* que recusa tentativa de sessão sem a metade do participante, e preenchimento das sessões anteriores (`server_seed_hex = seed_hex`, porque antes a semente era toda do servidor) |
 
 **Migração aplicada não se edita**: corrigir o vocabulário dos comentários mudaria o checksum
 do Flyway e quebraria a validação em qualquer banco já migrado — inclusive o do próprio autor.
@@ -96,6 +97,9 @@ ficam as decisões de implementação.
 |---|---|
 | Um módulo só (`trials`) para os dois protocolos | Eles compartilham tudo que importa: sessão com N fixo, semente comprometida, alvo derivado no travamento, revelação no fim. O que difere é um passo a mais na visão remota |
 | Alvo derivado, não sorteado e guardado | `alvo(n) = SeedStream(semente, "trial:" + n) mod alternativas`. Nada é gravado antes da resposta: a coluna `target_position` é nula até o travamento, imposto por `CHECK` |
+| **Semente em duas metades** | `semente = SHA-256(metade do servidor \|\| metade do participante)`. O servidor publica o hash da metade dele antes de a outra existir; o navegador sorteia a dele com `crypto.getRandomValues`. Nenhum dos lados escolhe o resultado, e a prova deixa de depender de ordem atestada pela plataforma |
+| Sem a metade do participante, nada existe | Nem semente, nem alvo, nem linha de tentativa. Imposto por *trigger* (V16), não só no serviço: é essa ordem que sustenta a afirmação do protocolo |
+| O compromisso é guardado pelo próprio navegador | `sessionStorage`, no momento em que a tela da entropia chega. No fim, o verificador compara — a conferência que antes exigia a pessoa copiar o hash à mão. Quando não há armazenamento, a página diz que essa parte não foi conferida |
 | Semente em custódia cifrada, revelada no fechamento | Mesmo esquema do sorteio do P1. Um dump do banco durante a sessão não entrega o alvo |
 | Compromisso liga a semente aos parâmetros | `SHA-256(semente \| protocolo \| tentativas \| alternativas \| versão do banco)`. Sem isso, um compromisso poderia ser "honrado" por uma sessão de outro tamanho |
 | Impressão travada antes das candidatas (P3) | A trilha guarda só o hash da impressão. É o que sustenta a afirmação de que o texto não foi reescrito depois de ver as figuras — objeção padrão ao autojulgamento |
@@ -210,7 +214,9 @@ sorteio na CLI, nunca para calcular hash.
 | `ModularityTest` | Regra 1 e 2 | Fronteiras de módulo |
 | `TargetDerivationTest` | P5 | Unitário: alvo reproduzível pela semente, dentro do intervalo, candidatas distintas e banco pequeno recusado |
 | `ProtocolCatalogTest` | SPEC 1.1 | Unitário: todo protocolo declara o que não sustenta, e protocolo sem limites não compila em tempo de execução |
-| `TrialSessionIntegrationTest` | E10 trava 1, E11, E12 | PostgreSQL real: semente só no fim, alvo ausente do banco antes do travamento, impressão não reescrita, tentativa travada imutável, fechamento idempotente |
+| `TrialSessionIntegrationTest` | E10 trava 1, E11, E12 | PostgreSQL real: semente só no fim, alvo ausente do banco antes do travamento, impressão não reescrita, tentativa travada imutável, fechamento idempotente, **nada acontece antes da entropia do participante — recusado no serviço e pelo *trigger*** |
+| `TargetDerivationTest` (semente conjunta) | E11 | Unitário: vetor de teste das duas metades, e a ordem das metades faz parte da regra |
+| `TrialRunControllerTest` | E11, E12 | Páginas: passo da entropia antes de qualquer tentativa, reenvio retoma o teste, coluna de figuras só onde há figuras |
 
 Os testes de integração usam o mesmo PostgreSQL embarcado, então `./mvnw test` funciona em
 Windows e Linux sem Docker e sem banco instalado.

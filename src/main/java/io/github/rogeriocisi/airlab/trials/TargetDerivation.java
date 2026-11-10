@@ -28,6 +28,33 @@ public final class TargetDerivation {
     private TargetDerivation() {
     }
 
+    /**
+     * Combines the seed the server committed to with the nonce the participant's browser drew,
+     * into the seed every target of the session comes from:
+     *
+     * <pre>
+     * semente = SHA-256( bytes(sementeDoServidor) || bytes(nonce) )
+     * </pre>
+     *
+     * <p>This is what removes the need to trust us. The server publishes a commitment to its
+     * half before it has seen the nonce; the participant draws the nonce after seeing that
+     * commitment. Neither side can steer the result: the server would have to find a second
+     * half that hashes with this nonce to a seed it likes, which is a preimage attack on
+     * SHA-256, and the participant never learns the server's half until the session closes.
+     *
+     * <p>Test vector, pinned in Java and repeated in the browser verifier:
+     * server seed of 32 bytes {@code 0x11}, nonce of 16 bytes {@code 0x22}, effective seed
+     * {@code 067163355c1ef281e5b95dd6000e3945f41154808a1f14698b9a2daa3d89079f}.
+     */
+    public static String effectiveSeedHex(String serverSeedHex, String participantNonceHex) {
+        byte[] serverSeed = Hashes.fromHex(serverSeedHex);
+        byte[] nonce = Hashes.fromHex(participantNonceHex);
+        byte[] joined = new byte[serverSeed.length + nonce.length];
+        System.arraycopy(serverSeed, 0, joined, 0, serverSeed.length);
+        System.arraycopy(nonce, 0, joined, serverSeed.length, nonce.length);
+        return Hashes.toHex(Hashes.sha256(joined));
+    }
+
     /** Index of the target alternative of a trial, in {@code [0, alternatives)}. */
     public static int targetIndex(String seedHex, int trialIndex, int alternatives) {
         if (trialIndex < 1) {

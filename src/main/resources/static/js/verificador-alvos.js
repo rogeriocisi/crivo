@@ -97,9 +97,9 @@
      * resposta. Sem esta conferência, recomputar os alvos só mostra que a semente mostrada
      * gera os alvos mostrados — o que qualquer semente faria, se tivesse sido escolhida depois.
      */
-    async function compromissoDe(sementeHex, caixa) {
+    async function compromissoDe(sementeDoServidorHex, caixa) {
         const partes = [
-            sementeHex.trim().toLowerCase(),
+            sementeDoServidorHex.trim().toLowerCase(),
             caixa.dataset.protocolo,
             caixa.dataset.tentativasDeclaradas,
             caixa.dataset.alternativas,
@@ -108,6 +108,26 @@
         const entrada = new TextEncoder().encode(partes.join('|'));
         const digest = await crypto.subtle.digest('SHA-256', entrada);
         return bytesParaHex(new Uint8Array(digest));
+    }
+
+    /** semente efetiva = SHA-256( bytes(metade do servidor) || bytes(nonce do participante) ) */
+    async function sementeEfetiva(servidorHex, nonceHex) {
+        const servidor = hexParaBytes(servidorHex);
+        const nonce = hexParaBytes(nonceHex);
+        const juntos = new Uint8Array(servidor.length + nonce.length);
+        juntos.set(servidor, 0);
+        juntos.set(nonce, servidor.length);
+        const digest = await crypto.subtle.digest('SHA-256', juntos);
+        return bytesParaHex(new Uint8Array(digest));
+    }
+
+    /** O compromisso que este navegador guardou quando a sessão começou, se guardou. */
+    function compromissoGuardado(codigoDaSessao) {
+        try {
+            return sessionStorage.getItem('crivo.compromisso.' + codigoDaSessao);
+        } catch (erro) {
+            return null;
+        }
     }
 
     async function alvoDaTentativa(semente, tentativa, alternativas) {
@@ -142,7 +162,8 @@
     }
 
     async function verificar(caixa) {
-        const semente = caixa.querySelector('[data-campo="semente"]').value;
+        const sementeDoServidor = caixa.querySelector('[data-campo="semente-servidor"]').value;
+        const nonce = caixa.querySelector('[data-campo="nonce"]').value;
         const tentativas = parseInt(caixa.querySelector('[data-campo="tentativas"]').value, 10);
         const alternativas = parseInt(caixa.dataset.alternativas, 10);
         const gravados = (caixa.dataset.alvos || '')
@@ -160,6 +181,9 @@
         // falha seria pior do que nao mostrar nada.
         compromissoLinhaInicial.textContent = '';
         compromissoLinhaInicial.classList.remove('falhou');
+        const linhaSementeInicial = caixa.querySelector('[data-campo="semente-efetiva"]');
+        linhaSementeInicial.textContent = '';
+        linhaSementeInicial.classList.remove('falhou');
 
         if (!window.crypto || !window.crypto.subtle) {
             resumo.textContent = 'Este navegador não expõe SHA-256 nesta página. '
@@ -168,13 +192,25 @@
             return;
         }
 
+        let semente;
         let sementeBytes;
         try {
+            semente = await sementeEfetiva(sementeDoServidor, nonce);
             sementeBytes = hexParaBytes(semente);
         } catch (erro) {
-            resumo.textContent = 'Semente inválida: ' + erro.message + '.';
+            resumo.textContent = 'Entrada inválida: ' + erro.message + '.';
             saida.hidden = false;
             return;
+        }
+        const linhaSemente = caixa.querySelector('[data-campo="semente-efetiva"]');
+        const sementeEsperada = (caixa.dataset.sementeEfetiva || '').trim().toLowerCase();
+        if (!sementeEsperada || semente === sementeEsperada) {
+            linhaSemente.textContent = 'Semente efetiva recomputada das duas metades: ' + semente;
+            linhaSemente.classList.remove('falhou');
+        } else {
+            linhaSemente.textContent = 'A semente efetiva recomputada (' + semente
+                + ') NÃO bate com a que a sessão gravou (' + sementeEsperada + ').';
+            linhaSemente.classList.add('falhou');
         }
 
         if (!Number.isInteger(tentativas) || tentativas < 1 || tentativas > 200) {
@@ -185,19 +221,32 @@
 
         const compromissoEsperado = (caixa.dataset.compromisso || '').trim().toLowerCase();
         const compromissoLinha = caixa.querySelector('[data-campo="compromisso"]');
-        const compromissoRefeito = await compromissoDe(semente, caixa);
+        const compromissoRefeito = await compromissoDe(sementeDoServidor, caixa);
         if (!compromissoEsperado) {
             compromissoLinha.textContent =
                 'Compromisso recomputado: ' + compromissoRefeito + '.';
         } else if (compromissoRefeito === compromissoEsperado) {
+            const guardado = compromissoGuardado(caixa.dataset.sessao || '');
+            let complemento;
+            if (guardado && guardado.trim().toLowerCase() === compromissoEsperado) {
+                complemento = ' E este navegador tinha guardado exatamente esse compromisso '
+                    + 'quando a sessão começou, antes de você sortear a sua metade: a ordem dos '
+                    + 'fatos está conferida sem depender de nós.';
+            } else if (guardado) {
+                complemento = ' ATENÇÃO: o compromisso que este navegador guardou no início era '
+                    + 'outro (' + guardado + ').';
+            } else {
+                complemento = ' Este navegador não guardou o compromisso do início — '
+                    + 'provavelmente a sessão começou noutro navegador ou em janela privativa — '
+                    + 'então esta parte depende do registro da plataforma.';
+            }
             compromissoLinha.textContent =
-                'A semente confere com o compromisso publicado no início da sessão. '
-                + 'Se você anotou aquele valor antes de responder, está provado que esta '
-                + 'semente já estava valendo naquele momento.';
+                'A metade do servidor confere com o compromisso publicado antes de você sortear '
+                + 'a sua.' + complemento;
             compromissoLinha.classList.remove('falhou');
         } else {
             compromissoLinha.textContent =
-                'A semente NÃO confere com o compromisso publicado no início: recomputado '
+                'A metade do servidor NÃO confere com o compromisso publicado no início: recomputado '
                 + compromissoRefeito + ', publicado ' + compromissoEsperado + '.';
             compromissoLinha.classList.add('falhou');
         }

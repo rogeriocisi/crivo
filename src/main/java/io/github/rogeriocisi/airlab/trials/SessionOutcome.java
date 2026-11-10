@@ -11,6 +11,11 @@ import java.util.List;
  * derivation rule, a third party recomputes every target and checks the hits, without taking
  * the platform's word for anything.
  *
+ * @param seedCommitment    commitment to the server's half, published before the participant
+ *                          drew theirs
+ * @param serverSeedHex     the server's half, revealed now
+ * @param participantNonce  the participant's half, drawn in their browser and public since
+ * @param seedHex           the effective seed, SHA-256 of one half followed by the other
  * @param chanceNumerator   declared chance level of the protocol, not estimated from the data
  * @param pValue            exact one sided binomial tail against that chance level
  * @param exploratoryReason why this session is exploratory data; never empty for public
@@ -26,6 +31,8 @@ public record SessionOutcome(String sessionCode,
                              int chanceDenominator,
                              BigDecimal pValue,
                              String seedCommitment,
+                             String serverSeedHex,
+                             String participantNonce,
                              String seedHex,
                              String targetPoolVersion,
                              Instant startedAt,

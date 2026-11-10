@@ -12,8 +12,10 @@ import java.time.Instant;
  * <p>Without this, a self-service test becomes an optional stopping machine: a person who sees
  * a running tally stops at a good moment, and so does a researcher watching a public pool.
  *
- * @param seedCommitment published before the first trial, so the person can check afterwards
- *                       that the seed revealed at the end is the one committed at the start
+ * @param seedCommitment commitment to the server's half of the seed, published before the
+ *                       participant contributes theirs
+ * @param awaitingEntropy true while the session still needs the participant's half of the seed;
+ *                        no trial exists before that
  */
 public record SessionProgress(String sessionCode,
                               TrialProtocol protocol,
@@ -23,6 +25,7 @@ public record SessionProgress(String sessionCode,
                               String seedCommitment,
                               Instant startedAt,
                               SessionState state,
+                              boolean awaitingEntropy,
                               boolean awaitingImpression) {
 
     public int remainingTrials() {

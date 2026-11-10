@@ -21,6 +21,19 @@ public interface TrialSessionService {
     SessionProgress progress(String sessionCode);
 
     /**
+     * Records the participant's half of the seed, drawn in their own browser after seeing the
+     * commitment to the server's half (Epic E11).
+     *
+     * <p>Until this happens the session has no seed at all, and therefore no targets: the
+     * database refuses to hold a trial for a session without it. That ordering is the whole
+     * guarantee — the server was already committed when the nonce arrived, and the nonce was
+     * unpredictable to it, so neither side chose the outcome.
+     *
+     * @param nonceHex 16 to 32 bytes in hexadecimal
+     */
+    SessionProgress contributeEntropy(String sessionCode, String nonceHex);
+
+    /**
      * Locks the written impression of the current remote viewing trial and only then returns
      * the four figures. Calling it twice for the same trial is refused: the impression cannot
      * be rewritten after the candidates are seen (E12).

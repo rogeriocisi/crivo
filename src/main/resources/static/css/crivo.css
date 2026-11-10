@@ -204,7 +204,8 @@ code,
 
 .navegacao {
     display: flex;
-    gap: 1.25rem;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
     font-family: var(--mono);
     font-size: 0.78rem;
     letter-spacing: 0.04em;
@@ -1023,7 +1024,7 @@ code,
 }
 
 .protocolos > li {
-    border: 1px solid var(--rule);
+    border: 1px solid var(--fio-forte);
     border-radius: 14px;
     padding: 1.5rem 1.5rem 1.25rem;
     background: var(--bg-alto, transparent);
@@ -1057,9 +1058,9 @@ code,
     font: inherit;
     font-size: 2.5rem;
     font-variant-numeric: tabular-nums;
-    color: var(--fg);
+    color: var(--tinta);
     background: transparent;
-    border: 2px solid var(--rule);
+    border: 2px solid var(--fio-forte);
     border-radius: 12px;
     cursor: pointer;
     transition: border-color 120ms ease, transform 120ms ease;
@@ -1067,14 +1068,14 @@ code,
 
 .porta:hover,
 .porta:focus-visible {
-    border-color: var(--accent);
+    border-color: var(--verdete);
     transform: translateY(-2px);
 }
 
 .progresso-barra {
     margin: 1.5rem 0;
     padding: 0.85rem 1rem;
-    border-left: 3px solid var(--accent);
+    border-left: 3px solid var(--verdete);
     background: rgba(127, 127, 127, 0.07);
     font-size: 0.95rem;
 }
@@ -1091,7 +1092,7 @@ code,
 .figuras img {
     width: 100%;
     height: auto;
-    border: 1px solid var(--rule);
+    border: 1px solid var(--fio-forte);
     border-radius: 10px;
     display: block;
 }
@@ -1127,7 +1128,7 @@ code,
 .tentativas td {
     text-align: left;
     padding: 0.5rem 0.6rem;
-    border-bottom: 1px solid var(--rule);
+    border-bottom: 1px solid var(--fio-forte);
 }
 
 .tentativas th {
@@ -1145,9 +1146,9 @@ code,
 select,
 textarea {
     font: inherit;
-    color: var(--fg);
+    color: var(--tinta);
     background: var(--bg);
-    border: 1px solid var(--rule);
+    border: 1px solid var(--fio-forte);
     border-radius: 8px;
     padding: 0.55rem 0.7rem;
     max-width: 100%;
@@ -1166,7 +1167,7 @@ label {
 /* --- Verificador de alvos (pagina de resultado) --------------------------- */
 
 .verificador {
-    border: 1px solid var(--rule);
+    border: 1px solid var(--fio-forte);
     border-radius: 14px;
     padding: 1.5rem;
     margin: 2rem 0;
@@ -1185,9 +1186,9 @@ label {
 
 .verificador input[type="number"] {
     font: inherit;
-    color: var(--fg);
+    color: var(--tinta);
     background: var(--bg);
-    border: 1px solid var(--rule);
+    border: 1px solid var(--fio-forte);
     border-radius: 8px;
     padding: 0.55rem 0.7rem;
     width: 8rem;
@@ -1196,7 +1197,7 @@ label {
 .resumo-verificacao {
     margin: 1rem 0 0;
     padding: 0.85rem 1rem;
-    border-left: 3px solid var(--accent);
+    border-left: 3px solid var(--verdete);
     background: rgba(127, 127, 127, 0.07);
 }
 
@@ -1222,4 +1223,89 @@ label {
         border-left-color: #f2b8b5;
         color: #f2b8b5;
     }
+}
+
+/* ---------- navegação: página atual ---------- */
+
+.navegacao a[aria-current="page"] {
+    color: var(--verdete);
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.35em;
+}
+
+/* ---------- sessões: progresso, teclado, envio ---------- */
+
+.progresso-sessao {
+    display: block;
+    width: 100%;
+    max-width: var(--medida);
+    height: 0.4rem;
+    margin: 0.25rem 0 1.25rem;
+    appearance: none;
+    border: none;
+    border-radius: 999px;
+    background: var(--fio);
+    overflow: hidden;
+}
+
+.progresso-sessao::-webkit-progress-bar {
+    background: var(--fio);
+    border-radius: 999px;
+}
+
+.progresso-sessao::-webkit-progress-value {
+    background: var(--verdete);
+    border-radius: 999px;
+}
+
+.progresso-sessao::-moz-progress-bar {
+    background: var(--verdete);
+    border-radius: 999px;
+}
+
+kbd {
+    font-family: var(--mono);
+    font-size: 0.85em;
+    padding: 0.05em 0.4em;
+    border: 1px solid var(--fio-forte);
+    border-bottom-width: 2px;
+    border-radius: 4px;
+}
+
+form.enviando button {
+    opacity: 0.55;
+    cursor: progress;
+    transform: none;
+}
+
+.enviando-aviso {
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    color: var(--tinta-suave);
+}
+
+.ordenacao option:disabled {
+    color: var(--tinta-suave);
+}
+
+/* ---------- resultado: copiar ---------- */
+
+.copiar {
+    margin-left: 0.5rem;
+    padding: 0.1rem 0.5rem;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--tinta-suave);
+    background: transparent;
+    border: 1px solid var(--fio-forte);
+    border-radius: 4px;
+    cursor: pointer;
+    vertical-align: middle;
+}
+
+.copiar:hover,
+.copiar:focus-visible {
+    color: var(--verdete);
+    border-color: var(--verdete);
 }

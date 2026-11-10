@@ -98,6 +98,27 @@ class DefaultTrialSessionService implements TrialSessionService {
 
     @Override
     @Transactional
+    public SessionProgress contributeEntropy(String sessionCode, String nonceHex) {
+        TestSessionEntity session = activeSession(sessionCode);
+        String nonce = normalisedNonce(nonceHex);
+
+        session.contributeNonce(nonce);
+        sessions.save(session);
+
+        Map<String, Object> payload = new LinkedHashMap<>();
+        payload.put("session", sessionCode);
+        // The nonce is public from the start: it is not a secret, it only has to be
+        // unpredictable to the server until it arrives.
+        payload.put("participantNonce", nonce);
+        payload.put("seedCommitment", session.seedCommitment());
+        auditTrail.append(AuditEventType.TEST_ENTROPY_CONTRIBUTED, ActorRole.SYSTEM, null,
+                "testSession:" + sessionCode, payload);
+
+        return progressOf(session);
+    }
+
+    @Override
+    @Transactional
     public TrialCandidates lockImpression(String sessionCode, String impression) {
         TestSessionEntity session = activeSession(sessionCode);
         if (!session.protocol().impressionRequired()) {
@@ -112,6 +133,7 @@ class DefaultTrialSessionService implements TrialSessionService {
                     "a impressao passa de " + MAX_IMPRESSION_CHARS + " caracteres");
         }
 
+        requireEntropy(session);
         int index = nextTrialIndex(session);
         TestTrialEntity trial = trials.findBySessionCodeAndTrialIndex(sessionCode, index)
                 .orElseGet(() -> trials.save(new TestTrialEntity(sessionCode, index)));
@@ -162,6 +184,7 @@ class DefaultTrialSessionService implements TrialSessionService {
             throw new IllegalStateException(
                     "o protocolo " + session.protocol() + " espera uma ordenacao, nao uma escolha");
         }
+        requireEntropy(session);
         requirePosition(session, chosenPosition);
 
         int index = nextTrialIndex(session);
@@ -180,6 +203,7 @@ class DefaultTrialSessionService implements TrialSessionService {
             throw new IllegalStateException(
                     "o protocolo " + session.protocol() + " espera uma escolha, nao uma ordenacao");
         }
+        requireEntropy(session);
         requirePermutation(session, rankedPositions);
 
         int index = nextTrialIndex(session);
@@ -235,8 +259,13 @@ class DefaultTrialSessionService implements TrialSessionService {
 
     private SessionOutcome close(TestSessionEntity session, SessionState finalState,
                                  AuditEventType eventType) {
-        String seedHex = cipher.decrypt(session.seedEscrow());
-        session.close(finalState, seedHex, now());
+        String serverSeedHex = cipher.decrypt(session.seedEscrow());
+        // A session abandoned before the participant contributed has no effective seed at all,
+        // and saying so is more honest than inventing one.
+        String seedHex = session.participantNonce() == null
+                ? null
+                : TargetDerivation.effectiveSeedHex(serverSeedHex, session.participantNonce());
+        session.close(finalState, serverSeedHex, seedHex, now());
         sessions.save(session);
 
         SessionOutcome outcome = outcomeOf(session);
@@ -245,6 +274,8 @@ class DefaultTrialSessionService implements TrialSessionService {
         payload.put("declaredTrials", session.declaredTrials());
         payload.put("lockedTrials", outcome.lockedTrials());
         payload.put("hits", outcome.hits());
+        payload.put("serverSeedHex", serverSeedHex);
+        payload.put("participantNonce", session.participantNonce());
         payload.put("seedHex", seedHex);
         payload.put("seedCommitment", session.seedCommitment());
         auditTrail.append(eventType, ActorRole.SYSTEM, null,
@@ -254,7 +285,7 @@ class DefaultTrialSessionService implements TrialSessionService {
 
     private void lockAnswer(TestSessionEntity session, TestTrialEntity trial, int chosenPosition,
                             String ranking, int index) {
-        String seedHex = cipher.decrypt(session.seedEscrow());
+        String seedHex = effectiveSeed(session);
         int targetPosition =
                 TargetDerivation.targetIndex(seedHex, index, session.alternatives()) + 1;
 
@@ -309,6 +340,8 @@ class DefaultTrialSessionService implements TrialSessionService {
                 session.alternatives(),
                 BinomialTest.pValueGreaterOrEqual(hits, locked, 1, session.alternatives()),
                 session.seedCommitment(),
+                session.serverSeedHex(),
+                session.participantNonce(),
                 session.seedHex(),
                 session.targetPoolVersion(),
                 session.startedAt(),
@@ -320,6 +353,8 @@ class DefaultTrialSessionService implements TrialSessionService {
     private SessionProgress progressOf(TestSessionEntity session) {
         int locked = (int) trials.countBySessionCodeAndLockedAtIsNotNull(session.code());
         int next = Math.min(locked + 1, session.declaredTrials());
+        boolean awaitingEntropy = session.participantNonce() == null
+                && session.state() == SessionState.ACTIVE;
         boolean awaitingImpression = session.protocol().impressionRequired()
                 && session.state() == SessionState.ACTIVE
                 && trials.findBySessionCodeAndTrialIndex(session.code(), next)
@@ -335,6 +370,7 @@ class DefaultTrialSessionService implements TrialSessionService {
                 session.seedCommitment(),
                 session.startedAt(),
                 session.state(),
+                awaitingEntropy,
                 awaitingImpression);
     }
 
@@ -351,7 +387,7 @@ class DefaultTrialSessionService implements TrialSessionService {
     }
 
     private List<TargetPool.Figure> candidateFigures(TestSessionEntity session, int index) {
-        String seedHex = cipher.decrypt(session.seedEscrow());
+        String seedHex = effectiveSeed(session);
         List<Integer> poolIndices = TargetDerivation.candidatePoolIndices(
                 seedHex, index, TargetPool.size(), session.alternatives());
         List<TargetPool.Figure> figures = new ArrayList<>();
@@ -373,6 +409,37 @@ class DefaultTrialSessionService implements TrialSessionService {
             return List.of();
         }
         return List.of(commaSeparated.split(","));
+    }
+
+    /**
+     * The seed every target comes from. It does not exist until the participant has
+     * contributed, which is the whole point: before that moment nobody, this server included,
+     * can know a single target of this session.
+     */
+    private String effectiveSeed(TestSessionEntity session) {
+        if (session.participantNonce() == null) {
+            throw new IllegalStateException(
+                    "a sessao " + session.code() + " ainda nao recebeu a parte do participante");
+        }
+        return TargetDerivation.effectiveSeedHex(
+                cipher.decrypt(session.seedEscrow()), session.participantNonce());
+    }
+
+    private static void requireEntropy(TestSessionEntity session) {
+        if (session.participantNonce() == null) {
+            throw new IllegalStateException(
+                    "a sessao " + session.code() + " precisa da parte do participante antes da "
+                            + "primeira tentativa");
+        }
+    }
+
+    private static String normalisedNonce(String nonceHex) {
+        String nonce = nonceHex == null ? "" : nonceHex.trim().toLowerCase();
+        if (!nonce.matches("[0-9a-f]{32,64}")) {
+            throw new IllegalArgumentException(
+                    "a parte do participante precisa ter de 16 a 32 bytes em hexadecimal");
+        }
+        return nonce;
     }
 
     private int nextTrialIndex(TestSessionEntity session) {

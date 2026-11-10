@@ -94,6 +94,32 @@ class TargetDerivationTest {
     }
 
     @Test
+    @DisplayName("a semente efetiva junta as duas metades, e so muda se uma delas mudar")
+    void the_effective_seed_joins_both_halves() {
+        String servidor = "11".repeat(32);
+        String nonce = "22".repeat(16);
+
+        // Vetor de teste publico: mesmo valor repetido no verificador do navegador.
+        assertThat(TargetDerivation.effectiveSeedHex(servidor, nonce))
+                .isEqualTo("067163355c1ef281e5b95dd6000e3945f41154808a1f14698b9a2daa3d89079f");
+
+        assertThat(TargetDerivation.effectiveSeedHex("11".repeat(31) + "12", nonce))
+                .isNotEqualTo(TargetDerivation.effectiveSeedHex(servidor, nonce));
+        assertThat(TargetDerivation.effectiveSeedHex(servidor, "22".repeat(15) + "23"))
+                .isNotEqualTo(TargetDerivation.effectiveSeedHex(servidor, nonce));
+    }
+
+    @Test
+    @DisplayName("trocar a ordem das metades daria outra semente: a regra fixa quem vem antes")
+    void the_order_of_the_halves_is_part_of_the_rule() {
+        String servidor = "11".repeat(32);
+        String nonce = "22".repeat(16);
+
+        assertThat(TargetDerivation.effectiveSeedHex(nonce, servidor))
+                .isNotEqualTo(TargetDerivation.effectiveSeedHex(servidor, nonce));
+    }
+
+    @Test
     @DisplayName("vetor de teste publico: semente de 64 zeros, 12 tentativas, 4 alternativas")
     void published_test_vector() {
         // Estes numeros sao o contrato entre tres implementacoes: esta, a do verificador em

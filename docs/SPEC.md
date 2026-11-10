@@ -3,7 +3,7 @@
 > Spec de alto nível. Cada épico abaixo vira uma spec detalhada própria antes da implementação.
 > Conformidade obrigatória com `CONSTITUTION.md`. Contexto e motivação em `VISION.md`. Fundamentação científica em `REFERENCES.md`.
 >
-> Versão 0.6 · novembro/2026 · 0.2: seção 2.1 "O que é uma leitura", regra "um item = uma afirmação" e referências · 0.3: critérios de inclusão de médiuns no pré-registro, regra de parada vinculante e unidade de análise por par (seções 5 e 9) · 0.4: medida primária pareada com Wilcoxon exato, teste de permutação de Pratt e Birge, controles de comprimento e de pistas temporais, escala de itens de cinco categorias e desvios de protocolo — derivados dos artigos em `references/` · 0.5: *sitter* passa a ser **consulente** em todo o texto em português, com a forma inglesa registrada no glossário e mantida nos identificadores do código · 0.6: épico E10, autoatendimento e automação, com as travas obrigatórias · 0.7: o Crivo passa a ser uma plataforma de protocolos de cognição anômala, com catálogo de protocolos (seção 1.1) e os épicos E11 e E12 — dois testes integralmente automatizáveis
+> Versão 0.6 · novembro/2026 · 0.2: seção 2.1 "O que é uma leitura", regra "um item = uma afirmação" e referências · 0.3: critérios de inclusão de médiuns no pré-registro, regra de parada vinculante e unidade de análise por par (seções 5 e 9) · 0.4: medida primária pareada com Wilcoxon exato, teste de permutação de Pratt e Birge, controles de comprimento e de pistas temporais, escala de itens de cinco categorias e desvios de protocolo — derivados dos artigos em `references/` · 0.5: *sitter* passa a ser **consulente** em todo o texto em português, com a forma inglesa registrada no glossário e mantida nos identificadores do código · 0.6: épico E10, autoatendimento e automação, com as travas obrigatórias · 0.7: o Crivo passa a ser uma plataforma de protocolos de cognição anômala, com catálogo de protocolos (seção 1.1) e os épicos E11 e E12 — dois testes integralmente automatizáveis · 0.8: a semente dos testes de autoatendimento passa a ter duas metades, uma do servidor e uma do participante, o que remove a necessidade de confiar na plataforma quanto à ordem dos fatos
 
 ---
 
@@ -269,7 +269,16 @@ dos escores; e a tentativa de acumular papéis conflitantes é recusada e audita
 **Desenho**: a cada tentativa, a pessoa escolhe entre quatro alternativas. O alvo daquela tentativa é derivado de uma semente sorteada no início da sessão e **só é calculado e mostrado depois que a resposta está travada**. Acaso = 25%, declarado.
 
 - A sessão tem número de tentativas **fixo e declarado antes de começar** (padrão: 24). A quantidade não muda no meio.
-- A semente da sessão é sorteada com `SecureRandom`, guardada cifrada e **comprometida por hash antes da primeira tentativa**; é revelada ao final da sessão. Com a semente e o algoritmo público (SHA-256 em modo contador, `support.SeedStream`), qualquer pessoa recomputa os alvos de todas as tentativas e confere que eles não foram escolhidos depois da resposta.
+- **A semente tem duas metades, e nenhum dos dois lados a escolhe sozinho:**
+
+  ```
+  semente = SHA-256( metade do servidor || metade do participante )
+  ```
+
+  O servidor sorteia a metade dele com `SecureRandom`, guarda cifrada e **publica o hash dela antes de a outra metade existir**. Só então o navegador do participante sorteia a metade dele (16 bytes de `crypto.getRandomValues`) e a envia. Para dirigir o resultado, o servidor precisaria de uma metade que, combinada com a do participante, desse a semente desejada — e ele já estava comprometido antes de ver aquela metade. Isso é um ataque de pré-imagem ao SHA-256.
+
+- **Antes da contribuição do participante a sessão não tem semente nem tentativas.** A regra é imposta no banco, não só no código: um *trigger* recusa qualquer linha de tentativa de sessão sem a metade do participante (migração V16). É essa ordem que sustenta a afirmação do protocolo.
+- As duas metades são reveladas no fechamento. Com elas e o algoritmo público (SHA-256 em modo contador, `support.SeedStream`), qualquer pessoa recomputa os alvos de todas as tentativas e confere que eles não foram escolhidos depois da resposta.
 - O alvo de cada tentativa nunca sai do servidor antes de a resposta estar travada — não há campo, API ou projeção que o exponha, e há teste que tenta obtê-lo.
 - **Nenhum resultado parcial dentro da sessão** (E10, trava 1): durante a sessão a pessoa vê quantas tentativas faltam, nunca quantas acertou. O desfecho aparece de uma vez, no fim.
 - Sessão abandonada é registrada como abandonada e **entra no denominador** da análise do pool conforme a regra pré-registrada. Desistir de uma sessão ruim não melhora o número agregado.
@@ -280,9 +289,9 @@ dos escores; e a tentativa de acumular papéis conflitantes é recusada e audita
 
 **Verificação na mão de quem testou**: a página de resultado traz a semente num campo editável e um botão que, **no navegador da pessoa e sem falar com o servidor**, faz duas conferências. Primeira, refaz o compromisso — `SHA-256(semente | protocolo | tentativas | alternativas | banco)` — e compara com o que foi publicado no início; é isso que liga a semente revelada no fim àquela que já estava valendo antes da primeira resposta. Segunda, recomputa os alvos e compara com os gravados. Sem a primeira conferência a segunda não vale nada: qualquer semente gera "os alvos certos" se tiver sido escolhida depois das respostas. O código do verificador é servido como arquivo legível (`/js/verificador-alvos.js`). Isso tem alcance limitado e a página diz qual: prova que a semente revelada gera os alvos gravados, não que a aplicação é honesta — para isso a regra precisa ser reimplementada por fora, e é por isso que ela cabe em oito linhas e tem **vetor de teste público** (semente de 64 zeros, 12 tentativas, 4 alternativas → 1, 1, 3, 3, 2, 3, 2, 1, 1, 4, 1, 3), fixado em teste tanto na implementação em Java quanto no verificador.
 
-**O compromisso é publicado onde dá para anotar**: ele aparece em **todas as telas de tentativa**, antes de qualquer resposta, e não só no fim. Quem copia o valor na primeira tentativa e compara no fim tem a prova completa, sem depender de confiar na plataforma. Quem não copiou depende da trilha de auditoria — que registra a abertura da sessão, com o compromisso, antes de cada resposta — e a trilha é mantida pela mesma aplicação: prova consistência interna, não honestidade do operador. **Questão em aberto, seção 9.8.**
+**A conferência de ordem é automática**: o navegador do participante guarda o compromisso no momento em que recebe a tela da entropia — antes de sortear a metade dele — e o verificador compara, no fim, com o que a página mostra. Quem quiser a prova à mão ainda pode copiar o valor, que aparece em todas as telas de tentativa. Quando a sessão começou noutro navegador, em janela privativa ou com armazenamento bloqueado, essa conferência não existe, e a página diz isso em vez de omitir.
 
-**Aceite**: a semente revelada reproduz exatamente os alvos gravados; a semente confere com o compromisso publicado no início; o alvo não é obtível por nenhuma via antes da resposta travada; durante a sessão nenhuma tela expõe função dos escores; duas sessões com a mesma semente e as mesmas respostas dão o mesmo resultado; e o verificador do navegador acusa divergência quando a semente é alterada num único dígito.
+**Aceite**: nenhuma tentativa existe antes de o participante contribuir com a metade dele, recusado também pelo banco; as duas metades reveladas reproduzem a semente efetiva, e ela reproduz exatamente os alvos gravados; a metade do servidor confere com o compromisso publicado antes de a outra existir; o alvo não é obtível por nenhuma via antes da resposta travada; durante a sessão nenhuma tela expõe função dos escores; duas sessões com a mesma semente e as mesmas respostas dão o mesmo resultado; e o verificador do navegador acusa divergência quando a semente é alterada num único dígito.
 
 ### E12. Visão remota com quatro alvos (P3)
 
@@ -314,7 +323,8 @@ Participant(identity schema) 1──* Consent(version)
 AuditEvent (seq, prev_hash, hash, type, payload, at)
 Incident ──* Session (affected)
 
-TestSession (protocol, declared_trials, seed_commitment, seed_revealed_at, pool_version)
+TestSession (protocol, declared_trials, seed_commitment, server_seed_hex,
+             participant_nonce, seed_hex, seed_revealed_at, pool_version)
 TestSession 1──* Trial (index, response, impression_sha256, locked_at, target_index, hit)
 TargetImage (pool_version, index, slug)
 ```
@@ -349,16 +359,18 @@ TargetImage (pool_version, index, slug)
 6. **Devolutiva**: o que cada participante recebe ao final, e como comunicar resultados nulos com cuidado.
 7. **Reconciliação** com a documentação de pesquisa já existente no Google Drive (*TransferênciaAnômalaInformação*).
 
-8. **Confiança no compromisso dos testes públicos**: hoje o compromisso é publicado pela própria
-   aplicação e a ordem dos eventos é atestada pela trilha dela. Para quem não copiou o
-   compromisso durante a sessão, isso é consistência interna, não prova. Duas saídas, não
-   excludentes: (a) **entropia do participante** — o navegador gera um nonce que entra na
-   semente final, `semente = SHA-256(semente do servidor || nonce)`, com o servidor comprometido
-   com a parte dele antes de ver o nonce; aí nenhum dos dois lados escolhe o resultado e a prova
-   não depende de ordem atestada por ninguém; (b) **ancoragem externa** da cabeça da cadeia de
-   auditoria (RFC 3161 ou OpenTimestamps, já previstos no E8), que torna reescrita retroativa
-   detectável por terceiros. A (a) resolve o caso do teste público com uma mudança pequena de
-   protocolo; a (b) resolve o caso geral, inclusive do P1.
+8. **Confiança no compromisso** — *resolvido para os testes públicos; em aberto para o P1*. A
+   entropia do participante está implementada (E11, E12): a semente tem duas metades, o servidor
+   se compromete com a dele antes de ver a do participante, e sem a metade do participante não
+   existe tentativa. Para o P2 e o P3, a prova não depende mais de ordem atestada por quem opera
+   a plataforma.
+
+   Continua em aberto para o **P1**, onde o sorteio é do pesquisador e os participantes não
+   estão no circuito no momento do compromisso. Ali a saída é a **ancoragem externa** da cabeça
+   da cadeia de auditoria (RFC 3161 ou OpenTimestamps, já previstos no E8), que torna reescrita
+   retroativa detectável por terceiros. Vale considerar também aplicar entropia de terceiros ao
+   sorteio do P1 — por exemplo, do próprio consulente no momento do cadastro do alvo —, mas isso
+   muda o fluxo do E3 e precisa de spec própria.
 
 ## 10. Próximos passos sugeridos (no Claude Code)
 

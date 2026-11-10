@@ -4,10 +4,16 @@ import io.github.rogeriocisi.airlab.trials.SessionOutcome;
 import io.github.rogeriocisi.airlab.trials.SessionProgress;
 import io.github.rogeriocisi.airlab.trials.TrialProtocol;
 import io.github.rogeriocisi.airlab.trials.TrialSessionService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import io.github.rogeriocisi.airlab.trials.TrialOutcome;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -31,6 +37,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 class TrialRunController {
 
     private static final String SESSION_KEY_PREFIX = "airlab.trial.";
+
+    /** Version of the downloadable session receipt; bump it when a field changes meaning. */
+    static final String RECEIPT_FORMAT = "crivo.sessao/1";
+
+    private static final ObjectMapper RECEIPT_JSON =
+            new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
 
     private final TrialSessionService trialSessions;
 
@@ -63,6 +75,15 @@ class TrialRunController {
         int declared = tentativas > 0 ? tentativas : protocol.defaultTrials();
         SessionProgress progress = trialSessions.start(protocol, declared);
         http.setAttribute(key(protocol), progress.sessionCode());
+        return "redirect:/testes/" + slug + "/rodar";
+    }
+
+    @PostMapping("/testes/{slug}/entropia")
+    String entropy(@PathVariable String slug,
+                   @RequestParam String nonce,
+                   HttpSession http) {
+        TrialProtocol protocol = protocolOf(slug);
+        trialSessions.contributeEntropy(requireCode(protocol, http), nonce);
         return "redirect:/testes/" + slug + "/rodar";
     }
 
@@ -117,6 +138,7 @@ class TrialRunController {
         http.removeAttribute(key(protocol));
         model.addAttribute("protocolo", protocol);
         model.addAttribute("desfecho", outcome);
+        model.addAttribute("comprovante", receipt(outcome));
         return "teste-resultado";
     }
 
@@ -140,6 +162,58 @@ class TrialRunController {
         return "redirect:/testes";
     }
 
+    /**
+     * The closed session as a downloadable receipt (P7): the same values the result page shows,
+     * in a stable shape a third party can feed to their own verifier. Built only from a
+     * {@link SessionOutcome}, which exists only once the session is over.
+     *
+     * <p>The JSON goes inside a {@code <script type="application/json">} element, so every
+     * {@code <} is escaped: no value can close that element early.
+     */
+    static String receipt(SessionOutcome outcome) {
+        Map<String, Object> json = new LinkedHashMap<>();
+        json.put("formato", RECEIPT_FORMAT);
+        json.put("sessao", outcome.sessionCode());
+        json.put("protocolo", outcome.protocol().name());
+        json.put("situacao", outcome.state().name());
+        json.put("tentativasDeclaradas", outcome.declaredTrials());
+        json.put("tentativasTravadas", outcome.lockedTrials());
+        json.put("alternativas", outcome.chanceDenominator());
+        json.put("acaso", outcome.chanceNumerator() + "/" + outcome.chanceDenominator());
+        json.put("acertos", outcome.hits());
+        json.put("valorP", outcome.pValue());
+        json.put("compromissoDaSemente", outcome.seedCommitment());
+        json.put("metadeDoServidor", outcome.serverSeedHex());
+        json.put("metadeDoParticipante", outcome.participantNonce());
+        json.put("sementeEfetiva", outcome.seedHex());
+        json.put("bancoDeFiguras", outcome.targetPoolVersion());
+        json.put("inicio", outcome.startedAt() == null ? null : outcome.startedAt().toString());
+        json.put("fim", outcome.closedAt() == null ? null : outcome.closedAt().toString());
+        json.put("regra", List.of(
+                "semente = SHA-256(metade do servidor || metade do participante)",
+                "alvo(n) = SHA-256(semente || \"trial:\" || n || contador) mod alternativas"));
+        List<Map<String, Object>> trials = new ArrayList<>();
+        for (TrialOutcome trial : outcome.trials()) {
+            Map<String, Object> t = new LinkedHashMap<>();
+            t.put("n", trial.index());
+            t.put("resposta", trial.chosenIndex());
+            t.put("alvo", trial.targetIndex());
+            t.put("acerto", trial.hit());
+            if (!trial.candidateSlugs().isEmpty()) {
+                t.put("figuras", trial.candidateSlugs());
+            }
+            trial.impressionSha256().ifPresent(hash -> t.put("hashDaImpressao", hash));
+            trials.add(t);
+        }
+        json.put("tentativas", trials);
+        json.put("natureza", outcome.exploratoryReason());
+        try {
+            return RECEIPT_JSON.writeValueAsString(json).replace("<", "\\u003c");
+        } catch (JsonProcessingException e) {
+            throw new IllegalStateException("comprovante da sessao nao serializou", e);
+        }
+    }
+
     private String afterTrial(String slug, String code, SessionProgress progress) {
         if (progress.remainingTrials() == 0) {
             trialSessions.finish(code);
@@ -151,6 +225,11 @@ class TrialRunController {
     private String trialView(TrialProtocol protocol, SessionProgress progress, Model model) {
         model.addAttribute("protocolo", protocol);
         model.addAttribute("progresso", progress);
+        if (progress.awaitingEntropy()) {
+            // Nothing exists yet: no seed, no targets, no trial. The session is waiting for the
+            // participant's half, drawn in their browser now that the commitment is on screen.
+            return "teste-entropia";
+        }
         if (protocol.impressionRequired()) {
             if (progress.awaitingImpression()) {
                 return view(protocol, "impressao");
