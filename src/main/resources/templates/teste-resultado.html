@@ -65,7 +65,11 @@
 
       <div class="verificador" data-verificador
            th:attr="data-alvos=${#strings.listJoin(desfecho.recordedTargets(), ',')},
-                    data-alternativas=${desfecho.chanceDenominator()}">
+                    data-alternativas=${desfecho.chanceDenominator()},
+                    data-compromisso=${desfecho.seedCommitment()},
+                    data-protocolo=${desfecho.protocol().name()},
+                    data-tentativas-declaradas=${desfecho.declaredTrials()},
+                    data-banco-figuras=${desfecho.targetPoolVersion()}">
         <h3>Recompute aqui, agora</h3>
         <p class="nota">
           O botão abaixo roda a regra no seu navegador, sem falar com o servidor, e compara o
@@ -89,6 +93,7 @@
         </p>
 
         <div data-campo="saida" hidden>
+          <p class="resumo-verificacao" data-campo="compromisso" role="status"></p>
           <p class="resumo-verificacao" data-campo="resumo" role="status"></p>
           <table class="tentativas">
             <thead>
@@ -104,12 +109,52 @@
         </div>
       </div>
 
-      <p class="nota">
-        Seja claro sobre o alcance disto: o verificador acima é servido por esta mesma
-        aplicação, então ele prova que a semente revelada gera os alvos gravados, não que a
-        aplicação é honesta. A prova forte é outra pessoa rodar a regra por fora — por isso ela
-        cabe em oito linhas, tem vetor de teste público e está escrita acima por extenso.
+      <h3>Como saber que esta é a mesma semente do início</h3>
+
+      <p>
+        Essa é a pergunta que decide tudo. Recomputar os alvos a partir de uma semente só vale
+        alguma coisa se a semente já estava fixada <strong>antes</strong> das suas respostas —
+        caso contrário bastaria escolher, no fim, uma semente que fizesse você errar.
       </p>
+
+      <p>
+        É para isso que serve o compromisso. No início da sessão o sistema publicou
+        <code th:text="${desfecho.seedCommitment()}">hash</code>, e esse valor apareceu em
+        <strong>todas as telas de tentativa</strong>, antes de você responder qualquer coisa.
+        Ele é o SHA-256 de:
+      </p>
+
+      <pre class="comando">semente | protocolo | tentativas | alternativas | banco de figuras</pre>
+
+      <p class="nota">
+        O botão acima confere isso para você. Achar uma segunda semente que resultasse no mesmo
+        compromisso significaria quebrar o SHA-256 — ninguém sabe fazer isso.
+      </p>
+
+      <div class="atestado">
+        <div class="nao">
+          <h3>O que esta verificação ainda não prova</h3>
+          <ul>
+            <li>
+              <strong>Se você não anotou o compromisso durante a sessão</strong>, está confiando
+              que o valor exibido agora é o mesmo de antes. Quem quiser a prova completa copia o
+              compromisso na primeira tentativa e compara no fim.
+            </li>
+            <li>
+              A ordem dos fatos fica registrada na trilha de auditoria, encadeada por hash: a
+              abertura da sessão, com o compromisso, entra antes de cada resposta. Mas a trilha é
+              mantida por esta mesma aplicação — ela prova consistência interna, não honestidade
+              de quem a opera.
+            </li>
+            <li>
+              A prova que não depende de confiar em nós é outra pessoa reimplementar a regra por
+              fora. Por isso ela cabe em oito linhas, está escrita aqui por extenso e tem vetor
+              de teste público: semente de 64 zeros, 12 tentativas, 4 alternativas, alvos
+              1, 1, 3, 3, 2, 3, 2, 1, 1, 4, 1, 3.
+            </li>
+          </ul>
+        </div>
+      </div>
       <p class="nota">
         A implementação de referência está em
         <a href="https://github.com/rogeriocisi/crivo/blob/main/src/main/java/io/github/rogeriocisi/airlab/support/SeedStream.java"><code>support/SeedStream.java</code></a>

@@ -82,6 +82,34 @@
         };
     }
 
+    function bytesParaHex(bytes) {
+        return Array.from(bytes)
+            .map(function (b) { return b.toString(16).padStart(2, '0'); })
+            .join('');
+    }
+
+    /**
+     * Refaz o compromisso publicado no início da sessão:
+     *
+     *   compromisso = SHA-256( semente | protocolo | tentativas | alternativas | banco )
+     *
+     * É isto que liga a semente revelada no fim àquela que estava valendo antes da primeira
+     * resposta. Sem esta conferência, recomputar os alvos só mostra que a semente mostrada
+     * gera os alvos mostrados — o que qualquer semente faria, se tivesse sido escolhida depois.
+     */
+    async function compromissoDe(sementeHex, caixa) {
+        const partes = [
+            sementeHex.trim().toLowerCase(),
+            caixa.dataset.protocolo,
+            caixa.dataset.tentativasDeclaradas,
+            caixa.dataset.alternativas,
+            caixa.dataset.bancoFiguras
+        ];
+        const entrada = new TextEncoder().encode(partes.join('|'));
+        const digest = await crypto.subtle.digest('SHA-256', entrada);
+        return bytesParaHex(new Uint8Array(digest));
+    }
+
     async function alvoDaTentativa(semente, tentativa, alternativas) {
         const fluxo = criaFluxo(semente, 'trial:' + tentativa);
         const limite = MAX_INT - (MAX_INT % alternativas);
@@ -126,7 +154,12 @@
         const saida = caixa.querySelector('[data-campo="saida"]');
         const corpo = caixa.querySelector('[data-campo="corpo"]');
         const resumo = caixa.querySelector('[data-campo="resumo"]');
+        const compromissoLinhaInicial = caixa.querySelector('[data-campo="compromisso"]');
         corpo.replaceChildren();
+        // Limpa o veredito anterior: deixar uma conferencia antiga na tela enquanto a nova
+        // falha seria pior do que nao mostrar nada.
+        compromissoLinhaInicial.textContent = '';
+        compromissoLinhaInicial.classList.remove('falhou');
 
         if (!window.crypto || !window.crypto.subtle) {
             resumo.textContent = 'Este navegador não expõe SHA-256 nesta página. '
@@ -148,6 +181,25 @@
             resumo.textContent = 'O número de tentativas precisa estar entre 1 e 200.';
             saida.hidden = false;
             return;
+        }
+
+        const compromissoEsperado = (caixa.dataset.compromisso || '').trim().toLowerCase();
+        const compromissoLinha = caixa.querySelector('[data-campo="compromisso"]');
+        const compromissoRefeito = await compromissoDe(semente, caixa);
+        if (!compromissoEsperado) {
+            compromissoLinha.textContent =
+                'Compromisso recomputado: ' + compromissoRefeito + '.';
+        } else if (compromissoRefeito === compromissoEsperado) {
+            compromissoLinha.textContent =
+                'A semente confere com o compromisso publicado no início da sessão. '
+                + 'Se você anotou aquele valor antes de responder, está provado que esta '
+                + 'semente já estava valendo naquele momento.';
+            compromissoLinha.classList.remove('falhou');
+        } else {
+            compromissoLinha.textContent =
+                'A semente NÃO confere com o compromisso publicado no início: recomputado '
+                + compromissoRefeito + ', publicado ' + compromissoEsperado + '.';
+            compromissoLinha.classList.add('falhou');
         }
 
         let divergencias = 0;

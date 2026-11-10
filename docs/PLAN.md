@@ -230,10 +230,21 @@ Windows e Linux sem Docker e sem banco instalado.
 
 5. **`target/` dentro de pasta sincronizada**: o JAR tem ~150 MB e o `target/` fica no Google
    Drive junto com o repositório. O Drive segura o arquivo enquanto sincroniza, e o
-   `spring-boot:repackage` falha com `Unable to rename ... airlab.jar`. Contorno imediato:
-   apagar `target/airlab.jar` e repetir. Contorno melhor: construir fora da pasta sincronizada,
-   com `./mvnw -Dmaven.build.directory=C:/temp/airlab-target package` (ou excluir `target/` da
-   sincronização do Drive, onde o cliente permitir).
+   `spring-boot:repackage` falha com `Unable to rename ... airlab.jar`. E não é só o JAR: já
+   aconteceu de `mvn clean` não conseguir apagar `target/classes` e de uma compilação enxergar
+   classes principais ausentes que estavam lá. Sintoma a reconhecer: erro de I/O ou símbolo não
+   encontrado que **some ao construir noutro lugar**.
+
+   Contorno imediato: apagar `target/airlab.jar` e repetir. Contorno confiável, e o único que
+   resolveu os três casos:
+
+   ```
+   ./mvnw -Dmaven.build.directory=C:/temp/airlab-target test
+   ```
+
+   Correção de verdade: manter o repositório num disco local. O `target/` é gerado, não deveria
+   estar sincronizado, e um JAR de 150 MB subindo para a nuvem a cada build é desperdício além
+   de risco.
 6. **Parar a aplicação pelo gerenciador de tarefas deixa o cluster travado**: o
    `epg-lock` em `~/.airlab/pgdata` fica preso pela JVM, e a próxima execução falha com
    `could not lock`. Encerre com `Ctrl+C` no terminal do `start.sh`, que roda o desligamento

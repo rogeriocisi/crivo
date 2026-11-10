@@ -278,9 +278,11 @@ dos escores; e a tentativa de acumular papéis conflitantes é recusada e audita
 
 **Pool público é exploratório.** O autoatendimento anônimo não tem controle de quem testa, quantas vezes nem em que condições; os dados públicos são abertos e rotulados **exploratórios**. Um resultado confirmatório exige estudo pré-registrado com participantes identificados, N fixo e pool declarado antes da coleta — a política de rótulo já existente é quem decide.
 
-**Verificação na mão de quem testou**: a página de resultado traz a semente num campo editável e um botão que **recomputa os alvos no navegador da pessoa**, sem falar com o servidor, e compara com o que a sessão gravou. O código do verificador é servido como arquivo legível (`/js/verificador-alvos.js`). Isso tem alcance limitado e a página diz qual: prova que a semente revelada gera os alvos gravados, não que a aplicação é honesta — para isso a regra precisa ser reimplementada por fora, e é por isso que ela cabe em oito linhas e tem **vetor de teste público** (semente de 64 zeros, 12 tentativas, 4 alternativas → 1, 1, 3, 3, 2, 3, 2, 1, 1, 4, 1, 3), fixado em teste tanto na implementação em Java quanto no verificador.
+**Verificação na mão de quem testou**: a página de resultado traz a semente num campo editável e um botão que, **no navegador da pessoa e sem falar com o servidor**, faz duas conferências. Primeira, refaz o compromisso — `SHA-256(semente | protocolo | tentativas | alternativas | banco)` — e compara com o que foi publicado no início; é isso que liga a semente revelada no fim àquela que já estava valendo antes da primeira resposta. Segunda, recomputa os alvos e compara com os gravados. Sem a primeira conferência a segunda não vale nada: qualquer semente gera "os alvos certos" se tiver sido escolhida depois das respostas. O código do verificador é servido como arquivo legível (`/js/verificador-alvos.js`). Isso tem alcance limitado e a página diz qual: prova que a semente revelada gera os alvos gravados, não que a aplicação é honesta — para isso a regra precisa ser reimplementada por fora, e é por isso que ela cabe em oito linhas e tem **vetor de teste público** (semente de 64 zeros, 12 tentativas, 4 alternativas → 1, 1, 3, 3, 2, 3, 2, 1, 1, 4, 1, 3), fixado em teste tanto na implementação em Java quanto no verificador.
 
-**Aceite**: a semente revelada reproduz exatamente os alvos gravados; o alvo não é obtível por nenhuma via antes da resposta travada; durante a sessão nenhuma tela expõe função dos escores; duas sessões com a mesma semente e as mesmas respostas dão o mesmo resultado; e o verificador do navegador acusa divergência quando a semente é alterada num único dígito.
+**O compromisso é publicado onde dá para anotar**: ele aparece em **todas as telas de tentativa**, antes de qualquer resposta, e não só no fim. Quem copia o valor na primeira tentativa e compara no fim tem a prova completa, sem depender de confiar na plataforma. Quem não copiou depende da trilha de auditoria — que registra a abertura da sessão, com o compromisso, antes de cada resposta — e a trilha é mantida pela mesma aplicação: prova consistência interna, não honestidade do operador. **Questão em aberto, seção 9.8.**
+
+**Aceite**: a semente revelada reproduz exatamente os alvos gravados; a semente confere com o compromisso publicado no início; o alvo não é obtível por nenhuma via antes da resposta travada; durante a sessão nenhuma tela expõe função dos escores; duas sessões com a mesma semente e as mesmas respostas dão o mesmo resultado; e o verificador do navegador acusa divergência quando a semente é alterada num único dígito.
 
 ### E12. Visão remota com quatro alvos (P3)
 
@@ -346,6 +348,17 @@ TargetImage (pool_version, index, slug)
 5. **CEP**: o estudo terá fins de publicação acadêmica? Se sim, a submissão à Plataforma Brasil vem antes do piloto.
 6. **Devolutiva**: o que cada participante recebe ao final, e como comunicar resultados nulos com cuidado.
 7. **Reconciliação** com a documentação de pesquisa já existente no Google Drive (*TransferênciaAnômalaInformação*).
+
+8. **Confiança no compromisso dos testes públicos**: hoje o compromisso é publicado pela própria
+   aplicação e a ordem dos eventos é atestada pela trilha dela. Para quem não copiou o
+   compromisso durante a sessão, isso é consistência interna, não prova. Duas saídas, não
+   excludentes: (a) **entropia do participante** — o navegador gera um nonce que entra na
+   semente final, `semente = SHA-256(semente do servidor || nonce)`, com o servidor comprometido
+   com a parte dele antes de ver o nonce; aí nenhum dos dois lados escolhe o resultado e a prova
+   não depende de ordem atestada por ninguém; (b) **ancoragem externa** da cabeça da cadeia de
+   auditoria (RFC 3161 ou OpenTimestamps, já previstos no E8), que torna reescrita retroativa
+   detectável por terceiros. A (a) resolve o caso do teste público com uma mudança pequena de
+   protocolo; a (b) resolve o caso geral, inclusive do P1.
 
 ## 10. Próximos passos sugeridos (no Claude Code)
 
