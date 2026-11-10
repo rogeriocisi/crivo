@@ -1,0 +1,31 @@
+{
+  // Crivo (AIR Lab) — ambiente para GitHub Codespaces e Dev Containers.
+  // Traz o JDK 21; o Maven vem pelo wrapper e o PostgreSQL é embarcado pela aplicação.
+  // Depois de abrir, rode no terminal:  ./scripts/start.sh
+  "name": "Crivo",
+  "image": "mcr.microsoft.com/devcontainers/java:1-21-bookworm",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "vscjava.vscode-java-pack",
+        "vmware.vscode-spring-boot"
+      ]
+    }
+  },
+
+  // Baixa as dependências uma vez, na criação, para o primeiro start.sh ser rápido.
+  "postCreateCommand": "./mvnw -B -q dependency:go-offline || true",
+
+  "forwardPorts": [8080],
+  "portsAttributes": {
+    "8080": {
+      "label": "Crivo",
+      "onAutoForward": "openPreview"
+    }
+  },
+
+  "hostRequirements": {
+    "memory": "4gb"
+  }
+}

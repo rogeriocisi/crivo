@@ -58,6 +58,16 @@ Se o resultado for `Internet`, as opções são: usar o `scripts\start.cmd` (rec
 
 O script valida o JDK, constrói o JAR, sobe o PostgreSQL embarcado em `~/.airlab/pgdata`, aplica as migrações e inicia a aplicação em <http://127.0.0.1:8080>. `Ctrl+C` encerra tudo.
 
+### No navegador, pelo GitHub Codespaces
+
+Caminho opcional, para quem não quer instalar nada. O script único continua sendo a forma de rodar, e nenhuma etapa depende de container. No GitHub, abra **Code → Codespaces → Create codespace on main**. A configuração em `.devcontainer/` já traz o JDK 21 e baixa as dependências. Quando o terminal estiver pronto:
+
+```bash
+./scripts/start.sh
+```
+
+O Codespaces encaminha a porta 8080 e abre a aplicação numa aba. Se a aba não abrir, ela fica na guia **Ports**. A senha do `pesquisador` sai no log, como no perfil local (ver abaixo).
+
 ### Entrar na aplicação
 
 A entrada em `/login` é para quem **conduz** o estudo, não para participantes — estes recebem link de uso único e nunca têm conta. Hoje ela ainda não leva a telas de pesquisador: a conta existe para proteger o que vem a seguir.
