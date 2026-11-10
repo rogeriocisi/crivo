@@ -46,11 +46,15 @@ Windows, chamando o script do PowerShell direto:
 .\scripts\start.ps1
 ```
 
-Esta última forma depende da política de execução do seu usuário. No Windows ela vem como `Restricted` por padrão, e o PowerShell recusa qualquer script não assinado — inclusive este. O `start.cmd` existe justamente para isso: ele chama o `start.ps1` com `-ExecutionPolicy Bypass`, sem mexer na configuração da máquina. Se preferir liberar scripts locais de uma vez, o comando é seu para rodar:
+Esta última forma depende da política de execução do seu usuário, e por padrão o Windows recusa script não assinado. O `start.cmd` existe justamente para isso: ele chama o `start.ps1` com `-ExecutionPolicy Bypass`, sem mexer em configuração nenhuma da máquina.
+
+**Atenção a um detalhe que pega quem clona o repositório numa pasta sincronizada** (Google Drive, OneDrive, ou um compartilhamento de rede): `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` **não resolve** nesse caso. O Windows classifica os arquivos dessas unidades na zona *Internet*, e `RemoteSigned` exige assinatura digital justamente para essa zona. `Unblock-File` também não ajuda: essas unidades não guardam *alternate data streams*, então não há marca para remover — a zona vem da unidade, não do arquivo. Verifique o seu caso com:
 
 ```powershell
-Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+[System.Security.Policy.Zone]::CreateFromUrl('G:\caminho\do\repo\scripts\start.ps1').SecurityZone
 ```
+
+Se o resultado for `Internet`, as opções são: usar o `scripts\start.cmd` (recomendado), chamar o script com `powershell -ExecutionPolicy Bypass -File .\scripts\start.ps1`, ou manter o repositório num disco local. Esta última é a melhor das três por outros dois motivos: o `target/` com um JAR de ~150 MB deixa de ser sincronizado a cada build, e o PostgreSQL de desenvolvimento nunca deve ter o diretório de dados em pasta sincronizada.
 
 O script valida o JDK, constrói o JAR, sobe o PostgreSQL embarcado em `~/.airlab/pgdata`, aplica as migrações e inicia a aplicação em <http://127.0.0.1:8080>. `Ctrl+C` encerra tudo.
 
