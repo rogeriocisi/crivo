@@ -1,47 +1,62 @@
 <!DOCTYPE html>
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+
 <head>
   <meta charset="utf-8">
   <title>Fragmentos</title>
 </head>
+
 <body>
 
-<header th:fragment="topo" class="topo">
-  <a class="marca" href="/">Crivo <span>AIR Lab</span></a>
-  <nav class="navegacao" aria-label="Navegação principal">
-    <a href="/testes">Testes</a>
-    <a href="/#protocolo">Protocolo</a>
-    <a href="/historia">História</a>
-    <a href="/referencias">Referências</a>
-    <a href="/sobre">Vocabulário</a>
-    <a href="/consulente">Para participantes</a>
-    <a href="/login">Entrar</a>
-  </nav>
-</header>
+  <th:block th:fragment="social(titulo, descricao)">
+    <meta name="description" th:content="${descricao}">
+    <meta property="og:site_name" content="Crivo">
+    <meta property="og:locale" content="pt_BR">
+    <meta property="og:type" content="website">
+    <meta property="og:title" th:content="${titulo}">
+    <meta property="og:description" th:content="${descricao}">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" th:content="${titulo}">
+    <meta name="twitter:description" th:content="${descricao}">
+  </th:block>
 
-<footer th:fragment="rodape" class="rodape">
-  <div class="faixa">
-    <ul>
-      <li><a href="https://github.com/rogeriocisi/crivo">Repositório no GitHub</a></li>
-      <li><a href="/testes">Testes da plataforma</a></li>
-      <li><a href="/consulente">Para participantes</a></li>
-      <li><a href="/historia">Linha do tempo</a></li>
-      <li><a href="/referencias">Referências</a></li>
-      <li><a href="/sobre">Vocabulário e protocolo</a></li>
-      <li><a href="/#verificar">Como auditar</a></li>
-      <li><a href="/login">Entrar</a></li>
-    </ul>
-    <p>
-      O Crivo é software livre, desenvolvido por Rogerio Cisi. Nome público <strong>Crivo</strong>;
-      codinome técnico <strong>AIR Lab</strong>, de <em>Anomalous Information Reception</em>.
-    </p>
-    <p>
-      A plataforma não afirma nem nega a existência do fenômeno estudado, não interpreta
-      resultados do ponto de vista doutrinário e não usa inteligência artificial para avaliar
-      leituras ou atribuir pontuação.
-    </p>
-  </div>
-</footer>
+  <header th:fragment="topo" class="topo">
+    <a class="marca" href="/">Crivo <span>AIR Lab</span></a>
+    <nav class="navegacao" aria-label="Navegação principal">
+      <a href="/#protocolo">O protocolo</a>
+      <a href="/historia" th:attr="aria-current=${secaoAtual == 'historia'} ? 'page' : null">História</a>
+      <a href="/referencias" th:attr="aria-current=${secaoAtual == 'referencias'} ? 'page' : null">Referências</a>
+      <a href="/sobre" th:attr="aria-current=${secaoAtual == 'sobre'} ? 'page' : null">Glossário</a>
+      <a href="/consulente" th:attr="aria-current=${secaoAtual == 'consulente'} ? 'page' : null">Para participantes</a>
+      <a href="/testes" th:attr="aria-current=${secaoAtual == 'testes'} ? 'page' : null">Testes rápidos</a>
+      <a href="/login" th:attr="aria-current=${secaoAtual == 'login'} ? 'page' : null">Entrar</a>
+    </nav>
+  </header>
+
+  <footer th:fragment="rodape" class="rodape">
+    <div class="faixa">
+      <ul>
+        <li><a href="https://github.com/rogeriocisi/crivo">Repositório no GitHub</a></li>
+        <li><a href="/testes">Testes da plataforma</a></li>
+        <li><a href="/consulente">Para participantes</a></li>
+        <li><a href="/historia">Linha do tempo</a></li>
+        <li><a href="/referencias">Referências</a></li>
+        <li><a href="/sobre">Glossário</a></li>
+        <li><a href="/#verificar">Como auditar</a></li>
+        <li><a href="/login">Entrar</a></li>
+      </ul>
+      <p>
+        O Crivo é software livre, desenvolvido por Rogerio Cisi. Nome público <strong>Crivo</strong>;
+        codinome técnico <strong>AIR Lab</strong>, de <em>Anomalous Information Reception</em>.
+      </p>
+      <p>
+        A plataforma não afirma nem nega a existência do fenômeno estudado, não interpreta
+        resultados do ponto de vista doutrinário e não usa inteligência artificial para avaliar
+        leituras ou atribuir pontuação.
+      </p>
+    </div>
+  </footer>
 
 </body>
+
 </html>

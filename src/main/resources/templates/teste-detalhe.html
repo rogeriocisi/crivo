@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title th:text="${protocolo.name} + ' — Crivo'">Protocolo — Crivo</title>
-  <meta name="description" th:attr="content=${protocolo.summary}">
+  <th:block th:replace="~{fragments/site :: social(${protocolo.name} + ' — Crivo', ${protocolo.summary})}"></th:block>
   <link rel="stylesheet" href="/css/crivo.css">
 </head>
 <body>

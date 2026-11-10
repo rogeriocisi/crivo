@@ -141,9 +141,15 @@ O cegamento é especificado como uma matriz de papéis × informações (Tabela 
 
 ## 4.4 Análise
 
-A análise primária sugerida é a proporção de escolhas forçadas corretas comparada a 0,5, com teste binomial unilateral. As análises secundárias comparam notas globais (alvo × chamariz, Wilcoxon pareado) e proporções de itens corretos.
+**Medida primária.** A análise confirmatória é a diferença pareada alvo − chamariz, com uma observação por par, avaliada por **teste de Wilcoxon exato unilateral**. A diferença é tomada na nota global ou no percentual de itens com encaixe óbvio, conforme declarado no pré-registro. A escolha forçada, que nas primeiras versões do protocolo era a medida primária, passou a secundária: ela descarta o tamanho da diferença, e Beischel e Schwartz já a esperavam como o indicador menos sensível [@beischel2007]. Com o efeito reportado pela meta-análise de Sarraf et al. [@sarraf2021], a troca decide a viabilidade do estudo: cerca de 30 pares bastam para d = 0,5 com poder de 80% (α = 0,05 unilateral), contra cerca de 240 pares para detectar 58% de acerto na escolha forçada. O cálculo de poder é feito pelo próprio sistema (`PowerCheck`) e entra no documento congelado do pré-registro.
 
-<!-- TODO: cálculo de poder com base em @sarraf2021; tratamento da dependência entre os dois consulentes de um mesmo par (modelo misto? análise por par?). -->
+**Unidade de análise: o par.** Os dois consulentes de um par avaliam o mesmo material, em espelho, e por isso suas escolhas não são independentes. Em vez de corrigir o agrupamento com um modelo misto ou erro-padrão robusto por *cluster*, o protocolo fixa o par como unidade independente: antes da primeira sessão, o sorteio designa qual consulente de cada par fornece a observação confirmatória. A avaliação do outro consulente é coletada e relatada como análise secundária.
+
+**Análises secundárias.** Proporção de escolhas forçadas corretas comparada a 0,5 (binomial exato) e **teste de permutação de Pratt e Birge** [@pratt1948] sobre a matriz de notas, que não assume independência entre os itens de uma leitura. A análise vedada é a de multiplicar as probabilidades individuais dos itens como se fossem independentes, procedimento que infla a acurácia porque os itens de uma mesma leitura são correlacionados por construção.
+
+**Regra de parada vinculante.** A coleta para no tamanho-alvo pré-registrado, sem análise interina. Se os dados não correspondem ao declarado — coleta interrompida antes, continuada depois, ou pré-registro não congelado —, o sistema rebaixa o resultado a exploratório e imprime o motivo ao lado (`ConfirmatoryAnalysisPolicy`). Análises não pré-registradas aparecem numa seção exploratória própria.
+
+<!-- TODO: declarar o efeito esperado. Os efeitos por seção de leitura em @beischel2015 vão de d = 0,49 a 0,75, e a seção escolhida muda o tamanho do estudo. -->
 
 # 5. Arquitetura
 

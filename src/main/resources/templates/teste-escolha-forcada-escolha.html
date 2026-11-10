@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Tentativa — Crivo</title>
+  <th:block th:replace="~{fragments/site :: social('Tentativa — Crivo', 'Protocolos cegos para pesquisa de cognição anômala, com sorteio verificável e trilha de auditoria encadeada por hash.')}"></th:block>
   <link rel="stylesheet" href="/css/crivo.css">
 </head>
 <body>
@@ -21,18 +22,24 @@
         Tentativa <span th:text="${progresso.nextTrialIndex}">1</span>
         de <span th:text="${progresso.declaredTrials}">24</span>
       </p>
+      <progress class="progresso-sessao" th:value="${progresso.lockedTrials}"
+                th:max="${progresso.declaredTrials}" value="0" max="24"
+                th:attr="aria-label='Tentativas concluídas: ' + ${progresso.lockedTrials} + ' de ' + ${progresso.declaredTrials}"></progress>
       <h1>Qual das quatro?</h1>
       <p class="chamada">
         Escolha uma. O alvo desta tentativa será calculado depois que você responder.
       </p>
+      <p class="nota">Pelo teclado: as teclas <kbd>1</kbd> a <kbd>4</kbd> escolhem a porta.</p>
 
-      <form method="post" th:action="'/testes/' + ${protocolo.slug()} + '/escolha'">
-        <ul class="portas">
+      <form method="post" th:action="'/testes/' + ${protocolo.slug()} + '/escolha'"
+            data-envio-unico>
+        <ul class="portas" data-portas>
           <li th:each="n : ${#numbers.sequence(1, alternativas)}">
             <button class="porta" type="submit" name="posicao" th:value="${n}"
                     th:text="${n}">1</button>
           </li>
         </ul>
+        <p class="enviando-aviso" data-enviando hidden role="status">Gravando a escolha…</p>
       </form>
 
       <p class="progresso-barra" role="status">
@@ -52,7 +59,7 @@
         semente é revelada, e o hash dela tem de bater com o que está aí.
       </p>
 
-      <form method="post" th:action="'/testes/' + ${protocolo.slug()} + '/desistir'">
+      <form method="post" th:action="'/testes/' + ${protocolo.slug()} + '/desistir'" data-envio-unico>
         <p class="acoes">
           <button class="botao botao-vazio" type="submit">Desistir desta sessão</button>
         </p>
@@ -67,5 +74,6 @@
 </main>
 
 <footer th:replace="~{fragments/site :: rodape}"></footer>
+<script src="/js/sessao-teste.js" defer></script>
 </body>
 </html>

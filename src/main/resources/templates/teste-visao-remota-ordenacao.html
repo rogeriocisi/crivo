@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Ordenação — Crivo</title>
+  <th:block th:replace="~{fragments/site :: social('Ordenação — Crivo', 'Protocolos cegos para pesquisa de cognição anômala, com sorteio verificável e trilha de auditoria encadeada por hash.')}"></th:block>
   <link rel="stylesheet" href="/css/crivo.css">
 </head>
 <body>
@@ -21,6 +22,9 @@
         Tentativa <span th:text="${progresso.nextTrialIndex}">1</span>
         de <span th:text="${progresso.declaredTrials}">6</span>
       </p>
+      <progress class="progresso-sessao" th:value="${progresso.lockedTrials}"
+                th:max="${progresso.declaredTrials}" value="0" max="24"
+                th:attr="aria-label='Tentativas concluídas: ' + ${progresso.lockedTrials} + ' de ' + ${progresso.declaredTrials}"></progress>
       <h1>Ordene as quatro figuras</h1>
       <p class="chamada">
         Uma delas é o alvo desta tentativa. Monte a ordem da que mais se parece com a sua
@@ -35,8 +39,9 @@
         </li>
       </ul>
 
-      <form method="post" th:action="'/testes/' + ${protocolo.slug()} + '/ordenacao'">
-        <ul class="ordenacao">
+      <form method="post" th:action="'/testes/' + ${protocolo.slug()} + '/ordenacao'"
+            data-envio-unico>
+        <ul class="ordenacao" data-ordenacao>
           <li th:each="lugar : ${#numbers.sequence(1, candidatas.candidates().size())}">
             <label th:for="'lugar-' + ${lugar}">
               <span th:text="${lugar} + 'º lugar'">1º lugar</span>
@@ -52,11 +57,13 @@
         <p class="acoes">
           <button class="botao botao-cheio" type="submit">Enviar ordenação</button>
         </p>
+        <p class="enviando-aviso" data-enviando hidden role="status">Gravando a ordenação…</p>
       </form>
 
       <p class="nota">
-        Se repetir ou faltar uma figura, o envio é recusado: a ordenação precisa ser uma
-        permutação das quatro. A sua impressão desta tentativa já está travada, e nenhum
+        Cada figura escolhida sai das opções dos outros lugares, e a última entra sozinha.
+        Sem JavaScript, se repetir ou faltar uma figura, o envio é recusado: a ordenação precisa
+        ser uma permutação das quatro. A sua impressão desta tentativa já está travada, e nenhum
         resultado aparece até o fim da sessão.
       </p>
     </div>
@@ -65,5 +72,6 @@
 </main>
 
 <footer th:replace="~{fragments/site :: rodape}"></footer>
+<script src="/js/sessao-teste.js" defer></script>
 </body>
 </html>

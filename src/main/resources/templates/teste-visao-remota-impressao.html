@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Impressão — Crivo</title>
+  <th:block th:replace="~{fragments/site :: social('Impressão — Crivo', 'Protocolos cegos para pesquisa de cognição anômala, com sorteio verificável e trilha de auditoria encadeada por hash.')}"></th:block>
   <link rel="stylesheet" href="/css/crivo.css">
 </head>
 <body>
@@ -21,6 +22,9 @@
         Tentativa <span th:text="${progresso.nextTrialIndex}">1</span>
         de <span th:text="${progresso.declaredTrials}">6</span>
       </p>
+      <progress class="progresso-sessao" th:value="${progresso.lockedTrials}"
+                th:max="${progresso.declaredTrials}" value="0" max="24"
+                th:attr="aria-label='Tentativas concluídas: ' + ${progresso.lockedTrials} + ' de ' + ${progresso.declaredTrials}"></progress>
       <h1>Escreva a sua impressão</h1>
       <p class="chamada">
         Uma figura já foi sorteada para esta tentativa. Antes de vê-la, escreva o que lhe vem:
@@ -28,7 +32,7 @@
         coisa.
       </p>
 
-      <form method="post" th:action="'/testes/' + ${protocolo.slug()} + '/impressao'">
+      <form method="post" th:action="'/testes/' + ${protocolo.slug()} + '/impressao'" data-envio-unico>
         <p>
           <label for="impressao">Impressão desta tentativa</label>
           <textarea id="impressao" name="impressao" rows="7" required
@@ -37,6 +41,7 @@
         <p class="acoes">
           <button class="botao botao-cheio" type="submit">Travar impressão e ver as figuras</button>
         </p>
+        <p class="enviando-aviso" data-enviando hidden role="status">Travando a impressão…</p>
       </form>
 
       <p class="nota">
@@ -57,5 +62,6 @@
 </main>
 
 <footer th:replace="~{fragments/site :: rodape}"></footer>
+<script src="/js/sessao-teste.js" defer></script>
 </body>
 </html>
