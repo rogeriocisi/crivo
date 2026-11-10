@@ -22,7 +22,15 @@
     "8080": {
       "label": "Crivo",
       "onAutoForward": "openPreview"
+    },
+    // PostgreSQL embarcado: não fala HTTP; abrir no navegador dá 502.
+    "5433": {
+      "label": "PostgreSQL embarcado",
+      "onAutoForward": "ignore"
     }
+  },
+  "otherPortsAttributes": {
+    "onAutoForward": "ignore"
   },
 
   "hostRequirements": {
