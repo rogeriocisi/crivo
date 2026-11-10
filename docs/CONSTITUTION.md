@@ -112,7 +112,7 @@ O projeto é mantido por um desenvolvedor solo.
 | Carimbo de tempo | **RFC 3161 (TSA)** e/ou **OpenTimestamps**; pré-registro também espelhado no **OSF Registries** | Prova de anterioridade verificável por terceiros |
 | Transcrição (opcional) | **whisper.cpp** local | Os dados de participantes não saem da máquina (P6, P10) |
 | Testes | JUnit 5, AssertJ, **PostgreSQL embarcado** (`io.zonky.test:embedded-postgres`, binários reais do PostgreSQL, sem Docker), ArchUnit/Modulith tests | Testes de cegamento contra PostgreSQL real, rodando em Windows e Linux sem container |
-| Execução | **JAR executável do Spring Boot**, acionado por linha de comando (`java -jar`) em Windows e Linux, via script único `scripts/start.sh` / `scripts/start.ps1` | Um comando sobe tudo; sem Docker, sem runtime de container |
+| Execução | **JAR executável do Spring Boot**, acionado por linha de comando (`java -jar`) em Windows e Linux, via script único `scripts/start.sh` no Linux e `scripts\start.cmd` no Windows | Um comando sobe tudo; sem Docker, sem runtime de container |
 | Implantação | **Processo do sistema operacional**: unidade `systemd` no Linux, serviço do Windows (WinSW/`sc.exe`) ou Agendador de Tarefas | Operável por uma pessoa, sem camada de orquestração |
 | Backups | Dump criptografado diário + teste de restauração mensal | Dados de pesquisa são irreproduzíveis |
 | Observabilidade | Logs estruturados **sem dados pessoais** + Spring Actuator | Logs nunca podem quebrar cegamento nem privacidade |
