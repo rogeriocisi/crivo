@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="Farol sobre rochas, com feixe de luz"><title>Farol sobre rochas, com feixe de luz</title>
+<rect width="400" height="300" fill="#15314b"/>
+<circle cx="300" cy="70" r="26" fill="#f6e7a8"/>
+<path d="M150 60 L390 20 L390 120 Z" fill="#f6e7a8" opacity="0.35"/>
+<path d="M120 250 L140 90 L170 90 L190 250 Z" fill="#e8eef4"/>
+<path d="M140 130 L170 130 L172 160 L138 160 Z" fill="#c0392b"/>
+<path d="M140 190 L170 190 L172 220 L138 220 Z" fill="#c0392b"/>
+<rect x="134" y="78" width="42" height="16" rx="4" fill="#f6e7a8"/>
+<path d="M60 250 Q120 230 200 252 Q280 274 400 250 L400 300 L60 300 Z" fill="#0d2235"/>
+<path d="M0 262 Q60 240 120 262 L120 300 L0 300 Z" fill="#1b4a63"/>
+</svg>

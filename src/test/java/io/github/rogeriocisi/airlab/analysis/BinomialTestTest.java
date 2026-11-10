@@ -58,6 +58,32 @@ class BinomialTestTest {
         assertThat(analysis.pValue().doubleValue()).isGreaterThan(0.5);
     }
 
+    @ParameterizedTest(name = "p({0}/{1}) com acaso 1/4 = {2}")
+    @CsvSource({
+            "12, 24, 0.00719965000785549591",
+            "10, 24, 0.05466492239442999335",
+            "9, 24, 0.12131828361813035144",
+            "6, 24, 0.57784479817604861296",
+            "0, 24, 1.00000000000000000000",
+            "30, 96, 0.09937122047004937064"
+    })
+    @DisplayName("o p-valor com acaso declarado de 1/4 confere com os valores de referencia")
+    void matches_reference_values_for_one_in_four(int hits, int trials, String expected) {
+        BigDecimal actual = BinomialTest.pValueGreaterOrEqual(hits, trials, 1, 4);
+
+        assertThat(actual.doubleValue())
+                .isCloseTo(Double.parseDouble(expected), org.assertj.core.data.Offset.offset(1e-15));
+    }
+
+    @Test
+    @DisplayName("acaso fora do intervalo (0,1) e recusado")
+    void an_impossible_chance_level_is_refused() {
+        assertThatThrownBy(() -> BinomialTest.pValueGreaterOrEqual(1, 4, 4, 4))
+                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> BinomialTest.pValueGreaterOrEqual(1, 4, 0, 4))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
     @Test
     @DisplayName("contagens impossiveis sao recusadas, nao arredondadas")
     void rejects_impossible_counts() {

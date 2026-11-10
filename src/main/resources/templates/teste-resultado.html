@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Resultado da sessão — Crivo</title>
+  <link rel="stylesheet" href="/css/crivo.css">
+</head>
+<body>
+<a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+<div class="faixa">
+  <header th:replace="~{fragments/site :: topo}"></header>
+</div>
+
+<main id="conteudo">
+
+  <section class="abertura">
+    <div class="faixa">
+      <p class="rotulo" th:text="${protocolo.catalogCode()} + ' · sessão encerrada'">Sessão</p>
+      <h1>Resultado</h1>
+
+      <dl class="leituras">
+        <dt>Acertos</dt>
+        <dd>
+          <strong th:text="${desfecho.hits()}">0</strong>
+          em <span th:text="${desfecho.lockedTrials()}">24</span> tentativa(s)
+        </dd>
+        <dt>Esperado pelo acaso</dt>
+        <dd th:text="${#numbers.formatDecimal(desfecho.expectedByChance(), 1, 2)} + ' (acaso de '
+                     + ${desfecho.chanceNumerator()} + '/' + ${desfecho.chanceDenominator()} + ')'">6</dd>
+        <dt>Valor p exato, unilateral</dt>
+        <dd><code th:text="${#numbers.formatDecimal(desfecho.pValue(), 1, 4)}">0,5000</code></dd>
+        <dt>Situação da sessão</dt>
+        <dd th:text="${desfecho.state().name() == 'FINISHED'}
+                     ? 'completa' : 'abandonada antes do fim'">completa</dd>
+      </dl>
+
+      <p class="nota" th:text="${desfecho.exploratoryReason()}">Exploratório</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="faixa">
+      <h2>Confira por conta própria</h2>
+      <p>
+        Esta é a parte que interessa. Você não precisa confiar na plataforma: com a semente
+        abaixo, qualquer pessoa recomputa o alvo de cada tentativa e confere que nenhum deles foi
+        escolhido depois da sua resposta.
+      </p>
+
+      <dl class="cadeia">
+        <dt>Sessão</dt>
+        <dd><code th:text="${desfecho.sessionCode()}">codigo</code></dd>
+        <dt>Compromisso publicado no início</dt>
+        <dd><code th:text="${desfecho.seedCommitment()}">hash</code></dd>
+        <dt>Semente revelada agora</dt>
+        <dd><code th:text="${desfecho.seedHex()}">semente</code></dd>
+        <dt>Banco de figuras</dt>
+        <dd><code th:text="${desfecho.targetPoolVersion()}">v1</code></dd>
+      </dl>
+
+      <p>A regra de derivação é esta, e é toda a regra:</p>
+      <pre class="comando">alvo(n) = SHA-256(semente || "trial:" || n || contador) mod 4</pre>
+      <p class="nota">
+        A implementação de referência está em
+        <a href="https://github.com/rogeriocisi/crivo/blob/main/src/main/java/io/github/rogeriocisi/airlab/support/SeedStream.java"><code>support/SeedStream.java</code></a>
+        e em
+        <a href="https://github.com/rogeriocisi/crivo/blob/main/src/main/java/io/github/rogeriocisi/airlab/trials/TargetDerivation.java"><code>trials/TargetDerivation.java</code></a>.
+        O compromisso liga a semente aos parâmetros da sessão: protocolo, número de tentativas,
+        número de alternativas e versão do banco de figuras.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <div class="faixa">
+      <h2>Tentativa por tentativa</h2>
+      <table class="tentativas">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Sua resposta</th>
+            <th scope="col">Alvo</th>
+            <th scope="col">Acerto</th>
+            <th scope="col">Figuras mostradas</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="t : ${desfecho.trials()}">
+            <td th:text="${t.index()}">1</td>
+            <td th:text="${t.chosenIndex()}">1</td>
+            <td th:text="${t.targetIndex()}">1</td>
+            <td th:text="${t.hit()} ? 'sim' : 'não'">não</td>
+            <td>
+              <span th:if="${t.candidateSlugs().isEmpty()}">—</span>
+              <span th:unless="${t.candidateSlugs().isEmpty()}"
+                    th:text="${#strings.listJoin(t.candidateSlugs(), ', ')}">figuras</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p class="acoes">
+        <a class="botao botao-cheio" th:href="'/testes/' + ${protocolo.slug()} + '/rodar'">
+          Fazer outra sessão</a>
+        <a class="botao botao-vazio" href="/testes">Voltar ao catálogo</a>
+      </p>
+      <p class="nota">
+        Uma sessão nova sorteia outra semente. Repetir o teste é livre, e é justamente por isso
+        que o conjunto público destes dados é exploratório: não há como saber quem testou,
+        quantas vezes nem em que condições.
+      </p>
+    </div>
+  </section>
+
+</main>
+
+<footer th:replace="~{fragments/site :: rodape}"></footer>
+</body>
+</html>

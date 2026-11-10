@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Visão remota com quatro alvos — Crivo</title>
+  <link rel="stylesheet" href="/css/crivo.css">
+</head>
+<body>
+<a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+<div class="faixa">
+  <header th:replace="~{fragments/site :: topo}"></header>
+</div>
+
+<main id="conteudo">
+
+  <section class="abertura">
+    <div class="faixa">
+      <p class="rotulo aparece">P3 · antes de começar</p>
+      <h1 class="aparece">Visão remota com quatro alvos</h1>
+      <p class="chamada aparece">
+        Em cada tentativa você escreve a sua impressão <strong>antes</strong> de ver qualquer
+        figura. Só depois aparecem quatro — uma é o alvo, três são chamarizes — para você
+        ordenar da mais parecida com a sua impressão à menos parecida.
+      </p>
+
+      <ul class="niveis">
+        <li>
+          <strong>A impressão é travada antes de as figuras aparecerem.</strong> O sistema guarda
+          o hash dela. Sem isso, qualquer um poderia reescrever a impressão depois de ver as
+          imagens — é a objeção padrão a quem julga o próprio acerto.
+        </li>
+        <li>
+          <strong>Acerto é o alvo em primeiro lugar.</strong> Acaso: 25%.
+        </li>
+        <li>
+          <strong>O banco de figuras é versionado</strong>, e a versão usada fica gravada na
+          sessão. Trocar as figuras depois não muda o que foi analisado.
+        </li>
+        <li>
+          <strong>Nada de resultado no meio do caminho</strong>, e a semente é revelada no fim.
+        </li>
+      </ul>
+
+      <p class="nota">
+        O limite deste protocolo, dito na cara: quem julga a semelhança é você. Isso reintroduz
+        a crítica de "como se pontua", que a escolha forçada não tem. É o preço do formato de
+        resposta livre, e é por isso que o teste existe ao lado do outro, não em vez dele.
+      </p>
+
+      <form method="post" th:action="'/testes/' + ${protocolo.slug()} + '/comecar'">
+        <p>
+          <label for="tentativas">Quantas tentativas nesta sessão</label>
+          <select id="tentativas" name="tentativas">
+            <option value="3">3 tentativas</option>
+            <option value="6" selected>6 tentativas (padrão)</option>
+            <option value="12">12 tentativas</option>
+          </select>
+        </p>
+        <p class="acoes">
+          <button class="botao botao-cheio" type="submit">Começar a sessão</button>
+          <a class="botao botao-vazio" href="/testes/visao-remota">Como funciona</a>
+        </p>
+      </form>
+    </div>
+  </section>
+
+</main>
+
+<footer th:replace="~{fragments/site :: rodape}"></footer>
+</body>
+</html>

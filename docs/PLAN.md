@@ -47,6 +47,8 @@ quem pode depender; `ModularityTest` verifica isso no build.
 | `scoring` | E6 | Parcial: escala de cinco categorias com justificativa obrigatória e a lógica do link de uso único (`AccessLink`). Pacotes e telas pendentes |
 | `unblinding` | E7 | Pendente (tabelas prontas) |
 | `cli` | E8 | **Implementado**: `airlab verify` |
+| `catalog` | — | **Implementado**: catálogo de protocolos (SPEC 1.1), sem estado e sem dependência de outro módulo |
+| `trials` | E11, E12 | **Implementado**: sessões de autoatendimento dos dois testes de ESP — semente comprometida, alvo derivado só no travamento, impressão travada antes das candidatas, sessão abandonada registrada |
 | `support`, `platform`, `web` | — | Infraestrutura e páginas públicas |
 
 Dependências entre módulos: `audit` não depende de nenhum módulo de domínio; todos os outros
@@ -74,6 +76,7 @@ Flyway, em `src/main/resources/db/migration`. Histórico no esquema `research`.
 | `V12` | `research.protocol_deviation`, append-only por *trigger* (E1/E7) |
 | `V13` | Comentários em português passam a dizer **consulente** no lugar de *sitter* (SPEC 0.5) |
 | `V14` | Índice cego do contato em `identity.participant`, para detectar papel duplo sem guardar contato em claro (E10) |
+| `V15` | `research.test_session` e `research.test_trial` dos testes de autoatendimento, com `CHECK` que impede alvo antes do travamento e *trigger* que torna a tentativa travada imutável (E11/E12) |
 
 **Migração aplicada não se edita**: corrigir o vocabulário dos comentários mudaria o checksum
 do Flyway e quebraria a validação em qualquer banco já migrado — inclusive o do próprio autor.
@@ -84,7 +87,30 @@ das migrações anteriores.
 superusuário, de modo que a imposição vale também no perfil local, onde a aplicação conecta
 como proprietária do banco.
 
-## 4. Decisões metodológicas impostas pelo código
+## 4. Os dois testes de autoatendimento (E11 e E12)
+
+A plataforma passou a cobrir mais de um protocolo. O catálogo está na SPEC, seção 1.1; aqui
+ficam as decisões de implementação.
+
+| Decisão | Por quê |
+|---|---|
+| Um módulo só (`trials`) para os dois protocolos | Eles compartilham tudo que importa: sessão com N fixo, semente comprometida, alvo derivado no travamento, revelação no fim. O que difere é um passo a mais na visão remota |
+| Alvo derivado, não sorteado e guardado | `alvo(n) = SeedStream(semente, "trial:" + n) mod alternativas`. Nada é gravado antes da resposta: a coluna `target_position` é nula até o travamento, imposto por `CHECK` |
+| Semente em custódia cifrada, revelada no fechamento | Mesmo esquema do sorteio do P1. Um dump do banco durante a sessão não entrega o alvo |
+| Compromisso liga a semente aos parâmetros | `SHA-256(semente \| protocolo \| tentativas \| alternativas \| versão do banco)`. Sem isso, um compromisso poderia ser "honrado" por uma sessão de outro tamanho |
+| Impressão travada antes das candidatas (P3) | A trilha guarda só o hash da impressão. É o que sustenta a afirmação de que o texto não foi reescrito depois de ver as figuras — objeção padrão ao autojulgamento |
+| Banco de figuras versionado no repositório, não no banco de dados | A versão usada fica na sessão. Assim a aplicação e o pacote de verificação não podem discordar sobre o que era a figura 7 |
+| Sessão anônima, sem conta nem e-mail | Não há nada aqui que justifique pedir dado pessoal, e é isso que permite publicar o conjunto |
+| `SessionProgress` sem nenhum campo de desfecho | Trava 1 do E10 aplicada ao autoatendimento. Há teste estrutural: um campo com nome de acerto, escore ou alvo derruba o build |
+| Alvo e acerto fora da trilha por tentativa | A trilha é pública. Publicar o acerto de cada tentativa entregaria o placar que a sessão esconde; eles entram no evento de fechamento, com a semente |
+| Sessão abandonada é registrada e fica | Desistir de uma sessão ruim não melhora o número agregado |
+
+**O que estes dois testes não fazem**: não dizem nada sobre mediunidade, e o pool público é
+exploratório — autoatendimento anônimo não controla quem testa, quantas vezes nem em que
+condições. Para resultado confirmatório, vale a política de rótulo que já existe: pré-registro
+congelado, participantes identificados e N declarado antes da coleta.
+
+## 5. Decisões metodológicas impostas pelo código
 
 Críticas recorrentes a esta literatura que não se resolvem com disciplina do pesquisador; o
 sistema as trata como regra:
@@ -139,7 +165,7 @@ confirmaram (notas globais p = 0,007; escolha forçada p = 0,01).
 O que resta decidir é qual efeito declarar: os efeitos por seção de leitura em Beischel et al.
 (2015) vão de d = 0,49 a 0,75.
 
-## 5. Decisões criptográficas
+## 6. Decisões criptográficas
 
 | Decisão | Por quê |
 |---|---|
@@ -150,7 +176,7 @@ O que resta decidir é qual efeito declarar: os efeitos por seção de leitura e
 | Semente cifrada em custódia (AES-256-GCM) até o desmascaramento | Um dump do banco durante o estudo não revela a semente, e a semente sobrevive a um reinício |
 | Campos identificáveis cifrados com AES-256-GCM, envelope `v1:` | LGPD (P6) e espaço para rotação de chave |
 
-## 6. Dependências novas e sua justificativa (P8)
+## 7. Dependências novas e sua justificativa (P8)
 
 | Dependência | Por quê | Custo de manutenção |
 |---|---|---|
@@ -165,7 +191,7 @@ O que resta decidir é qual efeito declarar: os efeitos por seção de leitura e
 Jackson entra apenas como já parte do starter web, e só é usado para **ler** a entrada do
 sorteio na CLI, nunca para calcular hash.
 
-## 7. Testes
+## 8. Testes
 
 | Teste | Princípio | Tipo |
 |---|---|---|
@@ -182,11 +208,14 @@ sorteio na CLI, nunca para calcular hash.
 | `PermutationTestTest` | P9 | Permutação exata; reproduz o resultado nulo publicado por O'Keeffe e Wiseman |
 | `ItemScoreEntryTest` | P1, E6 | Justificativa obrigatória nos valores interpretativos; só o encaixe óbvio conta |
 | `ModularityTest` | Regra 1 e 2 | Fronteiras de módulo |
+| `TargetDerivationTest` | P5 | Unitário: alvo reproduzível pela semente, dentro do intervalo, candidatas distintas e banco pequeno recusado |
+| `ProtocolCatalogTest` | SPEC 1.1 | Unitário: todo protocolo declara o que não sustenta, e protocolo sem limites não compila em tempo de execução |
+| `TrialSessionIntegrationTest` | E10 trava 1, E11, E12 | PostgreSQL real: semente só no fim, alvo ausente do banco antes do travamento, impressão não reescrita, tentativa travada imutável, fechamento idempotente |
 
 Os testes de integração usam o mesmo PostgreSQL embarcado, então `./mvnw test` funciona em
 Windows e Linux sem Docker e sem banco instalado.
 
-## 8. Armadilhas conhecidas
+## 9. Armadilhas conhecidas
 
 1. **Binários do PostgreSQL embarcado**: fixados em 16.9.0. Os 17.x quebram o `initdb` no Windows.
 2. **Diretório do cluster**: nunca aponte `airlab.local-database.data-directory` para pasta
@@ -199,7 +228,28 @@ Windows e Linux sem Docker e sem banco instalado.
    Aceitável para implantação por `scp`; se incomodar, separe um perfil Maven que exclua os
    binários no artefato de produção.
 
-## 9. Próximos cortes
+5. **`target/` dentro de pasta sincronizada**: o JAR tem ~150 MB e o `target/` fica no Google
+   Drive junto com o repositório. O Drive segura o arquivo enquanto sincroniza, e o
+   `spring-boot:repackage` falha com `Unable to rename ... airlab.jar`. Contorno imediato:
+   apagar `target/airlab.jar` e repetir. Contorno melhor: construir fora da pasta sincronizada,
+   com `./mvnw -Dmaven.build.directory=C:/temp/airlab-target package` (ou excluir `target/` da
+   sincronização do Drive, onde o cliente permitir).
+6. **Parar a aplicação pelo gerenciador de tarefas deixa o cluster travado**: o
+   `epg-lock` em `~/.airlab/pgdata` fica preso pela JVM, e a próxima execução falha com
+   `could not lock`. Encerre com `Ctrl+C` no terminal do `start.sh`, que roda o desligamento
+   limpo. Se já aconteceu, encerre o processo `java -jar target/airlab.jar` e o `postgres.exe`
+   correspondente — e **só esses**: é fácil derrubar junto o servidor de linguagem Java do IDE,
+   que também é `java.exe`.
+
+7. **Um cluster por JVM, não por contexto Spring**: a suíte carrega vários contextos no mesmo
+   processo, e cada um tentando subir o próprio PostgreSQL embarcado na mesma porta falha com
+   `could not lock`. Por isso `LocalDatabaseConfiguration` compartilha a instância no processo e
+   a encerra por *shutdown hook*, não por fechamento de contexto. Ao criar um teste que force
+   contexto novo (por exemplo com `@MockitoBean`), nada precisa ser feito — mas não volte a
+   registrar `destroyMethod` no bean.
+
+
+## 10. Próximos cortes
 
 1. **E4 (sessões)**: consumir `AllocationDrawn`, criar sessões, tela do experimentador com
    apenas o primeiro nome, upload de mídia com identificador aleatório. É aqui que a unidade

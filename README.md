@@ -1,8 +1,20 @@
-# Crivo — protocolos cegos para pesquisa de mediunidade
+# Crivo — protocolos cegos para pesquisa de cognição anômala
 
-> Codinome técnico: **AIR Lab** (*Anomalous Information Reception*, ou recepção anômala de informação)
+> Codinome técnico: **AIR Lab** (*Anomalous Information Reception*, ou recepção anômala de informação), herdado do primeiro protocolo
 
-O Crivo é uma plataforma para conduzir estudos de mediunidade com **cegamento múltiplo, sorteio verificável, pré-registro imutável e trilha de auditoria encadeada por hash**. Tudo foi pensado para que qualquer pessoa, inclusive um auditor cético, consiga conferir que o protocolo foi seguido.
+O Crivo é uma plataforma para conduzir estudos de **cognição anômala** com **cegamento múltiplo, sorteio verificável, pré-registro imutável e trilha de auditoria encadeada por hash**. Tudo foi pensado para que qualquer pessoa, inclusive um auditor cético, consiga conferir que o protocolo foi seguido.
+
+A mediunidade é um ramo da plataforma — na literatura, *recepção anômala de informação*, ou AIR. Os testes de percepção extrassensorial são outro. A distinção é mantida de propósito: AIR designa informação sobre pessoa falecida, e chamar um teste de precognição de AIR seria impreciso.
+
+## Catálogo de protocolos
+
+| Código | Protocolo | Ramo | Acaso | Automação |
+|---|---|---|---|---|
+| **P1** | [Leitura pareada cega](docs/SPEC.md) | AIR (mediunidade) | 50% | Parcial: a sessão é síncrona, com experimentador *proxy* |
+| **P2** | Escolha forçada precognitiva | ESP (precognição) | 25% | Integral — qualquer pessoa faz pelo navegador |
+| **P3** | Visão remota com quatro alvos | ESP (resposta livre) | 25% | Integral — qualquer pessoa faz pelo navegador |
+
+Os três herdam as mesmas garantias, e cada um declara na própria página **o que o seu resultado não sustenta**. Os dois testes de ESP não dizem nada sobre mediunidade: eles estão ali porque são integralmente verificáveis por quem os faz — no fim da sessão a semente é revelada, e você recomputa todos os alvos por conta própria. Em `/testes`, no site.
 
 O Crivo não existe para provar que a mediunidade é real, nem que não é. Ele existe para que **a resposta, qualquer que seja, seja defensável**.
 

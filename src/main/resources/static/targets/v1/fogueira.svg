@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="Fogueira acesa na noite"><title>Fogueira acesa na noite</title>
+<rect width="400" height="300" fill="#140f16"/>
+<circle cx="200" cy="200" r="130" fill="#2a1a1a" opacity="0.6"/>
+<path d="M200 60 Q250 140 230 190 Q215 230 200 240 Q185 230 170 190 Q150 140 200 60 Z" fill="#e8742c"/>
+<path d="M200 110 Q228 160 216 196 Q208 220 200 228 Q192 220 184 196 Q172 160 200 110 Z" fill="#f6c445"/>
+<g stroke="#6b4a2a" stroke-width="12" stroke-linecap="round">
+<path d="M130 255 L270 235"/>
+<path d="M140 235 L265 258"/>
+</g>
+<circle cx="90" cy="70" r="3" fill="#fff"/><circle cx="330" cy="50" r="3" fill="#fff"/>
+<circle cx="300" cy="110" r="2" fill="#fff"/><circle cx="70" cy="140" r="2" fill="#fff"/>
+</svg>

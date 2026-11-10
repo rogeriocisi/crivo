@@ -1,8 +1,8 @@
 package io.github.rogeriocisi.airlab.allocation;
 
 import io.github.rogeriocisi.airlab.support.Hashes;
+import io.github.rogeriocisi.airlab.support.Seeds;
 import io.github.rogeriocisi.airlab.support.SeedStream;
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -28,16 +28,12 @@ import java.util.TreeMap;
  */
 public final class AllocationEngine {
 
-    private static final SecureRandom SEED_SOURCE = new SecureRandom();
-
     private AllocationEngine() {
     }
 
     /** A fresh 32 byte seed in lower case hex. Kept secret until the unblinding (P1, P5). */
     public static String newSeedHex() {
-        byte[] seed = new byte[32];
-        SEED_SOURCE.nextBytes(seed);
-        return Hashes.toHex(seed);
+        return Seeds.newSeedHex();
     }
 
     /**

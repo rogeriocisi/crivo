@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ordenação — Crivo</title>
+  <link rel="stylesheet" href="/css/crivo.css">
+</head>
+<body>
+<a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+<div class="faixa">
+  <header th:replace="~{fragments/site :: topo}"></header>
+</div>
+
+<main id="conteudo">
+
+  <section class="abertura">
+    <div class="faixa">
+      <p class="rotulo">
+        Tentativa <span th:text="${progresso.nextTrialIndex}">1</span>
+        de <span th:text="${progresso.declaredTrials}">6</span>
+      </p>
+      <h1>Ordene as quatro figuras</h1>
+      <p class="chamada">
+        Uma delas é o alvo desta tentativa. Monte a ordem da que mais se parece com a sua
+        impressão à que menos se parece. Cada figura entra uma vez só.
+      </p>
+
+      <ul class="figuras">
+        <li th:each="c : ${candidatas.candidates()}">
+          <p class="selo">Figura <span th:text="${c.position()}">1</span></p>
+          <img th:src="${c.imagePath()}" th:alt="'Figura ' + ${c.position()}"
+               width="400" height="300">
+        </li>
+      </ul>
+
+      <form method="post" th:action="'/testes/' + ${protocolo.slug()} + '/ordenacao'">
+        <ul class="ordenacao">
+          <li th:each="lugar : ${#numbers.sequence(1, candidatas.candidates().size())}">
+            <label th:for="'lugar-' + ${lugar}">
+              <span th:text="${lugar} + 'º lugar'">1º lugar</span>
+            </label>
+            <select th:id="'lugar-' + ${lugar}" name="ordem" required>
+              <option value="">escolha a figura</option>
+              <option th:each="c : ${candidatas.candidates()}"
+                      th:value="${c.position()}"
+                      th:text="'Figura ' + ${c.position()}">Figura</option>
+            </select>
+          </li>
+        </ul>
+        <p class="acoes">
+          <button class="botao botao-cheio" type="submit">Enviar ordenação</button>
+        </p>
+      </form>
+
+      <p class="nota">
+        Se repetir ou faltar uma figura, o envio é recusado: a ordenação precisa ser uma
+        permutação das quatro. A sua impressão desta tentativa já está travada, e nenhum
+        resultado aparece até o fim da sessão.
+      </p>
+    </div>
+  </section>
+
+</main>
+
+<footer th:replace="~{fragments/site :: rodape}"></footer>
+</body>
+</html>

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="Barco a vela em mar aberto"><title>Barco a vela em mar aberto</title>
+<rect width="400" height="300" fill="#bfe3f2"/>
+<rect y="200" width="400" height="100" fill="#2e6f93"/>
+<path d="M120 200 L280 200 L250 240 L150 240 Z" fill="#6b4a2a"/>
+<rect x="196" y="70" width="8" height="130" fill="#4a3320"/>
+<path d="M200 76 L200 190 L120 190 Z" fill="#ffffff"/>
+<path d="M208 90 L208 190 L272 190 Z" fill="#f0f0f0"/>
+<path d="M0 226 Q80 214 160 228 Q240 242 320 226 Q360 218 400 226" stroke="#8fc9e0" stroke-width="5" fill="none"/>
+<path d="M0 262 Q80 250 160 264 Q240 278 320 262 Q360 254 400 262" stroke="#8fc9e0" stroke-width="5" fill="none"/>
+</svg>

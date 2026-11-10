@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="Ponte suspensa sobre agua"><title>Ponte suspensa sobre agua</title>
+<rect width="400" height="300" fill="#dce9f2"/>
+<rect y="210" width="400" height="90" fill="#4a7fa5"/>
+<path d="M0 190 L400 190" stroke="#2f3e4e" stroke-width="8"/>
+<rect x="90" y="60" width="14" height="130" fill="#8c3b3b"/>
+<rect x="296" y="60" width="14" height="130" fill="#8c3b3b"/>
+<path d="M0 120 Q97 200 200 150 Q303 100 400 170" stroke="#2f3e4e" stroke-width="5" fill="none"/>
+<path d="M97 70 L97 190 M200 150 L200 190 M303 70 L303 190" stroke="#2f3e4e" stroke-width="3"/>
+<path d="M0 230 Q100 245 200 230 Q300 215 400 232" stroke="#9fc4de" stroke-width="4" fill="none"/>
+<path d="M0 262 Q100 277 200 262 Q300 247 400 264" stroke="#9fc4de" stroke-width="4" fill="none"/>
+</svg>

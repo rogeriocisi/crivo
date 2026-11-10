@@ -28,15 +28,38 @@ public final class BinomialTest {
      * @throws IllegalArgumentException if the counts are not a possible observation
      */
     public static BigDecimal pValueGreaterOrEqual(int hits, int trials) {
+        return pValueGreaterOrEqual(hits, trials, 1, 2);
+    }
+
+    /**
+     * Same tail probability for a chance level of {@code chanceNumerator / chanceDenominator},
+     * computed in exact integer arithmetic and only then rounded.
+     *
+     * <p>The forced-choice protocols of the catalog have a declared chance level that is not
+     * one half: four alternatives means 1/4 (SPEC section 1.1). The chance level is a
+     * parameter of the protocol, never something estimated from the data.
+     *
+     * @throws IllegalArgumentException if the counts are impossible or the chance level is
+     *                                  not a probability strictly between 0 and 1
+     */
+    public static BigDecimal pValueGreaterOrEqual(int hits, int trials,
+                                                  int chanceNumerator, int chanceDenominator) {
         if (trials < 0 || hits < 0 || hits > trials) {
             throw new IllegalArgumentException("hits must be between 0 and trials");
         }
-        // sum of C(trials, k) for k >= hits, divided by 2^trials
+        if (chanceNumerator <= 0 || chanceDenominator <= chanceNumerator) {
+            throw new IllegalArgumentException("the chance level must be between 0 and 1");
+        }
+        // sum of C(n,k) * a^k * (b-a)^(n-k) for k >= hits, divided by b^n
+        BigInteger a = BigInteger.valueOf(chanceNumerator);
+        BigInteger complement = BigInteger.valueOf(chanceDenominator - chanceNumerator);
         BigInteger numerator = BigInteger.ZERO;
         for (int k = hits; k <= trials; k++) {
-            numerator = numerator.add(binomial(trials, k));
+            numerator = numerator.add(binomial(trials, k)
+                    .multiply(a.pow(k))
+                    .multiply(complement.pow(trials - k)));
         }
-        BigDecimal denominator = new BigDecimal(BigInteger.TWO.pow(trials));
+        BigDecimal denominator = new BigDecimal(BigInteger.valueOf(chanceDenominator).pow(trials));
         return new BigDecimal(numerator).divide(denominator, PRECISION);
     }
 

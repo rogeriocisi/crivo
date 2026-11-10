@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="Arvore solitaria num campo aberto"><title>Arvore solitaria num campo aberto</title>
+<rect width="400" height="300" fill="#cfe6f7"/>
+<rect y="200" width="400" height="100" fill="#8cbf6a"/>
+<rect x="188" y="150" width="20" height="60" fill="#6b4a2a"/>
+<circle cx="198" cy="120" r="62" fill="#3f7f3f"/>
+<circle cx="152" cy="140" r="38" fill="#4c9149"/>
+<circle cx="244" cy="140" r="38" fill="#4c9149"/>
+<path d="M0 232 Q100 222 200 234 Q300 246 400 230" stroke="#79ab59" stroke-width="6" fill="none"/>
+<circle cx="70" cy="60" r="22" fill="#ffffff" opacity="0.8"/>
+<circle cx="100" cy="60" r="28" fill="#ffffff" opacity="0.8"/>
+</svg>

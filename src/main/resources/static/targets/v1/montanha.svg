@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="Montanha com cume coberto de neve"><title>Montanha com cume coberto de neve</title>
+<rect width="400" height="300" fill="#d8ecf7"/>
+<circle cx="80" cy="60" r="26" fill="#fff6d6"/>
+<path d="M0 260 L120 110 L200 190 L260 120 L400 260 Z" fill="#6c7f94"/>
+<path d="M120 110 L160 160 L80 160 Z" fill="#ffffff"/>
+<path d="M260 120 L292 160 L228 160 Z" fill="#ffffff"/>
+<path d="M0 260 L400 260 L400 300 L0 300 Z" fill="#46617a"/>
+<path d="M0 282 Q100 270 200 284 Q300 298 400 280" stroke="#5b7790" stroke-width="5" fill="none"/>
+</svg>

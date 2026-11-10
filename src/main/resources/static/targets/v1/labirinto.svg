@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="Labirinto de muros baixos"><title>Labirinto de muros baixos</title>
+<rect width="400" height="300" fill="#ece6dc"/>
+<g stroke="#4a4036" stroke-width="12" fill="none" stroke-linecap="square">
+<path d="M40 40 L360 40 L360 260 L40 260 Z"/>
+<path d="M80 80 L320 80 L320 220 L80 220 L80 120"/>
+<path d="M120 120 L280 120 L280 180 L140 180"/>
+<path d="M160 160 L240 160"/>
+<path d="M200 40 L200 80"/>
+</g>
+<circle cx="200" cy="160" r="10" fill="#8c3b3b"/>
+</svg>

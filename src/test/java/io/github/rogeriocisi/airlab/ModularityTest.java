@@ -27,7 +27,8 @@ class ModularityTest {
     @DisplayName("os modulos esperados existem")
     void expected_modules_are_present() {
         for (String name : new String[]{"audit", "allocation", "study", "participant",
-                "redaction", "analysis", "session", "scoring", "unblinding", "cli", "web"}) {
+                "redaction", "analysis", "session", "scoring", "unblinding", "cli", "web",
+                "catalog", "trials"}) {
             assertThat(MODULES.getModuleByName(name))
                     .describedAs("modulo %s", name)
                     .isPresent();

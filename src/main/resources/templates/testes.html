@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Testes — Crivo</title>
+  <meta name="description"
+        content="Os protocolos de cognição anômala da plataforma Crivo: leitura pareada cega,
+                 escolha forçada precognitiva e visão remota com quatro alvos. Dois deles você
+                 pode fazer agora, no navegador, e conferir depois.">
+  <link rel="stylesheet" href="/css/crivo.css">
+</head>
+<body>
+<a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+<div class="faixa">
+  <header th:replace="~{fragments/site :: topo}"></header>
+</div>
+
+<main id="conteudo">
+
+  <section class="abertura">
+    <div class="faixa">
+      <p class="rotulo aparece">Testes</p>
+      <h1 class="aparece">Três protocolos, uma garantia</h1>
+      <p class="chamada aparece">
+        O Crivo é uma plataforma de protocolos cegos para pesquisa de <strong>cognição
+        anômala</strong>. A mediunidade é um ramo dela — na literatura, <em>recepção anômala de
+        informação</em>, ou AIR. Os testes de percepção extrassensorial são outro.
+      </p>
+      <p class="tese aparece">
+        O que todo protocolo daqui tem em comum: <strong>pré-registro congelado, sorteio com
+        compromisso publicado antes e revelado depois, trilha de auditoria encadeada por hash e
+        pacote de verificação</strong>. Protocolo que não consegue oferecer isso não entra no
+        catálogo.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <div class="faixa">
+      <h2>O catálogo</h2>
+
+      <ul class="protocolos">
+        <li th:each="p : ${protocolos}">
+          <p class="selo">
+            <span th:text="${p.code}">P1</span> ·
+            <span th:text="${p.branch.label()}">Ramo</span> ·
+            <span th:text="'automação ' + ${#strings.toLowerCase(p.automation.label())}">Automação</span> ·
+            <span th:text="'acaso ' + ${p.chancePercent()} + '%'">acaso</span>
+          </p>
+          <h3><a th:href="'/testes/' + ${p.slug}" th:text="${p.name}">Nome</a></h3>
+          <p th:text="${p.summary}">Resumo</p>
+          <p class="acoes">
+            <a class="botao botao-vazio" th:href="'/testes/' + ${p.slug}">Como funciona</a>
+            <a class="botao botao-cheio"
+               th:if="${p.automation.name() == 'FULL'}"
+               th:href="'/testes/' + ${p.slug} + '/rodar'">Fazer o teste agora</a>
+            <span class="nota" th:if="${p.automation.name() != 'FULL'}">
+              Este protocolo precisa de sessão com experimentador: não roda sozinho pelo site.
+            </span>
+          </p>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <div class="faixa">
+      <h2>Por que dois dos testes são automáticos e o primeiro não</h2>
+      <div class="confronto">
+        <div class="hoje">
+          <h3>Leitura pareada</h3>
+          <p>
+            Depende de uma sessão síncrona com experimentador intermediário. Isso não é
+            comodismo: nos dois estudos em que o médium não interagiu com ninguém, o resultado
+            foi nulo. Trocar a sessão por um formulário eliminaria justamente a variável que
+            mais separa os estudos positivos dos nulos.
+          </p>
+        </div>
+        <div class="crivo">
+          <h3>Testes de ESP</h3>
+          <p>
+            O alvo é sorteado pelo próprio sistema, não existe pessoa falecida envolvida e não
+            existe ninguém no circuito. Dá para automatizar por inteiro — e, no caso da escolha
+            forçada, o vazamento sensorial fica <strong>impossível por construção</strong>: no
+            instante da sua resposta o alvo ainda não foi calculado.
+          </p>
+        </div>
+      </div>
+
+      <p class="nota nota-espacada">
+        Uma ressalva que a plataforma faz questão de escrever: os testes de ESP
+        <strong>não dizem nada sobre mediunidade</strong>, e as replicações grandes dos achados
+        de precognição deram nulo. Eles estão aqui porque são integralmente verificáveis por
+        quem os faz — são uma demonstração do método, não uma promessa de efeito.
+      </p>
+    </div>
+  </section>
+
+</main>
+
+<footer th:replace="~{fragments/site :: rodape}"></footer>
+</body>
+</html>

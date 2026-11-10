@@ -92,6 +92,13 @@ class BlindingMatrixTest {
                 .doesNotContain("Antonio");
     }
 
+    @Test
+    @DisplayName("o progresso de uma sessao de teste nao tem nenhum campo de desempenho")
+    void trial_session_progress_has_no_outcome_field() {
+        assertNoFieldsNamedLike(io.github.rogeriocisi.airlab.trials.SessionProgress.class,
+                "hit", "score", "target", "correct", "acerto", "seedhex", "result");
+    }
+
     private static void assertNoFieldsNamedLike(Class<?> type, String... forbidden) {
         Arrays.stream(type.getRecordComponents()).forEach(component -> {
             String name = component.getName().toLowerCase(Locale.ROOT);

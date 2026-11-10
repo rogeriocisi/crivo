@@ -3,16 +3,33 @@
 > Spec de alto nível. Cada épico abaixo vira uma spec detalhada própria antes da implementação.
 > Conformidade obrigatória com `CONSTITUTION.md`. Contexto e motivação em `VISION.md`. Fundamentação científica em `REFERENCES.md`.
 >
-> Versão 0.6 · novembro/2026 · 0.2: seção 2.1 "O que é uma leitura", regra "um item = uma afirmação" e referências · 0.3: critérios de inclusão de médiuns no pré-registro, regra de parada vinculante e unidade de análise por par (seções 5 e 9) · 0.4: medida primária pareada com Wilcoxon exato, teste de permutação de Pratt e Birge, controles de comprimento e de pistas temporais, escala de itens de cinco categorias e desvios de protocolo — derivados dos artigos em `references/` · 0.5: *sitter* passa a ser **consulente** em todo o texto em português, com a forma inglesa registrada no glossário e mantida nos identificadores do código · 0.6: épico E10, autoatendimento e automação, com as travas obrigatórias
+> Versão 0.6 · novembro/2026 · 0.2: seção 2.1 "O que é uma leitura", regra "um item = uma afirmação" e referências · 0.3: critérios de inclusão de médiuns no pré-registro, regra de parada vinculante e unidade de análise por par (seções 5 e 9) · 0.4: medida primária pareada com Wilcoxon exato, teste de permutação de Pratt e Birge, controles de comprimento e de pistas temporais, escala de itens de cinco categorias e desvios de protocolo — derivados dos artigos em `references/` · 0.5: *sitter* passa a ser **consulente** em todo o texto em português, com a forma inglesa registrada no glossário e mantida nos identificadores do código · 0.6: épico E10, autoatendimento e automação, com as travas obrigatórias · 0.7: o Crivo passa a ser uma plataforma de protocolos de cognição anômala, com catálogo de protocolos (seção 1.1) e os épicos E11 e E12 — dois testes integralmente automatizáveis
 
 ---
 
-## 1. Escopo da v1
+## 1. Escopo
 
-A v1 implementa **um único protocolo**: a **leitura mediúnica pareada com cegamento múltiplo**. O desenho é inspirado nos protocolos usados na literatura de AIR: médium sem contato com o consulente, experimentador intermediário que não sabe nada sobre o falecido, avaliação feita pelo próprio consulente sem saber qual leitura é a dele.
+O Crivo é uma plataforma de **protocolos cegos para pesquisa de cognição anômala**. O primeiro ramo é a **recepção anômala de informação (AIR)**, isto é a mediunidade, e nele está o protocolo que motivou o projeto: a leitura pareada com cegamento múltiplo. O segundo ramo são os testes de **percepção extrassensorial (ESP)**, nos quais não há informação sobre pessoa falecida e o alvo é sorteado pelo próprio sistema.
 
-**Dentro do escopo**: um estudo por vez, um pesquisador, poucos médiuns, dezenas de consulentes, exportação de dados e verificação.
-**Fora do escopo da v1**: multi-tenant, protocolos de resposta livre (ganzfeld), juízes externos, aplicativo mobile, integração com IA na avaliação.
+A distinção entre os dois ramos não é cosmética. Na literatura, *anomalous information reception* designa especificamente a obtenção de informação sobre um falecido sem via sensorial; um teste de precognição com alvo gerado depois da resposta não é AIR, e chamá-lo assim seria impreciso. O termo que cobre os dois é **cognição anômala**, e é o que a plataforma usa. O codinome técnico **AIR Lab** permanece nos pacotes Java, na CLI e nos artefatos Maven, como herança do primeiro protocolo.
+
+**Dentro do escopo**: um estudo por vez e por protocolo, um pesquisador, exportação de dados e verificação; os dois testes de ESP em autoatendimento público.
+**Fora do escopo**: multi-tenant, ganzfeld (exige emissor e cabine), presentimento e DMILS (exigem sensores), ESP em sonho (exige pernoite), juízes externos remunerados, aplicativo mobile, integração com IA na avaliação.
+
+### 1.1 Catálogo de protocolos
+
+| Código | Nome público | Ramo | Acaso | Automação | Épico |
+|---|---|---|---|---|---|
+| **P1** | Leitura pareada cega | AIR (mediunidade) | 50% | Parcial: a sessão é síncrona, com experimentador *proxy* | E1–E9 |
+| **P2** | Escolha forçada precognitiva | ESP (precognição) | 25% | **Integral** | E11 |
+| **P3** | Visão remota com quatro alvos | ESP (resposta livre) | 25% | **Integral** | E12 |
+
+Regras do catálogo:
+
+1. **Todo protocolo herda as mesmas garantias**: pré-registro congelado, sorteio com compromisso → revelação, trilha de auditoria encadeada por hash, rótulo confirmatório decidido pela política e pacote de verificação. Um protocolo que não possa oferecê-las não entra.
+2. **Cada protocolo declara o que o seu resultado não sustenta.** O P1 não distingue entre sobrevivência e telepatia com os vivos; o P2 e o P3 não dizem nada sobre falecidos. Isso é texto obrigatório na página do protocolo, não nota de rodapé.
+3. **O acaso é declarado e verificável**, não estimado a partir dos dados.
+4. **P2 e P3 não substituem o P1.** Eles existem porque são integralmente automatizáveis e porque qualquer pessoa pode conferir a lisura do próprio teste depois; servem de porta de entrada e de vitrine do método, não de prova sobre mediunidade.
 
 ## 2. Glossário
 
@@ -245,6 +262,39 @@ vazamento ou remove um grau de liberdade do pesquisador; não automatizar o que 
 sinalizações; em nenhum momento, antes do desmascaramento, qualquer tela ou API expõe função
 dos escores; e a tentativa de acumular papéis conflitantes é recusada e auditada.
 
+### E11. Escolha forçada precognitiva (P2)
+
+**Objetivo**: um teste que qualquer pessoa faz pelo navegador, sem intermediário, e cuja lisura ela pode conferir depois por conta própria.
+
+**Desenho**: a cada tentativa, a pessoa escolhe entre quatro alternativas. O alvo daquela tentativa é derivado de uma semente sorteada no início da sessão e **só é calculado e mostrado depois que a resposta está travada**. Acaso = 25%, declarado.
+
+- A sessão tem número de tentativas **fixo e declarado antes de começar** (padrão: 24). A quantidade não muda no meio.
+- A semente da sessão é sorteada com `SecureRandom`, guardada cifrada e **comprometida por hash antes da primeira tentativa**; é revelada ao final da sessão. Com a semente e o algoritmo público (SHA-256 em modo contador, `support.SeedStream`), qualquer pessoa recomputa os alvos de todas as tentativas e confere que eles não foram escolhidos depois da resposta.
+- O alvo de cada tentativa nunca sai do servidor antes de a resposta estar travada — não há campo, API ou projeção que o exponha, e há teste que tenta obtê-lo.
+- **Nenhum resultado parcial dentro da sessão** (E10, trava 1): durante a sessão a pessoa vê quantas tentativas faltam, nunca quantas acertou. O desfecho aparece de uma vez, no fim.
+- Sessão abandonada é registrada como abandonada e **entra no denominador** da análise do pool conforme a regra pré-registrada. Desistir de uma sessão ruim não melhora o número agregado.
+
+**Por que este teste, apesar das evidências**: as replicações grandes dos achados de Bem deram nulo (Ritchie, Wiseman & French, 2012; Galak et al., 2012), e a página da plataforma diz isso. O valor dele aqui não é a expectativa de efeito: é ser o único protocolo em que o vazamento sensorial é **impossível por construção** — no instante da resposta o alvo ainda não foi calculado — e em que não existe julgamento subjetivo nenhum. Serve de demonstração limpa do método de verificação.
+
+**Pool público é exploratório.** O autoatendimento anônimo não tem controle de quem testa, quantas vezes nem em que condições; os dados públicos são abertos e rotulados **exploratórios**. Um resultado confirmatório exige estudo pré-registrado com participantes identificados, N fixo e pool declarado antes da coleta — a política de rótulo já existente é quem decide.
+
+**Aceite**: a semente revelada reproduz exatamente os alvos gravados; o alvo não é obtível por nenhuma via antes da resposta travada; durante a sessão nenhuma tela expõe função dos escores; e duas sessões com a mesma semente e as mesmas respostas dão o mesmo resultado.
+
+### E12. Visão remota com quatro alvos (P3)
+
+**Objetivo**: um teste de resposta livre, também integralmente automatizado, mais próximo do que a literatura chama de *free-response*.
+
+**Desenho**: o sistema sorteia um alvo entre as imagens de um banco versionado. A pessoa escreve a impressão dela **antes** de ver qualquer candidata. Só então o sistema apresenta quatro imagens — o alvo e três chamarizes, sorteados da mesma forma — e a pessoa as ordena da mais parecida com a impressão à menos parecida. Acerto = alvo em primeiro lugar; acaso = 25%, declarado.
+
+- A impressão escrita é **travada antes** de as candidatas aparecerem, e a trilha registra o hash dela. Sem isso, a pessoa pode reescrever a impressão depois de ver as imagens, que é a objeção padrão ao autojulgamento.
+- O alvo e os três chamarizes saem da mesma semente comprometida, pelo mesmo mecanismo do P2.
+- O banco de imagens é **versionado**, e a versão usada fica gravada na sessão: trocar as imagens depois não muda o que foi analisado.
+- Vale a mesma regra de resultado parcial, de sessão abandonada e de pool exploratório do E11.
+
+**Limite declarado**: quem julga a correspondência é a própria pessoa, e isso reintroduz a crítica de "como se pontua" que o P2 não tem. É o preço do formato de resposta livre, e fica escrito na página do protocolo. A estatística é de ordenação, com acaso exato.
+
+**Aceite**: a impressão não pode ser alterada depois de as candidatas aparecerem; a semente revelada reproduz alvo e chamarizes; e a versão do banco de imagens usada na sessão é a que o pacote de verificação exporta.
+
 ## 6. Modelo de domínio (macro)
 
 ```
@@ -259,6 +309,10 @@ Study 1──0..1 Unblinding ──1 AnalysisRun 1──1 Report
 Participant(identity schema) 1──* Consent(version)
 AuditEvent (seq, prev_hash, hash, type, payload, at)
 Incident ──* Session (affected)
+
+TestSession (protocol, declared_trials, seed_commitment, seed_revealed_at, pool_version)
+TestSession 1──* Trial (index, response, impression_sha256, locked_at, target_index, hit)
+TargetImage (pool_version, index, slug)
 ```
 
 ## 7. Requisitos não funcionais

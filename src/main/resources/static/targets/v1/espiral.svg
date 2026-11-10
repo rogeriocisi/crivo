@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="Escada em espiral vista de cima"><title>Escada em espiral vista de cima</title>
+<rect width="400" height="300" fill="#efe7da"/>
+<g transform="translate(200 150)" fill="none" stroke="#5a4632" stroke-width="10">
+<path d="M0 -120 A120 120 0 0 1 104 60"/>
+<path d="M0 -92 A92 92 0 0 1 80 46"/>
+<path d="M0 -64 A64 64 0 0 1 55 32"/>
+<path d="M0 -36 A36 36 0 0 1 31 18"/>
+</g>
+<g transform="translate(200 150)" stroke="#8a6f4e" stroke-width="4">
+<path d="M0 -120 L0 -36 M85 85 L25 25 M-85 85 L-25 25 M120 0 L36 0"/>
+</g>
+<circle cx="200" cy="150" r="12" fill="#5a4632"/>
+</svg>

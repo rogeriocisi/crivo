@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title th:text="${protocolo.name} + ' — Crivo'">Protocolo — Crivo</title>
+  <meta name="description" th:attr="content=${protocolo.summary}">
+  <link rel="stylesheet" href="/css/crivo.css">
+</head>
+<body>
+<a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+<div class="faixa">
+  <header th:replace="~{fragments/site :: topo}"></header>
+</div>
+
+<main id="conteudo">
+
+  <section class="abertura">
+    <div class="faixa">
+      <p class="rotulo aparece">
+        <span th:text="${protocolo.code}">P1</span> ·
+        <span th:text="${protocolo.branch.label()}">Ramo</span>
+      </p>
+      <h1 class="aparece" th:text="${protocolo.name}">Nome</h1>
+      <p class="chamada aparece" th:text="${protocolo.summary}">Resumo</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="faixa">
+      <dl class="leituras">
+        <dt>Acaso declarado</dt>
+        <dd th:text="${protocolo.chanceNumerator} + '/' + ${protocolo.chanceDenominator}
+                     + ' (' + ${protocolo.chancePercent()} + '%)'">1/2</dd>
+        <dt>Automação</dt>
+        <dd th:text="${protocolo.automation.label()}">Parcial</dd>
+        <dt>Situação</dt>
+        <dd th:text="${protocolo.status.label()}">Disponível</dd>
+        <dt>Especificação</dt>
+        <dd>
+          Épicos <span th:text="${protocolo.epics}">E1</span> da
+          <a href="https://github.com/rogeriocisi/crivo/blob/main/docs/SPEC.md">SPEC</a>
+        </dd>
+      </dl>
+
+      <p class="nota">
+        O acaso é uma propriedade do desenho, declarada antes da coleta. Ele nunca é estimado a
+        partir dos dados.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <div class="faixa">
+      <div class="atestado">
+        <div class="nao">
+          <h3>O que um resultado deste protocolo não sustenta</h3>
+          <ul>
+            <li th:each="limite : ${protocolo.limits}" th:text="${limite}">Limite</li>
+          </ul>
+        </div>
+      </div>
+
+      <p class="acoes">
+        <a class="botao botao-cheio"
+           th:if="${protocolo.automation.name() == 'FULL'}"
+           th:href="'/testes/' + ${protocolo.slug} + '/rodar'">Fazer o teste agora</a>
+        <a class="botao botao-vazio" href="/testes">Voltar ao catálogo</a>
+      </p>
+    </div>
+  </section>
+
+</main>
+
+<footer th:replace="~{fragments/site :: rodape}"></footer>
+</body>
+</html>

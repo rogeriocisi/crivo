@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Escolha forçada precognitiva — Crivo</title>
+  <link rel="stylesheet" href="/css/crivo.css">
+</head>
+<body>
+<a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+<div class="faixa">
+  <header th:replace="~{fragments/site :: topo}"></header>
+</div>
+
+<main id="conteudo">
+
+  <section class="abertura">
+    <div class="faixa">
+      <p class="rotulo aparece">P2 · antes de começar</p>
+      <h1 class="aparece">Escolha forçada precognitiva</h1>
+      <p class="chamada aparece">
+        Em cada tentativa você escolhe uma entre quatro portas. O alvo daquela tentativa
+        <strong>só é calculado depois que a sua resposta está travada</strong> — no instante da
+        escolha ele ainda não existe em lugar nenhum.
+      </p>
+
+      <ul class="niveis">
+        <li>
+          <strong>Nada de resultado no meio do caminho.</strong> Durante a sessão você vê quantas
+          tentativas faltam, nunca quantas acertou. Se visse, poderia parar numa hora boa — e aí
+          o número final não valeria nada.
+        </li>
+        <li>
+          <strong>O número de tentativas é fixado agora</strong> e não muda depois.
+        </li>
+        <li>
+          <strong>No fim, a semente é revelada.</strong> Com ela você recomputa todos os alvos
+          por conta própria e confere que nenhum foi escolhido depois da sua resposta.
+        </li>
+        <li>
+          <strong>Nenhum dado pessoal.</strong> A sessão é anônima: sem conta, sem e-mail.
+        </li>
+      </ul>
+
+      <p class="nota">
+        Expectativa honesta: as replicações grandes dos achados de precognição de Bem deram nulo
+        (Ritchie, Wiseman e French, 2012; Galak et al., 2012). O acaso aqui é 25%. Este teste
+        existe para demonstrar o método de verificação, não para prometer um efeito.
+      </p>
+
+      <form method="post" th:action="'/testes/' + ${protocolo.slug()} + '/comecar'">
+        <p>
+          <label for="tentativas">Quantas tentativas nesta sessão</label>
+          <select id="tentativas" name="tentativas">
+            <option value="12">12 tentativas</option>
+            <option value="24" selected>24 tentativas (padrão)</option>
+            <option value="48">48 tentativas</option>
+          </select>
+        </p>
+        <p class="acoes">
+          <button class="botao botao-cheio" type="submit">Começar a sessão</button>
+          <a class="botao botao-vazio" href="/testes/escolha-forcada">Como funciona</a>
+        </p>
+      </form>
+    </div>
+  </section>
+
+</main>
+
+<footer th:replace="~{fragments/site :: rodape}"></footer>
+</body>
+</html>

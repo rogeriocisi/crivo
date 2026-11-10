@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tentativa — Crivo</title>
+  <link rel="stylesheet" href="/css/crivo.css">
+</head>
+<body>
+<a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+<div class="faixa">
+  <header th:replace="~{fragments/site :: topo}"></header>
+</div>
+
+<main id="conteudo">
+
+  <section class="abertura">
+    <div class="faixa">
+      <p class="rotulo">
+        Tentativa <span th:text="${progresso.nextTrialIndex}">1</span>
+        de <span th:text="${progresso.declaredTrials}">24</span>
+      </p>
+      <h1>Qual das quatro?</h1>
+      <p class="chamada">
+        Escolha uma. O alvo desta tentativa será calculado depois que você responder.
+      </p>
+
+      <form method="post" th:action="'/testes/' + ${protocolo.slug()} + '/escolha'">
+        <ul class="portas">
+          <li th:each="n : ${#numbers.sequence(1, alternativas)}">
+            <button class="porta" type="submit" name="posicao" th:value="${n}"
+                    th:text="${n}">1</button>
+          </li>
+        </ul>
+      </form>
+
+      <p class="progresso-barra" role="status">
+        Faltam <strong th:text="${progresso.remainingTrials()}">24</strong> tentativa(s).
+        Nenhum resultado aparece até o fim da sessão — é essa regra que impede parar numa hora
+        conveniente.
+      </p>
+
+      <dl class="cadeia">
+        <dt>Compromisso da semente</dt>
+        <dd><code th:text="${progresso.seedCommitment}">hash</code></dd>
+        <dt>Sessão</dt>
+        <dd><code th:text="${progresso.sessionCode}">codigo</code></dd>
+      </dl>
+      <p class="nota">
+        Anote ou copie esse compromisso agora, se quiser conferir depois: no fim da sessão a
+        semente é revelada, e o hash dela tem de bater com o que está aí.
+      </p>
+
+      <form method="post" th:action="'/testes/' + ${protocolo.slug()} + '/desistir'">
+        <p class="acoes">
+          <button class="botao botao-vazio" type="submit">Desistir desta sessão</button>
+        </p>
+      </form>
+      <p class="nota">
+        Desistir é registrado como sessão abandonada e entra no denominador da análise do
+        conjunto. Isso é de propósito: abandonar uma sessão ruim não melhora o número agregado.
+      </p>
+    </div>
+  </section>
+
+</main>
+
+<footer th:replace="~{fragments/site :: rodape}"></footer>
+</body>
+</html>
