@@ -62,6 +62,54 @@
 
       <p>A regra de derivação é esta, e é toda a regra:</p>
       <pre class="comando">alvo(n) = SHA-256(semente || "trial:" || n || contador) mod 4</pre>
+
+      <div class="verificador" data-verificador
+           th:attr="data-alvos=${#strings.listJoin(desfecho.recordedTargets(), ',')},
+                    data-alternativas=${desfecho.chanceDenominator()}">
+        <h3>Recompute aqui, agora</h3>
+        <p class="nota">
+          O botão abaixo roda a regra no seu navegador, sem falar com o servidor, e compara o
+          resultado com o que esta sessão gravou. O código está em
+          <a href="/js/verificador-alvos.js"><code>/js/verificador-alvos.js</code></a> — pode ler
+          antes de clicar.
+        </p>
+
+        <p>
+          <label for="campo-semente">Semente</label>
+          <textarea id="campo-semente" data-campo="semente" rows="2" spellcheck="false"
+                    th:text="${desfecho.seedHex()}"></textarea>
+        </p>
+        <p>
+          <label for="campo-tentativas">Quantas tentativas recomputar</label>
+          <input id="campo-tentativas" data-campo="tentativas" type="number" min="1" max="200"
+                 th:value="${desfecho.lockedTrials()}">
+        </p>
+        <p class="acoes">
+          <button class="botao botao-cheio" type="button" data-campo="gerar">Gerar os alvos</button>
+        </p>
+
+        <div data-campo="saida" hidden>
+          <p class="resumo-verificacao" data-campo="resumo" role="status"></p>
+          <table class="tentativas">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Alvo recomputado aqui</th>
+                <th scope="col">Alvo gravado na sessão</th>
+                <th scope="col">Confere</th>
+              </tr>
+            </thead>
+            <tbody data-campo="corpo"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <p class="nota">
+        Seja claro sobre o alcance disto: o verificador acima é servido por esta mesma
+        aplicação, então ele prova que a semente revelada gera os alvos gravados, não que a
+        aplicação é honesta. A prova forte é outra pessoa rodar a regra por fora — por isso ela
+        cabe em oito linhas, tem vetor de teste público e está escrita acima por extenso.
+      </p>
       <p class="nota">
         A implementação de referência está em
         <a href="https://github.com/rogeriocisi/crivo/blob/main/src/main/java/io/github/rogeriocisi/airlab/support/SeedStream.java"><code>support/SeedStream.java</code></a>
@@ -83,7 +131,7 @@
             <th scope="col">Sua resposta</th>
             <th scope="col">Alvo</th>
             <th scope="col">Acerto</th>
-            <th scope="col">Figuras mostradas</th>
+            <th scope="col" th:if="${desfecho.usesFigures()}">Figuras mostradas</th>
           </tr>
         </thead>
         <tbody>
@@ -92,11 +140,8 @@
             <td th:text="${t.chosenIndex()}">1</td>
             <td th:text="${t.targetIndex()}">1</td>
             <td th:text="${t.hit()} ? 'sim' : 'não'">não</td>
-            <td>
-              <span th:if="${t.candidateSlugs().isEmpty()}">—</span>
-              <span th:unless="${t.candidateSlugs().isEmpty()}"
-                    th:text="${#strings.listJoin(t.candidateSlugs(), ', ')}">figuras</span>
-            </td>
+            <td th:if="${desfecho.usesFigures()}"
+                th:text="${#strings.listJoin(t.candidateSlugs(), ', ')}">figuras</td>
           </tr>
         </tbody>
       </table>
@@ -117,5 +162,6 @@
 </main>
 
 <footer th:replace="~{fragments/site :: rodape}"></footer>
+<script src="/js/verificador-alvos.js" defer></script>
 </body>
 </html>

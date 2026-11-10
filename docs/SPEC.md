@@ -278,7 +278,9 @@ dos escores; e a tentativa de acumular papéis conflitantes é recusada e audita
 
 **Pool público é exploratório.** O autoatendimento anônimo não tem controle de quem testa, quantas vezes nem em que condições; os dados públicos são abertos e rotulados **exploratórios**. Um resultado confirmatório exige estudo pré-registrado com participantes identificados, N fixo e pool declarado antes da coleta — a política de rótulo já existente é quem decide.
 
-**Aceite**: a semente revelada reproduz exatamente os alvos gravados; o alvo não é obtível por nenhuma via antes da resposta travada; durante a sessão nenhuma tela expõe função dos escores; e duas sessões com a mesma semente e as mesmas respostas dão o mesmo resultado.
+**Verificação na mão de quem testou**: a página de resultado traz a semente num campo editável e um botão que **recomputa os alvos no navegador da pessoa**, sem falar com o servidor, e compara com o que a sessão gravou. O código do verificador é servido como arquivo legível (`/js/verificador-alvos.js`). Isso tem alcance limitado e a página diz qual: prova que a semente revelada gera os alvos gravados, não que a aplicação é honesta — para isso a regra precisa ser reimplementada por fora, e é por isso que ela cabe em oito linhas e tem **vetor de teste público** (semente de 64 zeros, 12 tentativas, 4 alternativas → 1, 1, 3, 3, 2, 3, 2, 1, 1, 4, 1, 3), fixado em teste tanto na implementação em Java quanto no verificador.
+
+**Aceite**: a semente revelada reproduz exatamente os alvos gravados; o alvo não é obtível por nenhuma via antes da resposta travada; durante a sessão nenhuma tela expõe função dos escores; duas sessões com a mesma semente e as mesmas respostas dão o mesmo resultado; e o verificador do navegador acusa divergência quando a semente é alterada num único dígito.
 
 ### E12. Visão remota com quatro alvos (P3)
 

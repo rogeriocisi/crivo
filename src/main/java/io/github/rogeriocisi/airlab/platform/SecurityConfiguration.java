@@ -39,7 +39,7 @@ class SecurityConfiguration {
         http
                 .authorizeHttpRequests(requests -> requests
                         .requestMatchers("/", "/sobre", "/historia", "/referencias",
-                                "/consulente", "/login", "/css/**", "/targets/**",
+                                "/consulente", "/login", "/css/**", "/js/**", "/targets/**",
                                 "/testes", "/testes/**", "/error", "/actuator/health").permitAll()
                         .anyRequest().authenticated())
                 // Custom sign-in page: it has to explain what the account is for and where the

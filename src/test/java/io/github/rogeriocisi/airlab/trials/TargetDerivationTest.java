@@ -94,6 +94,22 @@ class TargetDerivationTest {
     }
 
     @Test
+    @DisplayName("vetor de teste publico: semente de 64 zeros, 12 tentativas, 4 alternativas")
+    void published_test_vector() {
+        // Estes numeros sao o contrato entre tres implementacoes: esta, a do verificador em
+        // JavaScript que roda no navegador de quem faz o teste, e a de qualquer terceiro que
+        // reimplemente a regra. Mudar o algoritmo quebra este teste de proposito.
+        String seed = "0".repeat(64);
+        int[] expected = {0, 0, 2, 2, 1, 2, 1, 0, 0, 3, 0, 2};
+
+        for (int trial = 1; trial <= expected.length; trial++) {
+            assertThat(TargetDerivation.targetIndex(seed, trial, 4))
+                    .describedAs("alvo da tentativa %s", trial)
+                    .isEqualTo(expected[trial - 1]);
+        }
+    }
+
+    @Test
     @DisplayName("indice de tentativa comeca em 1")
     void trial_index_starts_at_one() {
         assertThatThrownBy(() -> TargetDerivation.targetIndex(SEED, 0, 4))

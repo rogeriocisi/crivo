@@ -37,6 +37,23 @@ public record SessionOutcome(String sessionCode,
         trials = List.copyOf(trials);
     }
 
+    /**
+     * Whether this session showed figures at all. The forced choice does not: its
+     * alternatives are four numbered doors, and a column of figures on its result page would
+     * be a column of dashes.
+     */
+    public boolean usesFigures() {
+        return trials.stream().anyMatch(trial -> !trial.candidateSlugs().isEmpty());
+    }
+
+    /**
+     * Target positions as the session recorded them, in trial order, so a verifier running in
+     * the person's browser can compare its own recomputation against them.
+     */
+    public List<Integer> recordedTargets() {
+        return trials.stream().map(TrialOutcome::targetIndex).toList();
+    }
+
     /** Hits expected by chance alone, for display next to the observed count. */
     public BigDecimal expectedByChance() {
         return BigDecimal.valueOf((long) lockedTrials * chanceNumerator)
