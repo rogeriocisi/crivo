@@ -146,6 +146,89 @@ class BlindingMatrixTest {
                 .doesNotContain("Maria").doesNotContain("maria@exemplo").doesNotContain("segredo");
     }
 
+    // --- P4, fase C: o medium e o envio (SPEC E13, matriz de visibilidade do P4) ----------------
+
+    /** What the medium must not get: the sitter, the request, anyone's answers, any score. */
+    private static final String[] P4_MEDIUM_FORBIDDEN = {
+            "sitter", "consulente", "request", "pedido", "answer", "resposta", "salt", "score", "nota",
+            "hit", "acerto", "difference", "diferenca", "result", "email", "commitment"};
+
+    @Test
+    @DisplayName("P4: o que o medium ve do pedido tem nomes, posicao e prazo; nunca consulente, respostas ou nota")
+    void p4_medium_projection_carries_no_sitter_link_answers_or_outcome() {
+        assertNoFieldsNamedLike(io.github.rogeriocisi.airlab.structured.MediumAssignment.class, P4_MEDIUM_FORBIDDEN);
+        assertNoFieldsNamedLike(io.github.rogeriocisi.airlab.structured.MediumAssignment.Slot.class, P4_MEDIUM_FORBIDDEN);
+    }
+
+    @Test
+    @DisplayName("P4: o progresso do estudo e so contagem, sem medium, par ou conteudo")
+    void p4_study_progress_is_counts_only() {
+        for (Class<?> type : new Class<?>[]{io.github.rogeriocisi.airlab.structured.StructuredProgress.class,
+                io.github.rogeriocisi.airlab.structured.CycleReport.class}) {
+            Arrays.stream(type.getRecordComponents()).forEach(component -> assertThat(component.getType())
+                    .describedAs("%s.%s", type.getSimpleName(), component.getName())
+                    .isIn(int.class, long.class));
+        }
+        assertNoFieldsNamedLike(io.github.rogeriocisi.airlab.structured.StructuredStudyView.class, P4_CONTENT_AND_OUTCOME);
+        // N is a count; what must be absent is any code of a pair, a send, a medium or a reading.
+        assertNoFieldsNamedLike(io.github.rogeriocisi.airlab.structured.StructuredStudyView.class,
+                "medium", "paircode", "assignment", "reading", "leitura");
+    }
+
+    @Test
+    @DisplayName("P4: a API do estudo nao devolve a ligacao par -> medium, nem leitura, a quem a usa")
+    void p4_study_service_returns_no_pair_medium_link_or_reading() {
+        for (Method method : io.github.rogeriocisi.airlab.structured.StructuredStudyService.class.getMethods()) {
+            assertThat(method.getReturnType())
+                    .describedAs("StructuredStudyService.%s", method.getName())
+                    .isIn(void.class, boolean.class, java.util.Optional.class,
+                            io.github.rogeriocisi.airlab.structured.StructuredStudyView.class,
+                            io.github.rogeriocisi.airlab.structured.StructuredProgress.class,
+                            io.github.rogeriocisi.airlab.structured.CycleReport.class);
+        }
+    }
+
+    @Test
+    @DisplayName("P4: o pedido visto pelo pareamento e os eventos do envio nao carregam nome, resposta ou nota")
+    void p4_pairing_view_and_events_carry_no_content() {
+        assertNoFieldsNamedLike(io.github.rogeriocisi.airlab.participant.ConsultationRef.class, P4_CONTENT_AND_OUTCOME);
+        assertNoFieldsNamedLike(io.github.rogeriocisi.airlab.structured.ReadingRequestSent.class, P4_CONTENT_AND_OUTCOME);
+        assertNoFieldsNamedLike(io.github.rogeriocisi.airlab.structured.PairReadingsReceived.class, P4_CONTENT_AND_OUTCOME);
+        assertNoFieldsNamedLike(io.github.rogeriocisi.airlab.structured.ReadingRequestExpired.class, P4_CONTENT_AND_OUTCOME);
+    }
+
+    @Test
+    @DisplayName("P4: o consulente nao recebe a leitura nem o medium antes do desmascaramento")
+    void p4_sitter_projections_carry_no_reading_or_medium() {
+        for (Class<?> type : new Class<?>[]{io.github.rogeriocisi.airlab.participant.ConsultationStatus.class,
+                io.github.rogeriocisi.airlab.participant.OwnConsultation.class}) {
+            assertNoFieldsNamedLike(type, "reading", "leitura", "medium", "score", "nota", "hit", "acerto");
+        }
+    }
+
+    @Test
+    @DisplayName("P4: nenhum estado de envio ao medium carrega desempenho")
+    void p4_assignment_states_carry_no_outcome() {
+        for (io.github.rogeriocisi.airlab.structured.AssignmentState state
+                : io.github.rogeriocisi.airlab.structured.AssignmentState.values()) {
+            assertThat(state.label().toLowerCase(Locale.ROOT))
+                    .doesNotContain("acert").doesNotContain("nota").doesNotContain("encaix");
+        }
+    }
+
+    @Test
+    @DisplayName("P4: o envio e a leitura do medium nao vazam por toString")
+    void p4_medium_content_does_not_leak_through_to_string() {
+        var slot = new io.github.rogeriocisi.airlab.structured.MediumAssignment.Slot(1, "Sebastiao", false, null);
+        var assignment = new io.github.rogeriocisi.airlab.structured.MediumAssignment("ENV-1",
+                io.github.rogeriocisi.airlab.structured.AssignmentState.OPEN, "v1", java.time.Instant.EPOCH,
+                java.time.Instant.EPOCH.plusSeconds(60), java.util.List.of(slot));
+        assertThat(assignment.toString()).doesNotContain("Sebastiao");
+        assertThat(slot.toString()).doesNotContain("Sebastiao");
+        assertThat(new io.github.rogeriocisi.airlab.structured.MediumReadingDraft("ENV-1", 1,
+                java.util.Map.of("causa", "cancer")).toString()).doesNotContain("cancer");
+    }
+
     private static void assertNoFieldsNamedLike(Class<?> type, String... forbidden) {
         Arrays.stream(type.getRecordComponents()).forEach(component -> {
             String name = component.getName().toLowerCase(Locale.ROOT);

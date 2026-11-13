@@ -10,6 +10,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.Instant;
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -78,6 +80,10 @@ class ConsultationRequestEntity {
         this.withdrawnAt = at;
     }
 
+    void advance(ConsultationState next) {
+        this.state = next;
+    }
+
     String code() {
         return code;
     }
@@ -88,6 +94,18 @@ class ConsultationRequestEntity {
 
     String questionnaireVersion() {
         return questionnaireVersion;
+    }
+
+    String gender() {
+        return gender;
+    }
+
+    String ageBand() {
+        return ageBand;
+    }
+
+    String deathPeriod() {
+        return deathPeriod;
     }
 
     String commitment() {
@@ -173,6 +191,12 @@ interface ConsultationRequestRepository extends JpaRepository<ConsultationReques
 
     Optional<ConsultationRequestEntity> findBySitterCodeAndStateNot(String sitterCode, ConsultationState state);
 
+    Optional<ConsultationRequestEntity> findByCode(String code);
+
+    List<ConsultationRequestEntity> findByCodeIn(Collection<String> codes);
+
+    List<ConsultationRequestEntity> findByStateInOrderByLockedAtAscCodeAsc(Collection<ConsultationState> states);
+
     long countByStateNot(ConsultationState state);
 
     long countByState(ConsultationState state);
@@ -181,4 +205,60 @@ interface ConsultationRequestRepository extends JpaRepository<ConsultationReques
 interface ConsultationDetailRepository extends JpaRepository<ConsultationDetailEntity, Long> {
 
     Optional<ConsultationDetailEntity> findByRequestCode(String requestCode);
+}
+
+/**
+ * A first name released to the medium drawn for a pair (V19, SPEC E13, phase C). The record is
+ * what lets this module refuse a name to anyone else: no release, no name. Revoked, never deleted.
+ */
+@Entity
+@Table(name = "first_name_release", schema = "identity")
+class FirstNameReleaseEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "assignment_code", nullable = false, length = 32, updatable = false)
+    private String assignmentCode;
+
+    @Column(name = "request_code", nullable = false, length = 32, updatable = false)
+    private String requestCode;
+
+    @Column(name = "medium_code", nullable = false, length = 32, updatable = false)
+    private String mediumCode;
+
+    @Column(name = "released_at", nullable = false, updatable = false)
+    private Instant releasedAt;
+
+    @Column(name = "revoked_at")
+    private Instant revokedAt;
+
+    protected FirstNameReleaseEntity() {
+    }
+
+    FirstNameReleaseEntity(String assignmentCode, String requestCode, String mediumCode, Instant releasedAt) {
+        this.assignmentCode = assignmentCode;
+        this.requestCode = requestCode;
+        this.mediumCode = mediumCode;
+        this.releasedAt = releasedAt;
+    }
+
+    void revoke(Instant at) {
+        this.revokedAt = at;
+    }
+
+    String requestCode() {
+        return requestCode;
+    }
+}
+
+interface FirstNameReleaseRepository extends JpaRepository<FirstNameReleaseEntity, Long> {
+
+    List<FirstNameReleaseEntity> findByAssignmentCodeAndRevokedAtIsNull(String assignmentCode);
+
+    List<FirstNameReleaseEntity> findByAssignmentCodeAndMediumCodeAndRevokedAtIsNull(String assignmentCode,
+                                                                                    String mediumCode);
+
+    List<FirstNameReleaseEntity> findByRequestCodeAndRevokedAtIsNull(String requestCode);
 }

@@ -97,4 +97,43 @@ class QuestionnaireTest {
         assertThat(current.labelOf("causa", Questionnaire.NOT_RECEIVED)).isEqualTo("Não recebi");
         assertThat(current.labelOf("causa", "cancer")).isEqualTo("Câncer");
     }
+
+    // --- Fase C: as respostas do medium ---------------------------------------------------------
+
+    private Map<String, String> mediumAnswers() {
+        Map<String, String> answers = new HashMap<>();
+        for (Questionnaire.Field field : current.scoredFields()) {
+            answers.put(field.key(), field.options().get(0).key());
+        }
+        return answers;
+    }
+
+    @Test
+    @DisplayName("o medium responde so aos campos da nota, cada um com uma opcao ou nao recebi")
+    void medium_answers_only_the_scored_fields() {
+        assertThatCode(() -> current.checkMediumAnswers(mediumAnswers())).doesNotThrowAnyException();
+
+        Map<String, String> notReceived = mediumAnswers();
+        notReceived.replaceAll((key, value) -> Questionnaire.NOT_RECEIVED);
+        assertThatCode(() -> current.checkMediumAnswers(notReceived)).doesNotThrowAnyException();
+    }
+
+    @Test
+    @DisplayName("o medium nao deixa campo em branco, nao responde ao pareamento e nao usa nao sei")
+    void medium_answers_are_complete_and_closed() {
+        Map<String, String> missing = mediumAnswers();
+        missing.remove(current.scoredFields().get(0).key());
+        assertThatThrownBy(() -> current.checkMediumAnswers(missing))
+                .isInstanceOf(IllegalArgumentException.class).hasMessageContaining("Não recebi");
+
+        Map<String, String> pairing = mediumAnswers();
+        pairing.put(Questionnaires.GENDER, "feminino");
+        assertThatThrownBy(() -> current.checkMediumAnswers(pairing))
+                .isInstanceOf(IllegalArgumentException.class).hasMessageContaining("Campo desconhecido");
+
+        Map<String, String> unknown = mediumAnswers();
+        unknown.put(current.scoredFields().get(0).key(), Questionnaire.UNKNOWN);
+        assertThatThrownBy(() -> current.checkMediumAnswers(unknown))
+                .isInstanceOf(IllegalArgumentException.class).hasMessageContaining("Opção desconhecida");
+    }
 }

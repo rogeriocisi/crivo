@@ -2,7 +2,8 @@ package io.github.rogeriocisi.airlab.participant;
 
 /**
  * Where a P4 consultation request stands (SPEC E13, sitter panel). Phase B creates requests as
- * {@link #LOCKED} and can withdraw them; the other states arrive with phases C and D.
+ * {@link #LOCKED}; phase C pairs them, sends them to a medium and records the readings; phase D
+ * brings {@link #UNBLINDED}.
  *
  * <p>A state says where the request is, never how it scored: there is no score before
  * unblinding (E10, lock 1).

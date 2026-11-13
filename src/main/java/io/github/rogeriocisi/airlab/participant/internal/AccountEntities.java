@@ -105,6 +105,10 @@ class AccountEntity {
         return fullNameEnc;
     }
 
+    String emailEnc() {
+        return emailEnc;
+    }
+
     String passwordHash() {
         return passwordHash;
     }
@@ -195,6 +199,9 @@ interface AccountRepository extends JpaRepository<AccountEntity, Long> {
     long countByProfileAndClosedAtIsNullAndEmailConfirmedAtIsNotNull(AccountProfile profile);
 
     long countByProfileAndClosedAtIsNullAndEmailConfirmedAtIsNull(AccountProfile profile);
+
+    java.util.List<AccountEntity> findByProfileAndClosedAtIsNullAndEmailConfirmedAtIsNotNullOrderByCodeAsc(
+            AccountProfile profile);
 }
 
 interface EmailConfirmationRepository extends JpaRepository<EmailConfirmationEntity, Long> {

@@ -36,11 +36,30 @@
           <div><dt>Situação</dt><dd th:text="${situacao.state.label()}">Travado</dd></div>
         </dl>
         <p class="acoes"><a class="botao botao-cheio" href="/painel/consulente/pedido">Ver meu pedido</a></p>
-        <div class="ressalva">
-          <p>
-            <strong>Próxima etapa em construção.</strong> O pareamento e o envio dos pedidos aos
-            médiuns entram na fase seguinte da plataforma. Seu pedido está travado e guardado até lá.
+        <div class="ressalva" th:switch="${situacao.state.name()}">
+          <th:block th:case="'LOCKED'">
+            <p th:unless="${estudoAberto}">
+              <strong>Aguardando a abertura do estudo.</strong> O pareamento começa quando a administração
+              congelar o pré-registro. Seu pedido está travado e guardado até lá.
+            </p>
+            <p th:if="${estudoAberto}">
+              <strong>Aguardando um par.</strong> O sistema espera outro pedido de perfil parecido — mesmo
+              gênero, faixa etária e período do falecimento. Pode levar algum tempo.
+            </p>
+          </th:block>
+          <p th:case="'PAIRED'">
+            <strong>Par formado.</strong> Assim que houver um médium disponível, o sistema sorteia quem
+            recebe o primeiro nome.
           </p>
+          <p th:case="'SENT_TO_MEDIUM'">
+            <strong>Com o médium.</strong> Um médium sorteado recebeu só o primeiro nome e tem um prazo
+            para responder. Se o prazo vencer, o pedido vai a outro médium.
+          </p>
+          <p th:case="'READING_RECEIVED'">
+            <strong>Leitura recebida e travada.</strong> Ninguém vê o resultado ainda: a conferência só
+            acontece quando o estudo atingir o número de pares declarado.
+          </p>
+          <p th:case="*">Seu pedido está travado.</p>
         </div>
       </th:block>
 

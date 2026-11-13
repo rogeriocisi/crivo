@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rever a leitura — Crivo</title>
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="/css/crivo.css">
+</head>
+<body>
+<a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+<div class="faixa">
+  <header th:replace="~{fragments/site :: topo}"></header>
+</div>
+
+<main id="conteudo">
+  <section class="abertura">
+    <div class="faixa">
+      <p class="rotulo">Médium · rever antes de travar · leitura <span th:text="${posicao}">1</span> de 2</p>
+      <h1 th:text="'Sua leitura para ' + ${nome}">Sua leitura</h1>
+      <p class="chamada">
+        Se estiver tudo certo, trave. <strong>Depois de travada, a leitura não muda mais</strong> —
+        nem por você, nem pela equipe, nem pela plataforma.
+      </p>
+
+      <dl class="leituras">
+        <th:block th:each="item : ${respostas}">
+          <dt th:text="${item.key}">Pergunta</dt>
+          <dd th:text="${item.value}">Resposta</dd>
+        </th:block>
+      </dl>
+
+      <div class="ressalva">
+        <p>
+          Ao travar, a trilha pública de auditoria recebe um <strong>compromisso criptográfico</strong>
+          da leitura, sem as respostas e sem o seu código. No fim do estudo, ele prova que a leitura
+          conferida é esta.
+        </p>
+      </div>
+
+      <form class="formulario" method="post"
+            th:action="@{/painel/medium/pedido/{c}/leitura/{p}/travar(c=${pedido.code},p=${posicao})}">
+        <button class="botao botao-cheio" type="submit">Travar a leitura</button>
+      </form>
+      <p class="nota nota-espacada">
+        <a th:href="@{/painel/medium/pedido/{c}/leitura/{p}(c=${pedido.code},p=${posicao})}">Voltar e corrigir</a>
+      </p>
+    </div>
+  </section>
+</main>
+
+<footer th:replace="~{fragments/site :: rodape}"></footer>
+</body>
+</html>

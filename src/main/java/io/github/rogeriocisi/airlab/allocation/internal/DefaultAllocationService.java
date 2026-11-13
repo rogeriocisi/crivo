@@ -9,6 +9,7 @@ import io.github.rogeriocisi.airlab.allocation.DrawInput;
 import io.github.rogeriocisi.airlab.audit.ActorRole;
 import io.github.rogeriocisi.airlab.audit.AuditEventType;
 import io.github.rogeriocisi.airlab.audit.AuditTrail;
+import io.github.rogeriocisi.airlab.support.CanonicalJson;
 import io.github.rogeriocisi.airlab.support.FieldCipher;
 import io.github.rogeriocisi.airlab.support.Hashes;
 import java.time.Clock;
@@ -74,6 +75,45 @@ class DefaultAllocationService implements AllocationService {
 
         events.publishEvent(new AllocationDrawn(studyId, commitment, plan));
         return commitment;
+    }
+
+    @Override
+    @Transactional
+    public String commitSeed(long studyId, String studyCode) {
+        if (sets.findByStudyId(studyId).isPresent()) {
+            throw new IllegalStateException("study " + studyId + " already has a committed seed");
+        }
+        String seedHex = AllocationEngine.newSeedHex();
+        Map<String, Object> input = new LinkedHashMap<>();
+        input.put("mode", "P4_INCREMENTAL");
+        input.put("studyCode", studyCode);
+        String canonicalInput = CanonicalJson.write(input);
+        String commitment = AllocationEngine.seedCommitment(seedHex, canonicalInput);
+
+        // No plan yet: the P4 draws happen during collection and are recorded where they happen,
+        // with their inputs. This row holds the seed and its commitment.
+        sets.save(new AllocationSet(studyId, commitment, canonicalInput, "[]",
+                cipher.encrypt(seedHex), clock.instant()));
+
+        Map<String, Object> payload = new LinkedHashMap<>();
+        payload.put("commitment", commitment);
+        payload.put("mode", "P4_INCREMENTAL");
+        payload.put("drawInputSha256", Hashes.sha256Hex(canonicalInput));
+        auditTrail.append(AuditEventType.ALLOCATION_SEED_COMMITTED, ActorRole.SYSTEM, null,
+                "study:" + studyId, payload);
+        return commitment;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public String drawStructuredMedium(long studyId, String pairCode, int attempt, List<String> eligibleMediums) {
+        return AllocationEngine.structuredMedium(sealedSeed(studyId), pairCode, attempt, eligibleMediums);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<String> structuredNameOrder(long studyId, String pairCode, int attempt, List<String> requestCodes) {
+        return AllocationEngine.structuredNameOrder(sealedSeed(studyId), pairCode, attempt, requestCodes);
     }
 
     @Override

@@ -5,6 +5,10 @@ import io.github.rogeriocisi.airlab.notification.Mailer;
 import io.github.rogeriocisi.airlab.participant.AccountService;
 import io.github.rogeriocisi.airlab.participant.AccountView;
 import io.github.rogeriocisi.airlab.participant.ConsultationService;
+import io.github.rogeriocisi.airlab.structured.MediumAssignment;
+import io.github.rogeriocisi.airlab.structured.MediumReadingService;
+import io.github.rogeriocisi.airlab.structured.StructuredStudyService;
+import java.util.List;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import java.security.Principal;
@@ -20,23 +24,29 @@ import org.springframework.web.bind.annotation.GetMapping;
  * One panel per profile (SPEC E13, "Telas por perfil"). Who reaches which panel is decided in
  * the security configuration; here each panel gets a model built for that profile alone.
  *
- * <p>The administrator panel shows counts and notices, never a score: in phase A there are no
- * scores at all, and when there are, they will not exist before unblinding (E10, lock 1).
+ * <p>The administrator panel shows counts and notices, never a score — and in the P4 there is no
+ * score to show before the unblinding, because none is computed (E10, lock 1). Nor does it show
+ * which medium has which pair: the progress it gets is counts only.
  */
 @Controller
 class PanelController {
 
     private final AccountService accounts;
     private final ConsultationService consultations;
+    private final StructuredStudyService structuredStudies;
+    private final MediumReadingService mediumReadings;
     private final AdminNotices notices;
     private final Mailer mailer;
     private final SignUpGate gate;
     private final Environment environment;
 
-    PanelController(AccountService accounts, ConsultationService consultations, AdminNotices notices, Mailer mailer,
-                    SignUpGate gate, Environment environment) {
+    PanelController(AccountService accounts, ConsultationService consultations,
+                    StructuredStudyService structuredStudies, MediumReadingService mediumReadings,
+                    AdminNotices notices, Mailer mailer, SignUpGate gate, Environment environment) {
         this.accounts = accounts;
         this.consultations = consultations;
+        this.structuredStudies = structuredStudies;
+        this.mediumReadings = mediumReadings;
         this.notices = notices;
         this.mailer = mailer;
         this.gate = gate;
@@ -68,11 +78,18 @@ class PanelController {
     String sitter(Principal principal, Model model, HttpServletRequest request) throws ServletException {
         model.addAttribute("situacao", consultations.status(principal.getName()).orElse(null));
         model.addAttribute("pedidosAbertos", gate.requestsOpen());
+        model.addAttribute("estudoAberto", structuredStudies.current().isPresent());
         return ownPanel(principal, model, request, "painel-consulente");
     }
 
     @GetMapping("/painel/medium")
     String medium(Principal principal, Model model, HttpServletRequest request) throws ServletException {
+        // Built from the principal's own code: the medium's requests and nobody else's.
+        List<MediumAssignment> requests = mediumReadings.assignments(principal.getName());
+        model.addAttribute("abertos", requests.stream().filter(MediumAssignment::open).toList());
+        model.addAttribute("enviados", requests.stream().filter(assignment -> !assignment.open()).toList());
+        model.addAttribute("leiturasEnviadas", requests.stream().mapToLong(MediumAssignment::lockedSlots).sum());
+        model.addAttribute("encerrados", mediumReadings.closedWithoutReading(principal.getName()));
         return ownPanel(principal, model, request, "painel-medium");
     }
 
@@ -92,6 +109,8 @@ class PanelController {
     String admin(Model model) {
         model.addAttribute("contas", accounts.counts());
         model.addAttribute("pedidos", consultations.counts());
+        model.addAttribute("estudo", structuredStudies.current().orElse(null));
+        model.addAttribute("progresso", structuredStudies.progress());
         model.addAttribute("pedidosAbertos", gate.requestsOpen());
         model.addAttribute("avisos", notices.recent(50));
         model.addAttribute("caixaLocal", mailer.localOutbox());

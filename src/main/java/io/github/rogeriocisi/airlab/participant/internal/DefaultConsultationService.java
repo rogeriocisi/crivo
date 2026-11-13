@@ -9,6 +9,7 @@ import io.github.rogeriocisi.airlab.participant.AccountProfile;
 import io.github.rogeriocisi.airlab.participant.ConsultationCommitment;
 import io.github.rogeriocisi.airlab.participant.ConsultationCounts;
 import io.github.rogeriocisi.airlab.participant.ConsultationDraft;
+import io.github.rogeriocisi.airlab.participant.ConsultationRef;
 import io.github.rogeriocisi.airlab.participant.ConsultationLocked;
 import io.github.rogeriocisi.airlab.participant.ConsultationService;
 import io.github.rogeriocisi.airlab.participant.ConsultationState;
@@ -20,10 +21,17 @@ import io.github.rogeriocisi.airlab.support.Seeds;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.regex.Pattern;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -43,6 +51,7 @@ class DefaultConsultationService implements ConsultationService {
 
     private final ConsultationRequestRepository requests;
     private final ConsultationDetailRepository details;
+    private final FirstNameReleaseRepository releases;
     private final AccountRepository accounts;
     private final FieldCipher cipher;
     private final AuditTrail auditTrail;
@@ -51,6 +60,7 @@ class DefaultConsultationService implements ConsultationService {
 
     DefaultConsultationService(ConsultationRequestRepository requests,
                                ConsultationDetailRepository details,
+                               FirstNameReleaseRepository releases,
                                AccountRepository accounts,
                                FieldCipher cipher,
                                AuditTrail auditTrail,
@@ -58,6 +68,7 @@ class DefaultConsultationService implements ConsultationService {
                                Clock clock) {
         this.requests = requests;
         this.details = details;
+        this.releases = releases;
         this.accounts = accounts;
         this.cipher = cipher;
         this.auditTrail = auditTrail;
@@ -138,6 +149,9 @@ class DefaultConsultationService implements ConsultationService {
             details.findByRequestCode(request.code())
                     .filter(detail -> !detail.erased())
                     .ifPresent(detail -> detail.erase(now));
+            // A medium who had the name stops seeing it at once; the pair is undone by the next
+            // P4 cycle (SPEC E13, phase C).
+            releases.findByRequestCodeAndRevokedAtIsNull(request.code()).forEach(release -> release.revoke(now));
             request.withdraw(now);
 
             Map<String, Object> payload = new LinkedHashMap<>();
@@ -173,6 +187,100 @@ class DefaultConsultationService implements ConsultationService {
         return new ConsultationCounts(
                 requests.countByStateNot(ConsultationState.WITHDRAWN),
                 requests.countByState(ConsultationState.WITHDRAWN));
+    }
+
+    /** The steps of the P4 flow; anything else is refused (SPEC E13, phase C). */
+    private static final Map<ConsultationState, Set<ConsultationState>> STEPS = Map.of(
+            ConsultationState.LOCKED, EnumSet.of(ConsultationState.PAIRED),
+            ConsultationState.PAIRED, EnumSet.of(ConsultationState.SENT_TO_MEDIUM, ConsultationState.LOCKED),
+            ConsultationState.SENT_TO_MEDIUM, EnumSet.of(ConsultationState.READING_RECEIVED,
+                    ConsultationState.PAIRED, ConsultationState.LOCKED),
+            ConsultationState.READING_RECEIVED, EnumSet.of(ConsultationState.LOCKED));
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ConsultationRef> requests(Set<ConsultationState> states) {
+        if (states.isEmpty()) {
+            return List.of();
+        }
+        return requests.findByStateInOrderByLockedAtAscCodeAsc(states).stream()
+                .map(DefaultConsultationService::refOf).toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ConsultationRef> requestsByCode(Collection<String> codes) {
+        if (codes.isEmpty()) {
+            return List.of();
+        }
+        return requests.findByCodeIn(codes).stream()
+                .sorted(Comparator.comparing(ConsultationRequestEntity::code))
+                .map(DefaultConsultationService::refOf).toList();
+    }
+
+    @Override
+    @Transactional
+    public void advance(String requestCode, ConsultationState from, ConsultationState to) {
+        ConsultationRequestEntity request = requests.findByCode(requestCode)
+                .orElseThrow(() -> new IllegalArgumentException("unknown request " + requestCode));
+        if (request.state() != from) {
+            throw new IllegalStateException("request " + requestCode + " is " + request.state() + ", not " + from);
+        }
+        if (!STEPS.getOrDefault(from, Set.of()).contains(to)) {
+            throw new IllegalStateException("the P4 flow has no step " + from + " -> " + to);
+        }
+        request.advance(to);
+    }
+
+    @Override
+    @Transactional
+    public void releaseFirstNames(String assignmentCode, String mediumCode, List<String> requestCodes) {
+        accounts.findByCode(mediumCode)
+                .filter(account -> !account.closed() && account.confirmed())
+                .filter(account -> account.profile() == AccountProfile.MEDIUM)
+                .orElseThrow(() -> new IllegalStateException("names go only to an active, confirmed médium"));
+        Instant now = clock.instant();
+        List<String> released = new ArrayList<>();
+        for (String requestCode : new TreeSet<>(requestCodes)) {
+            ConsultationRequestEntity request = requests.findByCode(requestCode)
+                    .filter(candidate -> candidate.state() != ConsultationState.WITHDRAWN)
+                    .orElseThrow(() -> new IllegalStateException("request " + requestCode + " is not active"));
+            releases.save(new FirstNameReleaseEntity(assignmentCode, request.code(), mediumCode, now));
+            released.add(request.code());
+        }
+
+        // No medium code: the trail is public, and which medium has which pair stays blind until
+        // the unblinding (P4 matrix). The link is in the database and goes into the package later.
+        Map<String, Object> payload = new LinkedHashMap<>();
+        payload.put("assignment", assignmentCode);
+        payload.put("requests", released);
+        auditTrail.append(AuditEventType.FIRST_NAME_RELEASED, ActorRole.SYSTEM, null,
+                "assignment:" + assignmentCode, payload);
+    }
+
+    @Override
+    @Transactional
+    public void revokeFirstNames(String assignmentCode) {
+        Instant now = clock.instant();
+        releases.findByAssignmentCodeAndRevokedAtIsNull(assignmentCode).forEach(release -> release.revoke(now));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Map<String, String> releasedFirstNames(String mediumCode, String assignmentCode) {
+        Map<String, String> names = new TreeMap<>();
+        for (FirstNameReleaseEntity release
+                : releases.findByAssignmentCodeAndMediumCodeAndRevokedAtIsNull(assignmentCode, mediumCode)) {
+            details.findByRequestCode(release.requestCode())
+                    .filter(detail -> !detail.erased())
+                    .ifPresent(detail -> names.put(release.requestCode(), cipher.decrypt(detail.firstNameEnc())));
+        }
+        return names;
+    }
+
+    private static ConsultationRef refOf(ConsultationRequestEntity request) {
+        return new ConsultationRef(request.code(), request.sitterCode(), request.questionnaireVersion(),
+                request.gender(), request.ageBand(), request.deathPeriod(), request.state(), request.lockedAt());
     }
 
     private static ConsultationStatus statusOf(ConsultationRequestEntity request) {

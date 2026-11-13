@@ -6,6 +6,9 @@ import io.github.rogeriocisi.airlab.notification.Mailer;
 import io.github.rogeriocisi.airlab.notification.NoticeKind;
 import io.github.rogeriocisi.airlab.participant.AccountConfirmed;
 import io.github.rogeriocisi.airlab.participant.ConsultationLocked;
+import io.github.rogeriocisi.airlab.structured.PairReadingsReceived;
+import io.github.rogeriocisi.airlab.structured.ReadingRequestExpired;
+import io.github.rogeriocisi.airlab.structured.ReadingRequestSent;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -81,6 +84,23 @@ class DefaultAdminNotices implements AdminNotices {
     @EventListener
     void on(ConsultationLocked event) {
         record(NoticeKind.REQUEST_LOCKED, event.code());
+    }
+
+    // Phase C: the notice carries the pair code, never the medium's (P4 matrix).
+
+    @EventListener
+    void on(ReadingRequestSent event) {
+        record(NoticeKind.PAIR_SENT_TO_MEDIUM, event.pairCode());
+    }
+
+    @EventListener
+    void on(PairReadingsReceived event) {
+        record(NoticeKind.READING_RECEIVED, event.pairCode());
+    }
+
+    @EventListener
+    void on(ReadingRequestExpired event) {
+        record(NoticeKind.READING_OVERDUE, event.pairCode());
     }
 }
 

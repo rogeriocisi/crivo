@@ -1,6 +1,6 @@
 # Plano técnico do MVP — Crivo (AIR Lab)
 
-> Derivado de `CONSTITUTION.md` (prevalece) e de `SPEC.md`. Versão 1.4 · novembro/2026 · 1.3: protocolo P4 (SPEC E13), fase A — contas com perfil fixo, e-mail e avisos ao administrador · 1.4: fase B — questionário versionado e pedido de consulta travado com compromisso salgado.
+> Derivado de `CONSTITUTION.md` (prevalece) e de `SPEC.md`. Versão 1.5 · novembro/2026 · 1.3: protocolo P4 (SPEC E13), fase A — contas com perfil fixo, e-mail e avisos ao administrador · 1.4: fase B — questionário versionado e pedido de consulta travado com compromisso salgado · 1.5: fase C — módulo `structured`: estudo P4, ciclo automático, pareamento, sorteio do médium, leitura travada e prazos.
 > Este documento registra as decisões de implementação do MVP: estrutura de módulos,
 > esquemas e migrações, execução por linha de comando e justificativa de cada dependência.
 
@@ -40,8 +40,9 @@ quem pode depender; `ModularityTest` verifica isso no build.
 | `audit` | E8 | **Implementado**: trilha append-only encadeada por hash, verificação da cadeia |
 | `allocation` | E3 | **Implementado**: sorteio reproduzível, compromisso → revelação, custódia da semente |
 | `study` | E1 | **Implementado**: estudo, documento canônico do pré-registro, congelamento, emendas |
-| `participant` | E2, E13 | **Implementado**: participantes, consentimento, alvos, pareamento, desistência; **contas do P4** (`AccountService`) com perfil fixo, confirmação de e-mail por link de uso único e exclusão que mantém o código; **pedidos de consulta do P4** (`ConsultationService`), travados na criação, com compromisso salgado (`ConsultationCommitment`) |
-| `notification` | E13 | **Implementado (fase A)**: `Mailer` — caixa de saída em memória nos perfis `local`/`test`, SMTP em produção, desativado sem SMTP — e `AdminNotices`, avisos ao administrador só com tipo, código e hora |
+| `participant` | E2, E13 | **Implementado**: participantes, consentimento, alvos, pareamento, desistência; **contas do P4** (`AccountService`) com perfil fixo, confirmação de e-mail por link de uso único e exclusão que mantém o código; **pedidos de consulta do P4** (`ConsultationService`), travados na criação, com compromisso salgado (`ConsultationCommitment`), e a **liberação dos primeiros nomes** só ao médium sorteado |
+| `notification` | E13 | **Implementado**: `Mailer` — caixa de saída em memória nos perfis `local`/`test`, SMTP em produção, desativado sem SMTP —, `AdminNotices`, avisos ao administrador só com tipo, código e hora, e o e-mail ao médium sorteado, sem nomes |
+| `structured` | E13 | **Implementado (fase C)**: estudo P4 congelado com o questionário no anexo (`StructuredStudyService`), ciclo automático — pareamento, sorteio do médium, envio, prazos e reenvio —, leitura do médium travada com compromisso salgado (`MediumReadingService`, `ReadingCommitment`). Desmascaramento e conferência: fase D |
 | `redaction` | E5 | Parcial: `ClueScrubber` (guarda de pistas). Persistência e telas pendentes |
 | `analysis` | E7 | Parcial: Wilcoxon pareado exato (medida primária), binomial exato, permutação de Pratt e Birge, `PowerCheck`, política de rótulo e redução às unidades independentes. Persistência e relatório pendentes |
 | `session` | E4 | Pendente (tabelas prontas; os slots contrabalanceados já saem do sorteio) |
@@ -81,6 +82,7 @@ Flyway, em `src/main/resources/db/migration`. Histórico no esquema `research`.
 | `V16` | Entropia do participante: `participant_nonce` e `server_seed_hex`, *trigger* que recusa tentativa de sessão sem a metade do participante, e preenchimento das sessões anteriores (`server_seed_hex = seed_hex`, porque antes a semente era toda do servidor) |
 | `V17` | Contas do P4 (`identity.account`, `identity.email_confirmation`) e avisos (`research.admin_notice`). *Trigger* recusa troca de perfil, de código, reabertura de conta encerrada, reescrita da data de confirmação e qualquer `DELETE`; `CHECK` impede perfil fora de consulente e médium e exige dados apagados na conta encerrada; índice único parcial: uma conta ativa por e-mail (E13) |
 | `V18` | Pedido de consulta do P4: `research.consultation_request` (código, consulente, versão do questionário, atributos de pareamento, compromisso, estado) e `identity.consultation_detail` (primeiro nome, respostas e sal, cifrados). *Triggers*: pedido travado só muda de estado, retirado é final, nada se apaga, e o detalhe só admite o apagamento na desistência; índice único parcial: um pedido ativo por consulente (E13, fase B) |
+| `V19` | P4, fase C: `research.structured_study` (versão do questionário, N, prazo; imutável), `research.structured_pair` (dois pedidos travados; só se desfaz), `research.reading_assignment` (envio a um médium sorteado, com a lista de elegíveis e a ordem dos nomes; só se encerra), `research.structured_reading` (leitura cifrada com compromisso; imutável) e `identity.first_name_release` (a quem o nome foi liberado; só se revoga). Chaves estrangeiras para `consultation_request`: não existe par nem envio sobre pedido que não esteja travado (E13, fase C) |
 
 **Migração aplicada não se edita**: corrigir o vocabulário dos comentários mudaria o checksum
 do Flyway e quebraria a validação em qualquer banco já migrado — inclusive o do próprio autor.
@@ -138,6 +140,15 @@ congelado, participantes identificados e N declarado antes da coleta.
 | Faixas de pareamento iguais às do P1 | O pareamento da fase C é o mesmo código para os dois protocolos |
 | Respostas guardadas como linhas `chave=opção` cifradas | Chaves e opções são *slugs*; o formato dispensa parser de JSON e não entra em hash nenhum |
 | Formulário fechado em produção sem `AIRLAB_CEP_REFERENCE` | E10, trava 4: o pedido coleta dado sensível sobre a pessoa falecida |
+| **Fase C**: módulo próprio, `structured` | Pares, envios e leituras não são dado identificável e não cabem em `participant`; o nome continua lá, e só sai por uma liberação registrada |
+| Estudo P4 no módulo `study`, com anexo canônico | O mesmo documento com hash, congelamento e *trigger* do P1; o anexo leva o questionário inteiro, o N, o prazo e as regras de sorteio, e o P1 continua byte a byte igual |
+| Pré-registro do P4 sem rascunho gravado | Como o pedido: o administrador revê na sessão e congela num passo. Emenda de P4 é recusada até existir uma que preserve o anexo |
+| Compromisso sobre a semente (`AllocationService.commitSeed`) | Os pares se formam durante o estudo; cada sorteio é função pública da semente e de entradas registradas (`AllocationEngine.structuredMedium`, `structuredNameOrder`), em forma canônica |
+| Ciclo agendado a cada minuto, não evento síncrono | Um lugar só para pareamento, envio, prazo e cancelamento, idempotente e com o relógio como parâmetro; os testes o chamam com o relógio que precisam. Desligado na CLI e nos testes |
+| Nenhum código de médium na trilha antes do desmascaramento | Matriz do P4: ligação pedido → médium ✗ para o administrador, e a trilha é pública. Envio, liberação e leitura vão à trilha só com códigos de envio, par, leitura e hashes |
+| Liberação do nome registrada no esquema `identity` | `participant` recusa o nome a quem não tem liberação não revogada; vencimento, cancelamento e retirada revogam |
+| O médium responde só aos campos da nota | Os de pareamento não contam e são iguais (ou dedutíveis do nome) dentro do par |
+| E-mail ao médium depois do *commit* | Ninguém é avisado de um envio que um *rollback* desfez; o e-mail não leva nome nem código de par |
 
 ## 5. Decisões metodológicas impostas pelo código
 
@@ -242,6 +253,10 @@ sorteio na CLI, nunca para calcular hash.
 | `QuestionnaireTest` | E13 | Unitário: campos de pareamento iguais aos do P1 e fora da nota, "não sei" só onde o pareamento não precisa, resposta incompleta ou desconhecida recusada |
 | `ConsultationIntegrationTest` | P1, P4, P6, E13 | PostgreSQL real: pedido nasce travado, compromisso recalculável e sensível a qualquer resposta, trilha só com o compromisso, detalhe cifrado, banco recusa alterar e apagar, um pedido ativo por consulente, desistência apaga o detalhe |
 | `ConsultationPagesTest` | P1, E13 | Segurança real: preencher, rever, travar e ver; o pedido não aparece para outro consulente nem para o administrador; o médium não alcança as telas |
+| `StructuredPairingTest` | P5, E13 | Unitário: mesmo estrato, ordem de travamento, nunca dois pedidos do mesmo consulente, mesmo resultado em qualquer ordem de entrada, limite de N |
+| `StructuredStudyIntegrationTest` | P1, P2, P4, P5, E13 | PostgreSQL real: anexo e compromisso da semente no documento, um estudo por vez, nome só para o médium sorteado, trilha sem código de médium, sorteio refeito a partir da semente e das entradas registradas, leitura com compromisso recalculável e imutável, prazo vencido vai a outro médium, retirada desfaz o par, banco recusa reescritas |
+| `MediumReadingPagesTest` | P1, E13 | Segurança real: ver os nomes, responder, rever e travar; outro médium, o consulente e o administrador não veem os nomes |
+| `StructuredStudyPagesTest` | P2, E13 | Preencher, rever com o poder declarado e congelar; questionário em rascunho não congela onde rascunho não vale |
 | `AccountPagesTest` | P1, E13 | Segurança real: do cadastro ao painel, cada perfil só alcança o próprio painel, senha errada não revela conta não confirmada, cadastro repetido não revela nada |
 | `TargetDerivationTest` | P5 | Unitário: alvo reproduzível pela semente, dentro do intervalo, candidatas distintas e banco pequeno recusado |
 | `ProtocolCatalogTest` | SPEC 1.1 | Unitário: todo protocolo declara o que não sustenta, e protocolo sem limites não compila em tempo de execução |

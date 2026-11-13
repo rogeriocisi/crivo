@@ -14,6 +14,18 @@ public interface StudyService {
     StudySummary create(@NotBlank String title, @Valid PreregistrationPlan plan, String actorCode);
 
     /**
+     * Creates a study of another protocol of the catalog. The annex, canonical JSON written by
+     * the protocol's own module, goes into the hashed document as it is: for the P4 it carries
+     * the whole questionnaire, the pairing rule, the deadline and the number of pairs (SPEC E13,
+     * phase C), so that freezing the document freezes them too.
+     *
+     * @param protocol      protocol tag stored with the study, for example {@code STRUCTURED_READING_V1}
+     * @param protocolAnnex canonical JSON of what the protocol adds to the plan
+     */
+    StudySummary create(@NotBlank String title, @NotBlank String protocol, @Valid PreregistrationPlan plan,
+                        @NotBlank String protocolAnnex, String actorCode);
+
+    /**
      * Freezes the current preregistration version together with the draw commitment, and
      * returns the document hash to publish (P2, P5).
      *

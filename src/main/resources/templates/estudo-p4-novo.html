@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Novo estudo P4 — Crivo</title>
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="/css/crivo.css">
+</head>
+<body>
+<a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+<div class="faixa">
+  <header th:replace="~{fragments/site :: topo}"></header>
+</div>
+
+<main id="conteudo">
+  <section class="abertura">
+    <div class="faixa">
+      <p class="rotulo">Administrador · estudo P4</p>
+      <h1>Pré-registro do estudo</h1>
+      <p class="chamada">
+        Antes de qualquer pareamento, o estudo é declarado e congelado. Você escreve o que está
+        abaixo; o resto — questionário, regra de pareamento, regra de conferência, análise e regras
+        de exclusão — vem do protocolo e entra no documento como está (SPEC, E13).
+      </p>
+      <p class="nota">
+        Nada é gravado enquanto você preenche. Ao congelar, o documento recebe um hash e a semente do
+        sorteio recebe um compromisso, e nenhum dos dois muda mais.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <div class="faixa">
+      <div class="ressalva" th:if="${rascunhoBloqueado}">
+        <p>
+          <strong>O questionário em vigor é um rascunho</strong>
+          (<code th:text="${questionario.version}">v1-rascunho</code>). Em produção, o estudo só congela a
+          versão revisada pelo pesquisador.
+        </p>
+      </div>
+
+      <form class="formulario formulario-largo" method="post" th:action="@{/painel/adm/estudo-p4/revisar}">
+        <p class="erro" th:if="${erro}" th:text="${erro}" role="alert">Erro</p>
+
+        <label for="titulo">Título</label>
+        <input id="titulo" name="titulo" type="text" required maxlength="200" th:value="${termos.title}">
+
+        <label for="pares">Número de pares (N)</label>
+        <input id="pares" name="pares" type="number" min="1" required
+               th:attr="max=${paresMaximo}" th:value="${termos.targetPairs}">
+        <p class="nota">O pareamento para em N pares ativos; o desmascaramento vem quando todos têm as duas leituras.</p>
+
+        <label for="prazo">Prazo do médium, em dias</label>
+        <input id="prazo" name="prazo" type="number" min="1" required
+               th:attr="max=${prazoMaximo}" th:value="${termos.deadlineDays}">
+
+        <label for="efeito">Efeito esperado (d)</label>
+        <input id="efeito" name="efeito" type="number" min="0.05" max="3" step="0.05" required
+               th:value="${termos.expectedEffect}">
+        <p class="nota">Base do cálculo de poder, que o documento congelado declara.</p>
+
+        <label for="hipotese">Hipótese</label>
+        <textarea id="hipotese" name="hipotese" rows="3" required maxlength="2000"
+                  th:text="${termos.hypothesis}">Hipótese</textarea>
+
+        <label for="criterios">Critérios de inclusão de médiuns</label>
+        <textarea id="criterios" name="criterios" rows="3" required maxlength="2000"
+                  th:text="${termos.mediumInclusionCriteria}">Critérios</textarea>
+        <p class="nota">Declarados antes porque selecionar médiuns por desempenho anterior infla o efeito.</p>
+
+        <button class="botao botao-cheio" type="submit">Rever antes de congelar</button>
+      </form>
+
+      <p class="nota nota-espacada"><a href="/painel/adm">Voltar ao painel</a></p>
+    </div>
+  </section>
+</main>
+
+<footer th:replace="~{fragments/site :: rodape}"></footer>
+</body>
+</html>

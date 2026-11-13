@@ -84,6 +84,35 @@ public record Questionnaire(String version, List<Questionnaire.Field> fields) {
         }
     }
 
+    /**
+     * Checks a medium's answers (SPEC E13, phase C): every scored field answered with an option
+     * or "não recebi", and nothing else. The pairing fields are not asked of the medium — they do
+     * not count, and within a pair they are equal or given away by the first name — and "não sei"
+     * is the sitter's answer, not the medium's.
+     *
+     * @throws IllegalArgumentException with a message in Portuguese, for the person filling in
+     */
+    public void checkMediumAnswers(Map<String, String> answers) {
+        if (answers == null) {
+            throw new IllegalArgumentException("Responda ao questionário.");
+        }
+        for (String key : answers.keySet()) {
+            if (field(key).filter(Field::scored).isEmpty()) {
+                throw new IllegalArgumentException("Campo desconhecido no questionário.");
+            }
+        }
+        for (Field field : scoredFields()) {
+            String answer = answers.get(field.key());
+            if (answer == null || answer.isBlank()) {
+                throw new IllegalArgumentException("Responda ao campo \"" + field.label()
+                        + "\": escolha uma opção ou \"Não recebi\".");
+            }
+            if (!NOT_RECEIVED.equals(answer) && field.option(answer).isEmpty()) {
+                throw new IllegalArgumentException("Opção desconhecida no campo \"" + field.label() + "\".");
+            }
+        }
+    }
+
     /** Label of an answer, for showing it back; "Não sei" and "Não recebi" included. */
     public String labelOf(String fieldKey, String answer) {
         if (UNKNOWN.equals(answer)) {

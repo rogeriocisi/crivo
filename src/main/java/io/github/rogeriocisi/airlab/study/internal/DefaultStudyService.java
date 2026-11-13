@@ -50,11 +50,18 @@ class DefaultStudyService implements StudyService {
     @Override
     @Transactional
     public StudySummary create(String title, PreregistrationPlan plan, String actorCode) {
+        return create(title, PROTOCOL_V1, plan, null, actorCode);
+    }
+
+    @Override
+    @Transactional
+    public StudySummary create(String title, String protocol, PreregistrationPlan plan, String protocolAnnex,
+                               String actorCode) {
         StudyEntity study = studies.save(
-                new StudyEntity(Codes.of("STD"), title, PROTOCOL_V1, clock.instant()));
+                new StudyEntity(Codes.of("STD"), title, protocol, clock.instant()));
 
         String document = PreregistrationDocument.render(
-                study.code(), study.title(), study.protocol(), 1, plan, null, null);
+                study.code(), study.title(), study.protocol(), 1, plan, null, null, protocolAnnex);
         PreregistrationVersionEntity version = versions.save(new PreregistrationVersionEntity(
                 study.id(), 1, document, Hashes.sha256Hex(document), null, clock.instant()));
 
@@ -109,11 +116,16 @@ class DefaultStudyService implements StudyService {
     public PreregistrationSnapshot amend(long studyId, PreregistrationPlan plan, String reason,
                                          String actorCode) {
         StudyEntity study = study(studyId);
+        if (!PROTOCOL_V1.equals(study.protocol())) {
+            // An amendment re-renders the document from the plan; for another protocol it would
+            // drop the annex, and with it the questionnaire the study froze.
+            throw new IllegalStateException("amendments are implemented for " + PROTOCOL_V1 + " only");
+        }
         int nextVersion = versions.findFirstByStudyIdOrderByVersionDesc(studyId)
                 .map(PreregistrationVersionEntity::version).orElse(0) + 1;
 
         String document = PreregistrationDocument.render(
-                study.code(), study.title(), study.protocol(), nextVersion, plan, null, reason);
+                study.code(), study.title(), study.protocol(), nextVersion, plan, null, reason, null);
         PreregistrationVersionEntity version = versions.save(new PreregistrationVersionEntity(
                 study.id(), nextVersion, document, Hashes.sha256Hex(document), reason, clock.instant()));
 

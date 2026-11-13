@@ -211,6 +211,59 @@ public final class AllocationEngine {
     }
 
     /**
+     * P4 (SPEC E13, phase C): the commitment published in the frozen preregistration of a study
+     * whose pairs form during collection, so that there is no plan to commit to yet. It covers the
+     * seed and the canonical description of the study; every later draw is a public function of
+     * this seed and of inputs recorded at the time of the draw.
+     */
+    public static String seedCommitment(String seedHex, String canonicalInput) {
+        return Hashes.sha256Hex(seedHex + "|" + canonicalInput);
+    }
+
+    /**
+     * P4: the medium who reads both requests of a pair, on a given attempt, among the eligible
+     * mediums. The pool is sorted first, so the order in which accounts happened to be loaded
+     * cannot change the result (P5); the attempt is part of the domain, so a resend after an
+     * expired deadline is a new, independent draw.
+     */
+    public static String structuredMedium(String seedHex, String pairCode, int attempt,
+                                          List<String> eligibleMediums) {
+        if (attempt < 1) {
+            throw new IllegalArgumentException("attempts start at 1");
+        }
+        List<String> pool = canonical(eligibleMediums);
+        if (pool.isEmpty()) {
+            throw new IllegalArgumentException("a draw needs at least one eligible medium");
+        }
+        int index = new SeedStream(Hashes.fromHex(seedHex), "p4-medium:" + pairCode + ":" + attempt)
+                .nextInt(pool.size());
+        return pool.get(index);
+    }
+
+    /**
+     * P4: the order in which the medium sees the two requests of a pair, so that being shown
+     * first is not a clue. Canonical order first, then a seed-drawn shuffle (P5).
+     */
+    public static List<String> structuredNameOrder(String seedHex, String pairCode, int attempt,
+                                                   List<String> requestCodes) {
+        List<String> order = canonical(requestCodes);
+        new SeedStream(Hashes.fromHex(seedHex), "p4-name-order:" + pairCode + ":" + attempt).shuffle(order);
+        return order;
+    }
+
+    /** Sorted copy; a repeated code is a bug upstream, never something to tolerate silently. */
+    private static List<String> canonical(List<String> codes) {
+        List<String> sorted = new ArrayList<>(codes);
+        sorted.sort(Comparator.naturalOrder());
+        for (int i = 1; i < sorted.size(); i++) {
+            if (sorted.get(i).equals(sorted.get(i - 1))) {
+                throw new IllegalArgumentException("repeated code in a draw input: " + sorted.get(i));
+            }
+        }
+        return sorted;
+    }
+
+    /**
      * The published commitment: {@code SHA-256(seedHex + "|" + canonical(plan))}.
      *
      * <p>Published before the first session; checked by anyone once the seed is revealed

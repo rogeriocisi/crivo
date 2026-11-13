@@ -22,7 +22,7 @@
       <p class="chamada">
         Aqui chegam os pedidos sorteados para você. Cada pedido traz só os primeiros nomes de duas
         pessoas falecidas e o questionário em branco. Você não vê quem fez o pedido nem as respostas
-        dessa pessoa, e não vê nota nenhuma antes do fim do estudo.
+        dessa pessoa, e ninguém vê nota nenhuma antes do fim do estudo.
       </p>
     </div>
   </section>
@@ -30,24 +30,59 @@
   <section>
     <div class="faixa">
       <h2>Pedidos recebidos</h2>
+      <p class="aviso" th:if="${param.travada}" role="status">
+        Leitura travada. A trilha pública recebeu o compromisso dela — sem o seu código e sem as respostas.
+      </p>
       <dl class="contagens">
-        <div><dt>Aguardando leitura</dt><dd>0</dd></div>
-        <div><dt>Leituras enviadas</dt><dd>0</dd></div>
+        <div><dt>Aguardando leitura</dt><dd th:text="${#lists.size(abertos)}">0</dd></div>
+        <div><dt>Leituras enviadas</dt><dd th:text="${leiturasEnviadas}">0</dd></div>
+        <div><dt>Vencidos ou cancelados</dt><dd th:text="${encerrados}">0</dd></div>
       </dl>
 
-      <div class="ressalva">
-        <p>
-          <strong>O envio de pedidos aos médiuns ainda está em construção.</strong> Quando estiver no
-          ar, cada pedido aparece aqui com o prazo de resposta, e você recebe um e-mail ao ser
-          sorteado. Sua conta já está pronta para isso.
-        </p>
-      </div>
+      <p th:if="${#lists.isEmpty(abertos)}" class="nota-espacada">
+        Nenhum pedido aguardando você agora. Quando o sorteio escolher você, o pedido aparece aqui e
+        você recebe um e-mail — sem nomes, só o aviso e o prazo.
+      </p>
 
-      <h3>Como vai ser uma leitura</h3>
+      <ul class="pedidos" th:unless="${#lists.isEmpty(abertos)}">
+        <li th:each="pedido : ${abertos}">
+          <p class="prazo">
+            Pedido <code th:text="${pedido.code}">ENV-0000</code> · prazo até
+            <time th:datetime="${pedido.dueAt}" th:text="${@datas.utc(pedido.dueAt)}">2026-11-27 10:00</time> (UTC)
+          </p>
+          <ol>
+            <li th:each="vaga : ${pedido.slots}">
+              <span><span class="nota" th:text="${vaga.position} + '.'">1.</span>
+                <span class="nome" th:text="${vaga.firstName}">Nome</span></span>
+              <span th:if="${vaga.locked}" class="nota">Leitura travada</span>
+              <a th:unless="${vaga.locked}" class="botao botao-cheio"
+                 th:href="@{/painel/medium/pedido/{c}/leitura/{p}(c=${pedido.code},p=${vaga.position})}">Responder</a>
+            </li>
+          </ol>
+        </li>
+      </ul>
+
+      <th:block th:unless="${#lists.isEmpty(enviados)}">
+        <h3>Leituras enviadas</h3>
+        <p class="nota">Sem nota até o fim do estudo: a conferência só roda depois do desmascaramento.</p>
+        <ul class="pedidos">
+          <li th:each="pedido : ${enviados}">
+            <p class="prazo">Pedido <code th:text="${pedido.code}">ENV-0000</code> · <span th:text="${pedido.state.label()}">Leituras enviadas</span></p>
+            <ol>
+              <li th:each="vaga : ${pedido.slots}">
+                <span class="nome" th:text="${vaga.firstName}">Nome</span>
+                <span class="nota" th:if="${vaga.lockedAt}">travada em <time th:text="${@datas.utc(vaga.lockedAt)}">2026-11-13</time></span>
+              </li>
+            </ol>
+          </li>
+        </ul>
+      </th:block>
+
+      <h3>Como funciona uma leitura</h3>
       <ol class="etapas">
-        <li><div><h3>O pedido chega</h3><p>Dois primeiros nomes, em ordem sorteada, e o prazo — 14 dias, salvo outro valor declarado no estudo.</p></div></li>
-        <li><div><h3>Você responde</h3><p>O mesmo questionário de múltipla escolha que o consulente respondeu. Para cada campo, uma opção ou "não recebi".</p></div></li>
-        <li><div><h3>A leitura trava</h3><p>Ao enviar, as respostas travam, e a trilha pública recebe o hash delas.</p></div></li>
+        <li><div><h3>O pedido chega</h3><p>Dois primeiros nomes, em ordem sorteada, e o prazo declarado no estudo. Você não sabe quem pediu, e os dois nomes são de perfil parecido.</p></div></li>
+        <li><div><h3>Você responde a cada nome</h3><p>As perguntas de múltipla escolha que contam na comparação. Para cada uma, uma opção ou "não recebi".</p></div></li>
+        <li><div><h3>A leitura trava</h3><p>Antes de travar, você revê. Ao travar, as respostas não mudam mais, e a trilha pública recebe um compromisso delas.</p></div></li>
         <li><div><h3>Notas no fim</h3><p>Quando o estudo é concluído, você vê a nota de cada leitura sua.</p></div></li>
       </ol>
     </div>

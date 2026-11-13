@@ -60,14 +60,31 @@
       <dl class="contagens">
         <div><dt>Pedidos travados</dt><dd th:text="${pedidos.locked}">0</dd></div>
         <div><dt>Pedidos retirados</dt><dd th:text="${pedidos.withdrawn}">0</dd></div>
-        <div><dt>Pares enviados</dt><dd>—</dd></div>
-        <div><dt>Leituras recebidas</dt><dd>—</dd></div>
-        <div><dt>Progresso até o N</dt><dd>—</dd></div>
+        <div><dt>Pares ativos</dt><dd th:text="${progresso.activePairs}">0</dd></div>
+        <div><dt>Pedidos ao médium abertos</dt><dd th:text="${progresso.openAssignments}">0</dd></div>
+        <div><dt>Leituras travadas</dt><dd th:text="${progresso.lockedReadings}">0</dd></div>
+        <div><dt>Progresso até o N</dt>
+          <dd th:text="${estudo} ? (${progresso.completedPairs} + ' / ' + ${progresso.targetPairs}) : '—'">—</dd></div>
       </dl>
       <p class="nota">
-        Pares, leituras e progresso entram com as fases C e D do E13. Sempre como contagem de
-        unidades, nunca como desempenho. Você não vê o conteúdo de nenhum pedido.
+        Sempre contagem de unidades, nunca desempenho. Você não vê o conteúdo de nenhum pedido nem de
+        nenhuma leitura, e nada aqui diz qual médium tem qual par.
       </p>
+
+      <h3>Estudo P4</h3>
+      <p th:if="${estudo}">
+        <code th:text="${estudo.studyCode}">STD-0000</code> ·
+        <span th:text="${estudo.title}">Título</span> · congelado, questionário
+        <code th:text="${estudo.questionnaireVersion}">v1</code>.
+        <a href="/painel/adm/estudo-p4">Abrir o estudo</a>
+      </p>
+      <th:block th:unless="${estudo}">
+        <p>
+          Nenhum estudo P4 aberto. Os pedidos travados esperam: o pareamento e o envio aos médiuns só
+          começam depois do pré-registro congelado.
+        </p>
+        <p class="acoes"><a class="botao botao-cheio" href="/painel/adm/estudo-p4">Criar o estudo P4</a></p>
+      </th:block>
     </div>
   </section>
 

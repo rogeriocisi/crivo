@@ -49,10 +49,18 @@ airlab:
   admin-email: ${AIRLAB_ADMIN_EMAIL:}
   contact-email: ${AIRLAB_CONTACT_EMAIL:}
   mail-from: ${AIRLAB_MAIL_FROM:crivo@localhost}
+  # Endereco publico do site, para os links dos e-mails enviados fora de uma requisicao (o aviso
+  # de pedido novo ao medium sai do ciclo do servidor).
+  base-url: ${AIRLAB_BASE_URL:http://localhost:8080}
   p4:
     # Referencia da aprovacao do comite de etica (CEP/Plataforma Brasil). Sem ela, em producao,
     # o formulario de pedido do P4 fica fechado (SPEC E10, trava 4; E13, fase B).
     cep-reference: ${AIRLAB_CEP_REFERENCE:}
+    # Ciclo automatico do P4 (E13, fase C): pareamento, envio ao medium, prazos e reenvio.
+    cycle-enabled: true
+    cycle-ms: 60000
+    # Questionario marcado como rascunho so congela no perfil local (E13, fase C).
+    allow-draft-questionnaire: false
   storage:
     path: ${AIRLAB_STORAGE_PATH:./data/media}
   identity:

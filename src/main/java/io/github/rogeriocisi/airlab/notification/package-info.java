@@ -11,5 +11,5 @@
  */
 @org.springframework.modulith.ApplicationModule(
         displayName = "notification",
-        allowedDependencies = {"participant", "support"})
+        allowedDependencies = {"participant", "structured", "support"})
 package io.github.rogeriocisi.airlab.notification;

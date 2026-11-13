@@ -13,6 +13,9 @@ airlab:
     # sincronizada (Google Drive, OneDrive) nem em disco de rede. Ajuste com
     # AIRLAB_LOCAL_DB_DIR se quiser outro lugar.
     data-directory: ${AIRLAB_LOCAL_DB_DIR:${user.home}/.airlab/pgdata}
+  p4:
+    # Dados ficticios: o questionario v1-rascunho pode ser congelado para experimentar o fluxo.
+    allow-draft-questionnaire: true
   identity:
     # Chave de desenvolvimento: gerada na primeira execucao e guardada em
     # ./data/dev-identity.key, fora do versionamento. Nunca use em producao.

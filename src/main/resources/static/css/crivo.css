@@ -1491,6 +1491,66 @@ form.enviando button {
     font-size: 0.95rem;
 }
 
+/* ---------- P4, fase C: pedidos ao médium e estudo ---------- */
+
+.pedidos {
+    list-style: none;
+    padding: 0;
+    margin: 1.5rem 0 0;
+    display: grid;
+    gap: 1rem;
+}
+
+.pedidos > li {
+    border: 1px solid var(--fio-forte);
+    border-radius: 14px;
+    padding: 1rem 1.25rem;
+}
+
+.pedidos .prazo {
+    margin: 0;
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    color: var(--tinta-suave);
+}
+
+.pedidos ol {
+    list-style: none;
+    padding: 0;
+    margin: 0.75rem 0 0;
+    display: grid;
+    gap: 0.6rem;
+}
+
+.pedidos ol li {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.pedidos .nome {
+    font-size: 1.3rem;
+}
+
+.documento {
+    max-height: 28rem;
+    overflow: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    border: 1px solid var(--fio);
+    padding: 1rem;
+}
+
+.hash {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    word-break: break-all;
+}
+
 .avisos time,
 .avisos code {
     font-family: var(--mono);

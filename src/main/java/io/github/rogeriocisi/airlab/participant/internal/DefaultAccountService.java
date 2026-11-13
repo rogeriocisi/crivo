@@ -21,6 +21,7 @@ import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -226,6 +227,21 @@ class DefaultAccountService implements AccountService {
                 accounts.countByProfileAndClosedAtIsNullAndEmailConfirmedAtIsNull(AccountProfile.SITTER),
                 accounts.countByProfileAndClosedAtIsNullAndEmailConfirmedAtIsNotNull(AccountProfile.MEDIUM),
                 accounts.countByProfileAndClosedAtIsNullAndEmailConfirmedAtIsNull(AccountProfile.MEDIUM));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<String> activeMediumCodes() {
+        return accounts.findByProfileAndClosedAtIsNullAndEmailConfirmedAtIsNotNullOrderByCodeAsc(AccountProfile.MEDIUM)
+                .stream().map(AccountEntity::code).toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<String> mailAddress(String code) {
+        return accounts.findByCode(code)
+                .filter(account -> !account.closed() && account.confirmed())
+                .map(account -> cipher.decrypt(account.emailEnc()));
     }
 
     @Override

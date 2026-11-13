@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Leitura — Crivo</title>
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="/css/crivo.css">
+</head>
+<body>
+<a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+<div class="faixa">
+  <header th:replace="~{fragments/site :: topo}"></header>
+</div>
+
+<main id="conteudo">
+  <section class="abertura">
+    <div class="faixa">
+      <p class="rotulo">Médium · leitura <span th:text="${posicao}">1</span> de 2 · pedido <code th:text="${pedido.code}">ENV-0000</code></p>
+      <h1 th:text="${nome}">Nome</h1>
+      <p class="chamada">
+        Responda ao que vier para esta pessoa. Em cada pergunta, escolha uma opção — ou
+        "Não recebi", se nada veio. "Não recebi" não tem penalidade: só não conta como acerto.
+      </p>
+      <p class="nota">
+        Nada é gravado enquanto você preenche. Antes de travar, você revê tudo. Prazo do pedido:
+        <time th:text="${@datas.utc(pedido.dueAt)}">2026-11-27 10:00</time> (UTC).
+      </p>
+      <p class="nota" th:text="'Questionário, versão ' + ${versao}">Questionário, versão v1</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="faixa">
+      <form class="formulario formulario-largo" method="post"
+            th:action="@{/painel/medium/pedido/{c}/leitura/{p}/revisar(c=${pedido.code},p=${posicao})}">
+        <p class="erro" th:if="${erro}" th:text="${erro}" role="alert">Erro</p>
+
+        <fieldset th:each="campo : ${campos}">
+          <legend th:text="${campo.label}">Pergunta</legend>
+          <label class="opcao" th:each="opcao : ${campo.options}">
+            <input type="radio" th:name="'r.' + ${campo.key}" th:value="${opcao.key}" required
+                   th:checked="${rascunho.answers.get(campo.key) == opcao.key}">
+            <span th:text="${opcao.label}">Opção</span>
+          </label>
+          <label class="opcao">
+            <input type="radio" th:name="'r.' + ${campo.key}" th:value="${naoRecebi}"
+                   th:checked="${rascunho.answers.get(campo.key) == naoRecebi}">
+            <span>Não recebi</span>
+          </label>
+        </fieldset>
+
+        <button class="botao botao-cheio" type="submit">Rever antes de travar</button>
+      </form>
+
+      <p class="nota nota-espacada"><a href="/painel/medium">Voltar ao painel sem enviar</a></p>
+    </div>
+  </section>
+</main>
+
+<footer th:replace="~{fragments/site :: rodape}"></footer>
+</body>
+</html>

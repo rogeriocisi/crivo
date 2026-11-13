@@ -19,9 +19,14 @@ final class PreregistrationDocument {
     private PreregistrationDocument() {
     }
 
+    /**
+     * @param protocolAnnex canonical JSON that the protocol adds to the plan, or null. The P1
+     *                      has none, so its documents are byte for byte what they were before
+     *                      the annex existed.
+     */
     static String render(String studyCode, String title, String protocol, int version,
                          PreregistrationPlan plan, String allocationCommitment,
-                         String amendmentReason) {
+                         String amendmentReason, String protocolAnnex) {
         StringBuilder out = new StringBuilder();
         line(out, "# Pre-registro — " + title);
         line(out, "");
@@ -72,6 +77,12 @@ final class PreregistrationDocument {
         line(out, "- Suficiente: " + (power.adequate() ? "sim" : "NAO"));
         line(out, "- " + power.detail());
         line(out, "");
+        if (protocolAnnex != null) {
+            line(out, "## Anexo do protocolo (forma canonica)");
+            line(out, "");
+            line(out, protocolAnnex);
+            line(out, "");
+        }
         line(out, "## Forma canonica do plano");
         line(out, "");
         line(out, plan.canonicalForm());

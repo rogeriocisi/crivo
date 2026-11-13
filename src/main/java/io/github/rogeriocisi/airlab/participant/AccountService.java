@@ -1,5 +1,6 @@
 package io.github.rogeriocisi.airlab.participant;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -43,6 +44,18 @@ public interface AccountService {
 
     /** Accounts by profile and situation, for the administrator. */
     AccountCounts counts();
+
+    /**
+     * Codes of the confirmed, active medium accounts, in code order: the pool the P4 draw picks
+     * from (SPEC E13, phase C). Codes only.
+     */
+    List<String> activeMediumCodes();
+
+    /**
+     * The e-mail address of an active, confirmed account, for the mailer and nothing else: the
+     * medium is told by e-mail that a request arrived (SPEC E13). Never logged, never shown.
+     */
+    Optional<String> mailAddress(String code);
 
     /**
      * Closes the account at the owner's request, without justification (P6): name, e-mail and

@@ -251,4 +251,57 @@ class AllocationEngineTest {
 
         assertThat(first).hasSize(64).isNotEqualTo(second);
     }
+
+    // --- P4, fase C: sorteio incremental sobre semente comprometida -----------------------------
+
+    @Test
+    @DisplayName("P4: o medium do par nao depende da ordem em que os elegiveis chegam")
+    void structured_medium_is_independent_of_pool_order() {
+        List<String> pool = List.of("MED-C", "MED-A", "MED-E", "MED-B", "MED-D");
+        String drawn = AllocationEngine.structuredMedium(SEED, "PAR-1", 1, pool);
+        for (int shift = 1; shift < pool.size(); shift++) {
+            List<String> rotated = new java.util.ArrayList<>(pool);
+            java.util.Collections.rotate(rotated, shift);
+            assertThat(AllocationEngine.structuredMedium(SEED, "PAR-1", 1, rotated)).isEqualTo(drawn);
+        }
+        assertThat(pool).contains(drawn);
+    }
+
+    @Test
+    @DisplayName("P4: a tentativa entra no dominio do sorteio, e a semente decide")
+    void structured_medium_depends_on_attempt_pair_and_seed() {
+        List<String> pool = java.util.stream.IntStream.range(0, 50).mapToObj(i -> "MED-" + i).toList();
+        java.util.Set<String> byAttempt = new java.util.HashSet<>();
+        java.util.Set<String> byPair = new java.util.HashSet<>();
+        for (int i = 1; i <= 20; i++) {
+            byAttempt.add(AllocationEngine.structuredMedium(SEED, "PAR-1", i, pool));
+            byPair.add(AllocationEngine.structuredMedium(SEED, "PAR-" + i, 1, pool));
+        }
+        assertThat(byAttempt).hasSizeGreaterThan(1);
+        assertThat(byPair).hasSizeGreaterThan(1);
+    }
+
+    @Test
+    @DisplayName("P4: a ordem dos nomes nao depende da ordem dos pedidos e e uma permutacao deles")
+    void structured_name_order_is_canonical_then_drawn() {
+        List<String> order = AllocationEngine.structuredNameOrder(SEED, "PAR-1", 1, List.of("PED-B", "PED-A"));
+        assertThat(order).containsExactlyInAnyOrder("PED-A", "PED-B");
+        assertThat(AllocationEngine.structuredNameOrder(SEED, "PAR-1", 1, List.of("PED-A", "PED-B")))
+                .isEqualTo(order);
+    }
+
+    @Test
+    @DisplayName("P4: codigo repetido e lista vazia sao recusados, e o compromisso cobre semente e entrada")
+    void structured_inputs_are_checked_and_committed() {
+        org.assertj.core.api.Assertions.assertThatThrownBy(
+                () -> AllocationEngine.structuredMedium(SEED, "PAR-1", 1, List.of("MED-A", "MED-A")))
+                .isInstanceOf(IllegalArgumentException.class);
+        org.assertj.core.api.Assertions.assertThatThrownBy(
+                () -> AllocationEngine.structuredMedium(SEED, "PAR-1", 1, List.of()))
+                .isInstanceOf(IllegalArgumentException.class);
+        String input = "{\"mode\":\"P4_INCREMENTAL\",\"studyCode\":\"STD-1\"}";
+        assertThat(AllocationEngine.seedCommitment(SEED, input))
+                .isEqualTo(io.github.rogeriocisi.airlab.support.Hashes.sha256Hex(SEED + "|" + input))
+                .isNotEqualTo(AllocationEngine.seedCommitment(SEED, input.replace("STD-1", "STD-2")));
+    }
 }

@@ -59,7 +59,7 @@ public final class PowerCheck {
     public static int requiredPairs(PrimaryMeasure measure, double expectedEffect) {
         return switch (measure) {
             case FORCED_CHOICE -> requiredForForcedChoice(expectedEffect);
-            case PAIRED_ITEM_ACCURACY, PAIRED_GLOBAL_SCORE -> requiredForPaired(expectedEffect);
+            case PAIRED_ITEM_ACCURACY, PAIRED_GLOBAL_SCORE, PAIRED_FIELD_MATCHES -> requiredForPaired(expectedEffect);
         };
     }
 
