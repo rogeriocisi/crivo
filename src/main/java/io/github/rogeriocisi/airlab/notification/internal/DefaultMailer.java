@@ -17,6 +17,11 @@ import org.springframework.stereotype.Component;
 /**
  * The one mailer. The mode is decided once, at start up, from the profile and from whether
  * Spring Boot configured an SMTP sender ({@code spring.mail.host}).
+ *
+ * <p>In the local profile the in-memory outbox is the default; setting {@code SPRING_MAIL_HOST}
+ * there opts into real SMTP, meant for a local catcher such as Mailpit, which shows the messages
+ * in a web inbox and lets none of them leave the machine. The test profile always keeps the
+ * outbox, whatever the environment says.
  */
 @Component
 class DefaultMailer implements Mailer {
@@ -25,7 +30,7 @@ class DefaultMailer implements Mailer {
 
     private static final int OUTBOX_SIZE = 50;
 
-    private enum Mode { LOCAL, SMTP, DISABLED }
+    enum Mode { LOCAL, SMTP, DISABLED }
 
     private final Mode mode;
     private final JavaMailSender smtp;
@@ -37,15 +42,31 @@ class DefaultMailer implements Mailer {
         this.smtp = smtp.getIfAvailable();
         this.from = environment.getProperty("airlab.mail-from", "crivo@localhost");
         this.clock = clock;
-        if (environment.matchesProfiles("local", "test")) {
-            this.mode = Mode.LOCAL;
-        } else if (this.smtp != null) {
-            this.mode = Mode.SMTP;
-        } else {
-            this.mode = Mode.DISABLED;
-            log.warn("Envio de e-mail desativado: SPRING_MAIL_HOST nao definido. "
+        this.mode = modeFor(environment.matchesProfiles("test"), environment.matchesProfiles("local"),
+                this.smtp != null);
+        switch (mode) {
+            case SMTP -> {
+                if (environment.matchesProfiles("local")) {
+                    log.info("Perfil local com SMTP: e-mails vao para {}:{} (por exemplo, o Mailpit)",
+                            environment.getProperty("spring.mail.host"), environment.getProperty("spring.mail.port", "25"));
+                }
+            }
+            case DISABLED -> log.warn("Envio de e-mail desativado: SPRING_MAIL_HOST nao definido. "
                     + "A inscricao de contas fica fechada ate que um SMTP seja configurado.");
+            case LOCAL -> {
+            }
         }
+    }
+
+    /**
+     * Tests keep the outbox, always. The local profile keeps it unless an SMTP server was
+     * configured on purpose. Anywhere else, SMTP or nothing.
+     */
+    static Mode modeFor(boolean testProfile, boolean localProfile, boolean smtpConfigured) {
+        if (testProfile || (localProfile && !smtpConfigured)) {
+            return Mode.LOCAL;
+        }
+        return smtpConfigured ? Mode.SMTP : Mode.DISABLED;
     }
 
     @Override

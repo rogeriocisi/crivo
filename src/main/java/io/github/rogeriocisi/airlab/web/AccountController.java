@@ -164,8 +164,9 @@ class AccountController {
                 Crivo — protocolos cegos para pesquisa de cognição anômala.
                 """.formatted(firstName, profile, already, AccountService.CONFIRMATION_HOURS, link));
 
-        if (mailer.localOutbox()) {
-            // Local profile only, where no e-mail leaves the machine. Code and link, no address (P6).
+        if (gate.localProfile()) {
+            // Local profile only, where the data are fictitious: the link is in the log even when an
+            // SMTP catcher is configured and happens not to be running. Code and link, no address (P6).
             log.info("Perfil local: link de confirmacao da conta {}: {}", registration.code(), link);
         }
     }
@@ -173,6 +174,7 @@ class AccountController {
     @GetMapping("/conta/verifique-seu-email")
     String checkYourEmail(Model model) {
         model.addAttribute("perfilLocal", mailer.localOutbox());
+        model.addAttribute("smtpLocal", gate.localProfile() && !mailer.localOutbox() && mailer.enabled());
         model.addAttribute("horas", AccountService.CONFIRMATION_HOURS);
         return "conta-verifique";
     }

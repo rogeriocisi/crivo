@@ -37,6 +37,14 @@
           e na <a href="/caixa-de-saida">caixa de saída</a>, que só o administrador abre.
         </p>
       </div>
+      <div class="ressalva" th:if="${smtpLocal}">
+        <p>
+          <strong>Perfil local com SMTP.</strong> O e-mail foi entregue ao servidor SMTP configurado — com
+          o Mailpit, ele aparece em <a href="http://localhost:8025">localhost:8025</a> e não sai da máquina.
+          O link também está no log da aplicação, numa linha que começa com
+          <code>Perfil local: link de confirmacao</code>.
+        </p>
+      </div>
 
       <p class="acoes">
         <a class="botao botao-vazio" href="/login">Ir para a entrada</a>
