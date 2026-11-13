@@ -3,7 +3,7 @@
 > Spec de alto nível. Cada épico abaixo vira uma spec detalhada própria antes da implementação.
 > Conformidade obrigatória com `CONSTITUTION.md`. Contexto e motivação em `VISION.md`. Fundamentação científica em `REFERENCES.md`.
 >
-> Versão 0.9 · novembro/2026 · 0.2: seção 2.1 "O que é uma leitura", regra "um item = uma afirmação" e referências · 0.3: critérios de inclusão de médiuns no pré-registro, regra de parada vinculante e unidade de análise por par (seções 5 e 9) · 0.4: medida primária pareada com Wilcoxon exato, teste de permutação de Pratt e Birge, controles de comprimento e de pistas temporais, escala de itens de cinco categorias e desvios de protocolo — derivados dos artigos em `references/` · 0.5: *sitter* passa a ser **consulente** em todo o texto em português, com a forma inglesa registrada no glossário e mantida nos identificadores do código · 0.6: épico E10, autoatendimento e automação, com as travas obrigatórias · 0.7: o Crivo passa a ser uma plataforma de protocolos de cognição anômala, com catálogo de protocolos (seção 1.1) e os épicos E11 e E12 — dois testes integralmente automatizáveis · 0.8: a semente dos testes de autoatendimento passa a ter duas metades, uma do servidor e uma do participante, o que remove a necessidade de confiar na plataforma quanto à ordem dos fatos · 0.9: protocolo **P4, leitura estruturada automatizada** (épico E13), o ramo AIR integralmente automatizado: contas com perfil fixo (consulente ou médium), questionário fechado preenchido pelo consulente e pelo médium e conferência automática contra o alvo e o chamariz; o catálogo passa a se dividir em **protocolos AIR** e **experimentos extras**
+> Versão 0.10 · novembro/2026 · 0.2: seção 2.1 "O que é uma leitura", regra "um item = uma afirmação" e referências · 0.3: critérios de inclusão de médiuns no pré-registro, regra de parada vinculante e unidade de análise por par (seções 5 e 9) · 0.4: medida primária pareada com Wilcoxon exato, teste de permutação de Pratt e Birge, controles de comprimento e de pistas temporais, escala de itens de cinco categorias e desvios de protocolo — derivados dos artigos em `references/` · 0.5: *sitter* passa a ser **consulente** em todo o texto em português, com a forma inglesa registrada no glossário e mantida nos identificadores do código · 0.6: épico E10, autoatendimento e automação, com as travas obrigatórias · 0.7: o Crivo passa a ser uma plataforma de protocolos de cognição anômala, com catálogo de protocolos (seção 1.1) e os épicos E11 e E12 — dois testes integralmente automatizáveis · 0.8: a semente dos testes de autoatendimento passa a ter duas metades, uma do servidor e uma do participante, o que remove a necessidade de confiar na plataforma quanto à ordem dos fatos · 0.9: protocolo **P4, leitura estruturada automatizada** (épico E13), o ramo AIR integralmente automatizado: contas com perfil fixo (consulente ou médium), questionário fechado preenchido pelo consulente e pelo médium e conferência automática contra o alvo e o chamariz; o catálogo passa a se dividir em **protocolos AIR** e **experimentos extras** · 0.10: fase B do P4 — questionário versionado `v1-rascunho`, pedido de consulta travado com compromisso salgado, rascunho só na sessão, campos de pareamento iguais aos do P1 e formulário fechado em produção sem referência do CEP; seção 10 atualizada
 
 ---
 
@@ -443,21 +443,33 @@ Além das seis travas do E10:
 | Fase | Conteúdo | Estado |
 |---|---|---|
 | A | Catálogo em duas seções, páginas do P4, contas com perfil fixo, confirmação por e-mail, painéis por perfil, avisos de conta ao administrador | Implementada na SPEC 0.9 |
-| B | Questionário versionado no pré-registro e pedido de consulta com compromisso salgado | Pendente |
+| B | Questionário versionado e pedido de consulta com compromisso salgado | Implementada na SPEC 0.10 |
 | C | Pareamento, sorteio do médium, pedido ao médium, leitura, prazos e reenvio | Pendente |
 | D | Desmascaramento automático no N, conferência, análise, relatório e devolutiva | Pendente |
 
+#### Fase B — decisões
+
+- **O rascunho não é gravado.** Enquanto o consulente preenche e revisa, as respostas ficam só na sessão do navegador. O banco recebe o pedido uma vez, já travado. É minimização (P6) e fecha a pergunta "o pedido mudou entre o rascunho e a trava?".
+- **Compromisso**: `SHA-256(JSON canônico || "|" || sal em hexadecimal)`, onde o JSON canônico (`support.CanonicalJson`) tem o protocolo, a versão do questionário, o primeiro nome e as respostas, por chave de campo. A regra está em `participant.ConsultationCommitment`, pública, para que o pacote de verificação a reimplemente por fora.
+- **A trilha recebe o código do pedido, o código do consulente, a versão do questionário e o compromisso — nada mais.** Nem os campos de pareamento entram nela: só o compromisso precisa ser público antes da leitura.
+- **Onde fica cada coisa**: primeiro nome, respostas e sal, cifrados, em `identity.consultation_detail`; em `research.consultation_request`, o código, o consulente, a versão, os três atributos de pareamento e o compromisso. O banco recusa alterar o pedido travado e recusa `DELETE`; a única alteração admitida no detalhe é o apagamento, na desistência.
+- **Um pedido ativo por consulente.** Vários pedidos da mesma pessoa criariam dependência entre unidades de análise. Imposto por índice único parcial.
+- **Campos de pareamento são obrigatórios**: gênero, faixa etária e período do falecimento não aceitam "não sei", porque sem eles não há par. As faixas são as mesmas do P1, para que o pareamento seja o mesmo código.
+- **Pedido antes do congelamento.** Como no P1, em que os alvos são cadastrados antes do sorteio, o pedido vem antes do congelamento do estudo. A garantia é outra: na fase C, só entra no estudo o pedido cuja versão de questionário é a declarada no pré-registro congelado.
+- **Comitê de ética (E10, trava 4)**: em produção, o formulário de pedido fica fechado até que `AIRLAB_CEP_REFERENCE` esteja definida. No perfil local ele abre, porque ali os dados são fictícios.
+- **Desistência**: excluir a conta retira o pedido ativo — o detalhe cifrado é apagado, o pedido fica como retirado, e a trilha registra.
+
 **Aceite**: nenhuma conta muda de perfil, nem por SQL direto; nenhum caminho do site cria administrador; nenhum nome é liberado a médium sem pedido travado com compromisso na trilha; nenhuma nota existe antes do desmascaramento; e a conferência refeita a partir do pacote de verificação dá os mesmos `d` de cada par.
 
-#### Anexo — rascunho do questionário, versão 1
+#### Anexo — questionário, versão `v1-rascunho`
 
-Rascunho para revisão do pesquisador; o que vale é a versão congelada no pré-registro. Todo campo tem também "não sei" (consulente) e "não recebi" (médium).
+Rascunho para revisão do pesquisador; o que vale é a versão congelada no pré-registro. Implementado em `catalog.Questionnaires`. Todo campo pontuável tem também "não sei" (consulente) e "não recebi" (médium); os campos de pareamento são obrigatórios para o consulente.
 
 | Campo | Opções | Na nota? |
 |---|---|---|
-| Gênero | feminino, masculino | não (o nome entrega) |
+| Gênero | feminino, masculino, outro | não (o nome entrega; pareamento) |
 | Faixa etária no óbito | até 17, 18–39, 40–59, 60–79, 80 ou mais | não (pareamento) |
-| Período do falecimento | até 2 anos, 2–10 anos, mais de 10 anos | não (pareamento) |
+| Período do falecimento | menos de 1 ano, 1–5 anos, 5–15 anos, mais de 15 anos | não (pareamento) |
 | Como foi a morte | súbita, após doença prolongada | sim |
 | Causa principal | coração ou circulação, câncer, doença respiratória, acidente, violência, outra doença | sim |
 | Onde faleceu | hospital, em casa, na rua ou no trânsito, outro lugar | sim |
@@ -552,9 +564,11 @@ ReadingRequest(P4) ──1 ConsultationRequest, ──1 Account(médium), due_at
 11. **P4 — qualificação de médiuns**: uma rodada prévia com o próprio P4 (E10) antes da entrada
     no estudo confirmatório.
 
-## 10. Próximos passos sugeridos (no Claude Code)
+## 10. Próximos passos
 
-1. Criar o repositório e colocar `VISION.md`, `CONSTITUTION.md` e `SPEC.md` em `/docs`; referenciar os três no `CLAUDE.md`.
-2. Gerar o **plano técnico** do MVP a partir desta spec (estrutura de módulos, migrações iniciais, esquemas e papéis do banco).
-3. Implementar primeiro **E8 (auditoria)** e **E3 (sorteio)**: são a base de confiança de todo o resto.
-4. Depois, a matriz de cegamento (seção 4) como suíte de testes, ainda antes das telas.
+Os passos iniciais desta seção estão feitos: os documentos estão em `/docs` e no `CLAUDE.md`, o plano técnico existe (`docs/PLAN.md`), E8 e E3 estão implementados, e a matriz de cegamento é uma suíte de testes (`BlindingMatrixTest`) que cresce antes de cada tela. O estado detalhado por épico está no plano técnico. A ordem daqui em diante:
+
+1. **P4, fase C** (E13): estudo P4 com o questionário congelado no pré-registro, pareamento dos pedidos, sorteio do médium, pedido ao médium com prazo e reenvio, leitura travada com hash. As linhas da matriz do P4 sobre o médium entram como teste antes das telas.
+2. **P4, fase D**: desmascaramento automático no N, conferência, análise primária, relatório e devolutiva.
+3. **P1**: E4 (sessões) e E5 (redação), consumindo o evento do sorteio; E6 (avaliação cega); E7 (desmascaramento e relatório).
+4. **E8/E9**: carimbo de tempo RFC 3161 e pacote de verificação.
