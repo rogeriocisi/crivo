@@ -3,7 +3,7 @@
 > Spec de alto nível. Cada épico abaixo vira uma spec detalhada própria antes da implementação.
 > Conformidade obrigatória com `CONSTITUTION.md`. Contexto e motivação em `VISION.md`. Fundamentação científica em `REFERENCES.md`.
 >
-> Versão 0.11 · novembro/2026 · 0.2: seção 2.1 "O que é uma leitura", regra "um item = uma afirmação" e referências · 0.3: critérios de inclusão de médiuns no pré-registro, regra de parada vinculante e unidade de análise por par (seções 5 e 9) · 0.4: medida primária pareada com Wilcoxon exato, teste de permutação de Pratt e Birge, controles de comprimento e de pistas temporais, escala de itens de cinco categorias e desvios de protocolo — derivados dos artigos em `references/` · 0.5: *sitter* passa a ser **consulente** em todo o texto em português, com a forma inglesa registrada no glossário e mantida nos identificadores do código · 0.6: épico E10, autoatendimento e automação, com as travas obrigatórias · 0.7: o Crivo passa a ser uma plataforma de protocolos de cognição anômala, com catálogo de protocolos (seção 1.1) e os épicos E11 e E12 — dois testes integralmente automatizáveis · 0.8: a semente dos testes de autoatendimento passa a ter duas metades, uma do servidor e uma do participante, o que remove a necessidade de confiar na plataforma quanto à ordem dos fatos · 0.9: protocolo **P4, leitura estruturada automatizada** (épico E13), o ramo AIR integralmente automatizado: contas com perfil fixo (consulente ou médium), questionário fechado preenchido pelo consulente e pelo médium e conferência automática contra o alvo e o chamariz; o catálogo passa a se dividir em **protocolos AIR** e **experimentos extras** · 0.10: fase B do P4 — questionário versionado `v1-rascunho`, pedido de consulta travado com compromisso salgado, rascunho só na sessão, campos de pareamento iguais aos do P1 e formulário fechado em produção sem referência do CEP; seção 10 atualizada · 0.11: fase C do P4 — estudo P4 congelado numa tela com o questionário no anexo, compromisso sobre a semente, ciclo automático de pareamento e envio, um médium sorteado por par, leitura travada com compromisso salgado, prazo com reenvio, e nenhum código de médium na trilha antes do desmascaramento
+> Versão 0.12 · novembro/2026 · 0.2: seção 2.1 "O que é uma leitura", regra "um item = uma afirmação" e referências · 0.3: critérios de inclusão de médiuns no pré-registro, regra de parada vinculante e unidade de análise por par (seções 5 e 9) · 0.4: medida primária pareada com Wilcoxon exato, teste de permutação de Pratt e Birge, controles de comprimento e de pistas temporais, escala de itens de cinco categorias e desvios de protocolo — derivados dos artigos em `references/` · 0.5: *sitter* passa a ser **consulente** em todo o texto em português, com a forma inglesa registrada no glossário e mantida nos identificadores do código · 0.6: épico E10, autoatendimento e automação, com as travas obrigatórias · 0.7: o Crivo passa a ser uma plataforma de protocolos de cognição anômala, com catálogo de protocolos (seção 1.1) e os épicos E11 e E12 — dois testes integralmente automatizáveis · 0.8: a semente dos testes de autoatendimento passa a ter duas metades, uma do servidor e uma do participante, o que remove a necessidade de confiar na plataforma quanto à ordem dos fatos · 0.9: protocolo **P4, leitura estruturada automatizada** (épico E13), o ramo AIR integralmente automatizado: contas com perfil fixo (consulente ou médium), questionário fechado preenchido pelo consulente e pelo médium e conferência automática contra o alvo e o chamariz; o catálogo passa a se dividir em **protocolos AIR** e **experimentos extras** · 0.10: fase B do P4 — questionário versionado `v1-rascunho`, pedido de consulta travado com compromisso salgado, rascunho só na sessão, campos de pareamento iguais aos do P1 e formulário fechado em produção sem referência do CEP; seção 10 atualizada · 0.11: fase C do P4 — estudo P4 congelado numa tela com o questionário no anexo, compromisso sobre a semente, ciclo automático de pareamento e envio, um médium sorteado por par, leitura travada com compromisso salgado, prazo com reenvio, e nenhum código de médium na trilha antes do desmascaramento · 0.12: fase D do P4 — desmascaramento automático no N, conferência com integridade verificada, análise primária e secundárias, relatório com hash, devolutiva do consulente e do médium; e o esclarecimento, na página inicial, de que o P4 não é mensagem do falecido nem resposta a perguntas
 
 ---
 
@@ -386,7 +386,7 @@ Para cada par (A, B), com a leitura `R_A` (feita com o nome de A) e `R_B`:
 
 | Perfil | Tela | Conteúdo |
 |---|---|---|
-| Público | Página do protocolo | O que é o P4, como participar, o que o resultado não sustenta |
+| Público | Página do protocolo | O que é o P4 e **o que ele não é** — não é carta nem mensagem da pessoa falecida, nem resposta a perguntas do consulente, só um experimento de confirmação (ou não) da recepção anômala de informação —, como participar, o que o resultado não sustenta. O mesmo esclarecimento está na página inicial |
 | Público | Criar conta | Nome, e-mail, senha, perfil (consulente ou médium), termo, contato humano |
 | Público | Confirmar e-mail | Resultado do link de confirmação |
 | Consulente | Painel | Situação do pedido: rascunho, travado, aguardando par, enviado ao médium, leitura recebida, aguardando o fechamento do estudo, devolutiva |
@@ -445,7 +445,7 @@ Além das seis travas do E10:
 | A | Catálogo em duas seções, páginas do P4, contas com perfil fixo, confirmação por e-mail, painéis por perfil, avisos de conta ao administrador | Implementada na SPEC 0.9 |
 | B | Questionário versionado e pedido de consulta com compromisso salgado | Implementada na SPEC 0.10 |
 | C | Pareamento, sorteio do médium, pedido ao médium, leitura, prazos e reenvio | Implementada na SPEC 0.11 |
-| D | Desmascaramento automático no N, conferência, análise, relatório e devolutiva | Pendente |
+| D | Desmascaramento automático no N, conferência, análise, relatório e devolutiva | Implementada na SPEC 0.12 |
 
 #### Fase B — decisões
 
@@ -479,6 +479,23 @@ Além das seis travas do E10:
 - **E-mail.** O médium recebe o aviso de pedido novo — sem nome, com o prazo e o endereço do painel (`AIRLAB_BASE_URL`). O administrador recebe "par enviado ao médium", "leitura recebida" e "prazo vencido", com o código do par.
 
 **Aceite da fase C**: nenhum nome chega a médium sem liberação registrada sobre pedido travado; o médium vê só os nomes dos próprios pedidos; a trilha não tem código de médium em envio, liberação ou leitura; com a semente revelada, o médium e a ordem dos nomes de cada envio se refazem a partir das entradas registradas, em qualquer ordem de entrada; leitura travada não muda nem some, nem por SQL.
+
+#### Fase D — decisões
+
+- **Desmascaramento automático, no N.** Quando os N pares ativos têm as duas leituras travadas, o próprio ciclo encerra a coleta e desmascara, numa transação só: o estudo passa a coleta encerrada; a semente é revelada; o estudo passa a desmascarado; os pedidos dos pares passam a "estudo concluído"; a conferência, a análise e o relatório rodam; e o estudo passa a relatado. Ninguém escolhe o momento — nem o administrador. O desmascaramento do P4 mora no módulo `structured`, onde estão as entradas dele; o módulo `unblinding` continua reservado ao P1.
+- **Nenhuma nota antes, imposto no banco.** As tabelas de notas e de relatório recusam linha de estudo que não esteja desmascarado. As respostas do consulente só saem do módulo `participant` para pedido em "estudo concluído".
+- **Integridade conferida antes de pontuar.** Com os sais revelados, o sistema recalcula o compromisso de cada pedido e de cada leitura, e o relatório diz quantos conferiram.
+- **Conferência**: exatamente a regra da seção "Conferência automática", sobre os pares ativos e a leitura do envio concluído. Pares desfeitos e leituras de envios vencidos ou cancelados ficam fora, como o pré-registro declara.
+- **Análise.** Primária: Wilcoxon exato unilateral sobre os `d` (exato até 20 pares com `d` diferente de zero; acima disso, aproximação normal, e o relatório diz qual foi usado). Secundárias: binomial exato do sinal de `d`; permutação das leituras entre os alvos, **dentro dos estratos** do pareamento, sobre a matriz consulente × leitura em que cada célula conta as coincidências nos campos que o consulente respondeu. A permutação é exata enquanto os arranjos cabem na enumeração; acima disso, usa 100 mil arranjos sorteados da semente revelada, e qualquer pessoa os refaz.
+- **Relatório**: documento canônico com hash na trilha. Traz o hash do pré-registro, o compromisso e a semente revelada, as três análises, o poder declarado, a integridade, as exclusões, a tabela por par — com o médium, agora revelado — e por médium, e o que o resultado não sustenta. A linguagem é neutra: "p abaixo de 0,05" é uma afirmação sobre o teste, não sobre o fenômeno (P3).
+- **Devolutiva do consulente**: as próprias respostas ao lado das do médium para o seu alvo, campo a campo, com os campos fora da comparação marcados. Mostra também quantos campos coincidiram com as suas respostas e, para comparação, quantos coincidiram com as do outro consulente do par — só a contagem, nunca as respostas dele —, além do resultado do estudo inteiro. O texto diz que um resultado individual não fala da pessoa falecida nem do médium: o que o estudo avalia é o conjunto.
+- **Vazamento residual declarado**: o campo marcado como fora da comparação revela ao consulente que o outro respondeu "não sei" ali, e a contagem contra o chamariz revela quantas respostas do outro coincidem com a leitura. Nenhuma resposta do outro consulente é mostrada.
+- **Devolutiva do médium**: para cada leitura, as coincidências com o alvo e com o chamariz e o `d` do par — nunca as respostas dos consulentes.
+- **Administrador**: o relatório inteiro. Depois dele, o estudo deixa de estar aberto e um novo estudo P4 pode ser criado; os pedidos que esperavam par continuam travados e entram no próximo.
+- **Avisos e e-mail**: "estudo desmascarado" e "relatório pronto" para o administrador, com o código do estudo. Os consulentes e médiuns do estudo recebem e-mail dizendo que a devolutiva está disponível, sem nota nenhuma na mensagem.
+- **O que fica para o E9**: o pacote de verificação público, com respostas, sais, envios e listas de elegíveis, depende de uma decisão de LGPD sobre publicar respostas sobre pessoas falecidas.
+
+**Aceite da fase D**: nenhuma nota nem relatório antes do desmascaramento, nem por SQL; o desmascaramento acontece sozinho no N; a conferência refeita a partir das respostas reveladas dá os mesmos `d`; o relatório tem hash na trilha.
 
 #### Anexo — questionário, versão `v1-rascunho`
 
@@ -532,6 +549,8 @@ StructuredStudy(P4) ──1 Study, questionnaire_version, target_pairs, deadline
 StructuredPair(P4) ──2 ConsultationRequest, dissolved_at                              [fase C]
 ReadingAssignment(P4) ──1 StructuredPair, ──1 Account(médium), attempt, pool, due_at  [fase C]
 StructuredReading(P4) ──1 ReadingAssignment, ──1 ConsultationRequest, commitment      [fase C]
+StructuredScore(P4) ──1 StructuredPair, comparable_fields, s_aa, s_ab, s_bb, s_ba, d  [fase D]
+StructuredReport(P4) ──1 Study, document, results, sha256                            [fase D]
 FirstNameRelease(identity) ──1 ReadingAssignment, ──1 ConsultationRequest, revoked_at [fase C]
 ```
 
@@ -594,6 +613,6 @@ FirstNameRelease(identity) ──1 ReadingAssignment, ──1 ConsultationReques
 
 Os passos iniciais desta seção estão feitos: os documentos estão em `/docs` e no `CLAUDE.md`, o plano técnico existe (`docs/PLAN.md`), E8 e E3 estão implementados, e a matriz de cegamento é uma suíte de testes (`BlindingMatrixTest`) que cresce antes de cada tela. O estado detalhado por épico está no plano técnico. A ordem daqui em diante:
 
-1. **P4, fase D** (E13): desmascaramento automático quando os N pares têm as duas leituras, revelação dos sais e da semente, conferência, análise primária, relatório e devolutiva — para o consulente e para o médium.
+1. **P4, pendências** (E13): sinalização de contas ligadas para revisão humana, teto de pares por médium (questão 12) e a página pública do relatório.
 2. **P1**: E4 (sessões) e E5 (redação), consumindo o evento do sorteio; E6 (avaliação cega); E7 (desmascaramento e relatório).
 3. **E8/E9**: carimbo de tempo RFC 3161 e pacote de verificação, que no P4 publica também os envios, as listas de elegíveis e as leituras.
