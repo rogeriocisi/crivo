@@ -3,7 +3,7 @@
 > Spec de alto nível. Cada épico abaixo vira uma spec detalhada própria antes da implementação.
 > Conformidade obrigatória com `CONSTITUTION.md`. Contexto e motivação em `VISION.md`. Fundamentação científica em `REFERENCES.md`.
 >
-> Versão 0.12 · novembro/2026 · 0.2: seção 2.1 "O que é uma leitura", regra "um item = uma afirmação" e referências · 0.3: critérios de inclusão de médiuns no pré-registro, regra de parada vinculante e unidade de análise por par (seções 5 e 9) · 0.4: medida primária pareada com Wilcoxon exato, teste de permutação de Pratt e Birge, controles de comprimento e de pistas temporais, escala de itens de cinco categorias e desvios de protocolo — derivados dos artigos em `references/` · 0.5: *sitter* passa a ser **consulente** em todo o texto em português, com a forma inglesa registrada no glossário e mantida nos identificadores do código · 0.6: épico E10, autoatendimento e automação, com as travas obrigatórias · 0.7: o Crivo passa a ser uma plataforma de protocolos de cognição anômala, com catálogo de protocolos (seção 1.1) e os épicos E11 e E12 — dois testes integralmente automatizáveis · 0.8: a semente dos testes de autoatendimento passa a ter duas metades, uma do servidor e uma do participante, o que remove a necessidade de confiar na plataforma quanto à ordem dos fatos · 0.9: protocolo **P4, leitura estruturada automatizada** (épico E13), o ramo AIR integralmente automatizado: contas com perfil fixo (consulente ou médium), questionário fechado preenchido pelo consulente e pelo médium e conferência automática contra o alvo e o chamariz; o catálogo passa a se dividir em **protocolos AIR** e **experimentos extras** · 0.10: fase B do P4 — questionário versionado `v1-rascunho`, pedido de consulta travado com compromisso salgado, rascunho só na sessão, campos de pareamento iguais aos do P1 e formulário fechado em produção sem referência do CEP; seção 10 atualizada · 0.11: fase C do P4 — estudo P4 congelado numa tela com o questionário no anexo, compromisso sobre a semente, ciclo automático de pareamento e envio, um médium sorteado por par, leitura travada com compromisso salgado, prazo com reenvio, e nenhum código de médium na trilha antes do desmascaramento · 0.12: fase D do P4 — desmascaramento automático no N, conferência com integridade verificada, análise primária e secundárias, relatório com hash, devolutiva do consulente e do médium; e o esclarecimento, na página inicial, de que o P4 não é mensagem do falecido nem resposta a perguntas
+> Versão 0.13 · novembro/2026 · 0.2: seção 2.1 "O que é uma leitura", regra "um item = uma afirmação" e referências · 0.3: critérios de inclusão de médiuns no pré-registro, regra de parada vinculante e unidade de análise por par (seções 5 e 9) · 0.4: medida primária pareada com Wilcoxon exato, teste de permutação de Pratt e Birge, controles de comprimento e de pistas temporais, escala de itens de cinco categorias e desvios de protocolo — derivados dos artigos em `references/` · 0.5: *sitter* passa a ser **consulente** em todo o texto em português, com a forma inglesa registrada no glossário e mantida nos identificadores do código · 0.6: épico E10, autoatendimento e automação, com as travas obrigatórias · 0.7: o Crivo passa a ser uma plataforma de protocolos de cognição anômala, com catálogo de protocolos (seção 1.1) e os épicos E11 e E12 — dois testes integralmente automatizáveis · 0.8: a semente dos testes de autoatendimento passa a ter duas metades, uma do servidor e uma do participante, o que remove a necessidade de confiar na plataforma quanto à ordem dos fatos · 0.9: protocolo **P4, leitura estruturada automatizada** (épico E13), o ramo AIR integralmente automatizado: contas com perfil fixo (consulente ou médium), questionário fechado preenchido pelo consulente e pelo médium e conferência automática contra o alvo e o chamariz; o catálogo passa a se dividir em **protocolos AIR** e **experimentos extras** · 0.10: fase B do P4 — questionário versionado `v1-rascunho`, pedido de consulta travado com compromisso salgado, rascunho só na sessão, campos de pareamento iguais aos do P1 e formulário fechado em produção sem referência do CEP; seção 10 atualizada · 0.11: fase C do P4 — estudo P4 congelado numa tela com o questionário no anexo, compromisso sobre a semente, ciclo automático de pareamento e envio, um médium sorteado por par, leitura travada com compromisso salgado, prazo com reenvio, e nenhum código de médium na trilha antes do desmascaramento · 0.12: fase D do P4 — desmascaramento automático no N, conferência com integridade verificada, análise primária e secundárias, relatório com hash, devolutiva do consulente e do médium; e o esclarecimento, na página inicial, de que o P4 não é mensagem do falecido nem resposta a perguntas · 0.13: fase E do P4 — sinalização de contas ligadas por índice cego, sem bloqueio e com revisão humana; teto de pares por médium no pré-registro; página pública dos estudos e relatórios
 
 ---
 
@@ -446,6 +446,7 @@ Além das seis travas do E10:
 | B | Questionário versionado e pedido de consulta com compromisso salgado | Implementada na SPEC 0.10 |
 | C | Pareamento, sorteio do médium, pedido ao médium, leitura, prazos e reenvio | Implementada na SPEC 0.11 |
 | D | Desmascaramento automático no N, conferência, análise, relatório e devolutiva | Implementada na SPEC 0.12 |
+| E | Sinalização de contas ligadas, teto de pares por médium, página pública dos estudos | Implementada na SPEC 0.13 |
 
 #### Fase B — decisões
 
@@ -496,6 +497,19 @@ Além das seis travas do E10:
 - **O que fica para o E9**: o pacote de verificação público, com respostas, sais, envios e listas de elegíveis, depende de uma decisão de LGPD sobre publicar respostas sobre pessoas falecidas.
 
 **Aceite da fase D**: nenhuma nota nem relatório antes do desmascaramento, nem por SQL; o desmascaramento acontece sozinho no N; a conferência refeita a partir das respostas reveladas dá os mesmos `d`; o relatório tem hash na trilha.
+
+#### Fase E — pendências: decisões
+
+- **Sinalização de contas ligadas.** Dois sinais, calculados na confirmação do e-mail e guardados só como índice cego (HMAC), como o próprio e-mail. O **e-mail canônico**: minúsculas, sem o sufixo "+…" e, no Gmail, sem os pontos — `jo.ao+x@gmail.com` e `joao@gmail.com` são a mesma caixa. O **nome completo normalizado**: minúsculas, sem acentos, com espaços simples, e só com duas palavras ou mais — "Maria", sozinho, coincide com gente demais para significar alguma coisa. Quando uma conta confirmada compartilha um sinal com outra conta ativa, nasce uma sinalização para revisão humana, com os dois códigos e o tipo de sinal, e o administrador recebe o aviso "contas ligadas sinalizadas". Nenhum IP, aparelho ou outro rastro é coletado (P6).
+- **Sinalizar não é bloquear.** Nenhuma conta é recusada nem suspensa. Enquanto a sinalização está pendente, ou depois que o administrador confirmar que as contas são da mesma pessoa, o sistema só evita o encontro: o médium sinalizado não é sorteado para o par de um consulente sinalizado com ele, e dois consulentes sinalizados entre si não formam par. Se o administrador decidir que as contas não têm relação, a restrição cai. A decisão é registrada uma vez e não muda.
+- **Trilha**: a sinalização e a revisão entram com o código da sinalização, o tipo de sinal e a decisão — sem os códigos das contas, porque a trilha é pública e uma suspeita não é um fato.
+- **A desistência apaga os sinais** da conta, como o resto dos dados identificáveis. A sinalização fica, só com os códigos pseudônimos.
+- **Limite declarado**: os sinais pegam o caso descuidado — o mesmo nome, um apelido do mesmo e-mail. Quem se cadastra com nome e e-mail diferentes não é detectado; isso já está entre o que o P4 não sustenta.
+- **Teto de pares por médium**, declarado no pré-registro (padrão: 10, ou N se N for menor) e no anexo canônico. O médium que já tem o teto de pares no estudo, somando pedidos abertos e concluídos, sai da lista de elegíveis. A lista registrada em cada envio já é a filtrada, e o sorteio continua reproduzível. Com poucos médiuns, os pares esperam, e o painel do administrador mostra quantos (questão 12).
+- **Página pública dos estudos** (`/estudos`): lista os estudos P4 e, para cada um, o documento do pré-registro com o hash e o compromisso da semente. Enquanto o estudo coleta, só contagens; depois do desmascaramento, o relatório inteiro, com o hash que está na trilha. Só o que é público por construção (P2, P7): códigos pseudônimos, contagens, notas por par e a semente revelada — nunca nome, resposta ou leitura.
+- **Vazamento residual declarado**: quem conhece o código do próprio pedido acha o par na trilha e, no relatório público, as quatro contagens do par. São contagens, nunca respostas.
+
+**Aceite da fase E**: nenhuma sinalização bloqueia conta; médium e consulente sinalizados nunca se encontram num par enquanto a sinalização não for descartada; nenhum médium passa do teto; a página pública não mostra, antes do desmascaramento, nada além do pré-registro e de contagens.
 
 #### Anexo — questionário, versão `v1-rascunho`
 
@@ -605,14 +619,13 @@ FirstNameRelease(identity) ──1 ReadingAssignment, ──1 ConsultationReques
     com o vazamento declarado.
 11. **P4 — qualificação de médiuns**: uma rodada prévia com o próprio P4 (E10) antes da entrada
     no estudo confirmatório.
-12. **P4 — carga por médium**: a v1 não limita quantos pares um médium recebe ao mesmo tempo. Com
-    poucos médiuns, um deles pode concentrar o estudo, e o efeito passa a ser o dele. Um teto por
-    médium, declarado no pré-registro, é a saída provável.
+12. **P4 — carga por médium** — *resolvido na v0.13*: o teto de pares por médium é declarado no
+    pré-registro, e o relatório mostra a soma de `d` por médium. O que resta decidir é o valor do
+    teto de um estudo real, que depende de quantos médiuns se inscreverem.
 
 ## 10. Próximos passos
 
 Os passos iniciais desta seção estão feitos: os documentos estão em `/docs` e no `CLAUDE.md`, o plano técnico existe (`docs/PLAN.md`), E8 e E3 estão implementados, e a matriz de cegamento é uma suíte de testes (`BlindingMatrixTest`) que cresce antes de cada tela. O estado detalhado por épico está no plano técnico. A ordem daqui em diante:
 
-1. **P4, pendências** (E13): sinalização de contas ligadas para revisão humana, teto de pares por médium (questão 12) e a página pública do relatório.
-2. **P1**: E4 (sessões) e E5 (redação), consumindo o evento do sorteio; E6 (avaliação cega); E7 (desmascaramento e relatório).
-3. **E8/E9**: carimbo de tempo RFC 3161 e pacote de verificação, que no P4 publica também os envios, as listas de elegíveis e as leituras.
+1. **P1**: E4 (sessões) e E5 (redação), consumindo o evento do sorteio; E6 (avaliação cega); E7 (desmascaramento e relatório).
+2. **E8/E9**: carimbo de tempo RFC 3161 e pacote de verificação, que no P4 publica também os envios, as listas de elegíveis e as leituras.
