@@ -56,6 +56,15 @@ public record Protocol(String code,
     }
 
     /**
+     * Whether anyone can take it right now in the browser, anonymously, as a quick test. Only
+     * the ESP protocols are like that: the automated AIR protocol runs end to end too, but
+     * through an account, because it collects data about a deceased person.
+     */
+    public boolean quickTest() {
+        return branch == Branch.ESP && automation == Automation.FULL;
+    }
+
+    /**
      * Branch of anomalous cognition. The distinction is kept because AIR means something
      * narrower than psi in the literature: information about a deceased person, obtained
      * without a sensory channel.
@@ -96,6 +105,8 @@ public record Protocol(String code,
 
     public enum Status {
         IMPLEMENTED("Disponível"),
+        /** Delivered in phases; part of it works today and the page says which part. */
+        IN_PROGRESS("Em construção"),
         PLANNED("Planejado");
 
         private final String label;

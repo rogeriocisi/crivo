@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="utf-8">
+  <title>Fragmentos do P4</title>
+</head>
+
+<body>
+
+  <!--
+    Como participar do P4 (SPEC, E13). Usado na página inicial e na página do protocolo, para que
+    as duas digam a mesma coisa.
+  -->
+  <section th:fragment="como-participar" id="como-participar">
+    <div class="faixa">
+      <p class="rotulo">Leitura estruturada automatizada · P4</p>
+      <h2>Como participar, passo a passo</h2>
+      <p>
+        Tudo acontece pelo site. Ninguém da equipe lê o que você escreve, e ninguém julga se uma
+        resposta "encaixa": o sistema compara respostas fechadas.
+      </p>
+
+      <ol class="etapas">
+        <li>
+          <div>
+            <h3>Crie uma conta</h3>
+            <p>
+              Em <a href="/conta/criar">Criar conta</a>, informe nome, e-mail e senha e aceite o termo.
+              Seus dados ficam cifrados, separados dos dados da pesquisa, que usam só um código.
+            </p>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Escolha o seu perfil: consulente ou médium</h3>
+            <p>
+              <strong>Consulente</strong> é quem perdeu alguém e faz o pedido de consulta.
+              <strong>Médium</strong> é quem recebe os pedidos e responde. A escolha é feita uma vez e
+              não muda: ninguém pode estar dos dois lados.
+            </p>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Confirme o e-mail</h3>
+            <p>
+              Você recebe um link de confirmação, que vale por 48 horas. A conta só passa a valer
+              depois dele.
+            </p>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Consulente: faça o pedido</h3>
+            <p>
+              Informe o primeiro nome da pessoa falecida e responda a um questionário de múltipla
+              escolha sobre ela. Ao confirmar, as respostas são travadas, e a trilha pública recebe
+              um compromisso criptográfico delas antes de qualquer médium ver o pedido.
+            </p>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Médium: responda ao pedido</h3>
+            <p>
+              O sistema sorteia o médium e envia só o primeiro nome. O médium responde ao mesmo
+              questionário — ou marca "não recebi" — e, ao enviar, a leitura também trava.
+            </p>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Conferência automática e devolutiva</h3>
+            <p>
+              Quando o estudo atinge o número de pares declarado, o sistema compara cada leitura com
+              o alvo verdadeiro e com um chamariz de perfil semelhante. Só então aparecem as notas:
+              o consulente vê as respostas do médium ao lado das suas, e o administrador recebe o
+              aviso de que o estudo foi concluído.
+            </p>
+          </div>
+        </li>
+      </ol>
+
+      <p class="acoes">
+        <a class="botao botao-cheio" href="/conta/criar">Criar uma conta</a>
+        <a class="botao botao-vazio" href="/login">Já tenho conta</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- As telas de cada perfil, com o que já funciona e o que está em construção. -->
+  <section th:fragment="telas" id="telas">
+    <div class="faixa">
+      <p class="rotulo">Telas de cada perfil</p>
+      <h2>O que cada perfil vê</h2>
+      <p>
+        Cada perfil enxerga só o que o papel dele permite: o cegamento é aplicado no servidor e no
+        banco, não escondendo campos na tela. Nenhuma nota existe antes do fim do estudo, para
+        ninguém.
+      </p>
+
+      <div class="perfis">
+        <article class="perfil">
+          <h3>Consulente</h3>
+          <ul>
+            <li><strong>Painel</strong> — a situação do seu pedido, etapa por etapa.</li>
+            <li><strong>Novo pedido</strong> — primeiro nome e questionário, com revisão antes de travar.</li>
+            <li><strong>Devolutiva</strong> — depois do fim do estudo, as respostas do médium ao lado das suas.</li>
+            <li><strong>Minha conta</strong> — seus dados, o termo aceito e a exclusão da conta.</li>
+          </ul>
+        </article>
+        <article class="perfil">
+          <h3>Médium</h3>
+          <ul>
+            <li><strong>Painel</strong> — pedidos recebidos e prazos; leituras enviadas, sem nota.</li>
+            <li><strong>Leitura</strong> — os primeiros nomes do par e o questionário em branco.</li>
+            <li><strong>Minha conta</strong> — seus dados, o termo aceito e a exclusão da conta.</li>
+          </ul>
+        </article>
+        <article class="perfil">
+          <h3>Administrador</h3>
+          <ul>
+            <li><strong>Painel</strong> — contas por perfil, pedidos e leituras por etapa, progresso até o número declarado: contagens, nunca notas.</li>
+            <li><strong>Avisos</strong> — a conclusão de cada etapa, do cadastro ao relatório.</li>
+            <li><strong>Sinalizações</strong> — contas que parecem ligadas, para revisão humana.</li>
+            <li><strong>Estudo</strong> — pré-registro, questionário, congelamento e relatório.</li>
+          </ul>
+          <p class="nota">
+            O administrador não é um perfil que se escolha: a conta vem da configuração do servidor.
+          </p>
+        </article>
+      </div>
+
+      <div class="ressalva">
+        <p>
+          <strong>Estado honesto.</strong> Já funcionam a criação de conta com perfil, a confirmação
+          por e-mail, a entrada e o painel de cada perfil, e os avisos de conta ao administrador. O
+          questionário, o envio dos pedidos aos médiuns e a conferência automática são as próximas
+          etapas, e os painéis dizem isso em vez de fingir que estão prontos.
+        </p>
+      </div>
+    </div>
+  </section>
+
+</body>
+
+</html>

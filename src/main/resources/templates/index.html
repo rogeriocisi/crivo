@@ -20,6 +20,10 @@
 
     <section class="abertura">
       <div class="faixa">
+        <p class="aviso" th:if="${param.contaEncerrada}" role="status">
+          Sua conta foi excluída. Nome, e-mail e senha foram apagados; só o código pseudônimo
+          permanece na pesquisa, marcado como encerrado.
+        </p>
         <p class="rotulo aparece">Protocolos cegos para pesquisa de cognição anômala</p>
         <h1 class="aparece">Crivo</h1>
         <p class="chamada aparece">
@@ -35,13 +39,49 @@
           anos depois.
         </p>
         <div class="acoes aparece">
-          <a class="botao botao-cheio" href="#o-que-e">Comece por aqui</a>
-          <a class="botao botao-vazio" href="#protocolo">O protocolo</a>
-          <a class="botao botao-vazio" href="#participar">Quero participar</a>
+          <a class="botao botao-cheio" href="#air-automatizado">Participar pelo site</a>
+          <a class="botao botao-vazio" href="#o-que-e">Comece por aqui</a>
+          <a class="botao botao-vazio" href="/testes">Os protocolos</a>
         </div>
         <blockquote class="epigrafe aparece">Passar pelo crivo da razão.</blockquote>
       </div>
     </section>
+
+    <section id="air-automatizado">
+      <div class="faixa">
+        <p class="rotulo">Em destaque · leitura estruturada automatizada · P4</p>
+        <h2>Um protocolo AIR que roda inteiro pelo site</h2>
+        <p>
+          O consulente informa o primeiro nome da pessoa falecida e responde a um questionário de
+          múltipla escolha sobre ela. Um médium sorteado recebe só o primeiro nome e responde ao
+          mesmo questionário. O sistema confere as respostas campo a campo — contra o alvo
+          verdadeiro e contra um chamariz de perfil parecido —, e o que conta é a diferença entre as
+          duas notas. <strong>Ninguém julga se uma afirmação "encaixa"</strong>, e ninguém da equipe
+          fica no circuito: do cadastro ao aviso de conclusão, tudo é automático.
+        </p>
+        <div class="caminhos">
+          <article class="caminho">
+            <h3>Protocolos AIR</h3>
+            <p>
+              Dois: a <a href="/testes/leitura-estruturada">leitura estruturada automatizada</a>, em
+              destaque, e a <a href="/testes/leitura-pareada">leitura pareada cega</a>, conduzida por
+              uma equipe com experimentador e redator.
+            </p>
+          </article>
+          <article class="caminho">
+            <h3>Experimentos extras</h3>
+            <p>
+              Dois testes rápidos de percepção extrassensorial, anônimos e sem conta, que você faz
+              agora e confere depois. Eles não dizem nada sobre mediunidade.
+              <a href="/testes#extras">Ver os experimentos</a>.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section th:replace="~{fragments/p4 :: como-participar}"></section>
+    <section th:replace="~{fragments/p4 :: telas}"></section>
 
     <section id="o-que-e">
       <div class="faixa">
@@ -227,9 +267,11 @@
     <section id="protocolo">
       <div class="faixa">
         <p class="rotulo">Como funciona</p>
-        <h2>Oito etapas, cada uma presa à anterior</h2>
+        <h2>A leitura pareada, conduzida por equipe: oito etapas, cada uma presa à anterior</h2>
         <p>
-          O protocolo da primeira versão é a <strong>leitura pareada com cegamento múltiplo</strong>.
+          O protocolo AIR mais próximo da literatura é a <strong>leitura pareada com cegamento
+          múltiplo</strong> (P1). Ele não roda sozinho pelo site: precisa de um experimentador que
+          conduza a sessão e de um redator que divida a leitura em itens.
           Dois falecidos de perfil semelhante formam um par, e a leitura de cada um serve de
           <em>chamariz</em> para o outro. Só conta como evidência aquilo que se ajusta ao alvo
           verdadeiro mais do que ao chamariz, de forma consistente e acima do acaso.
@@ -505,9 +547,17 @@
     <section id="participar">
       <div class="faixa">
         <p class="rotulo">Participar</p>
-        <h2>Três formas de entrar nisso</h2>
+        <h2>Quatro formas de entrar nisso</h2>
 
         <div class="caminhos">
+          <article class="caminho">
+            <h3>Participar como consulente ou médium</h3>
+            <p>
+              Pela leitura estruturada automatizada, tudo acontece no site: crie uma conta, escolha
+              o perfil e acompanhe pelo seu painel.
+            </p>
+            <p><a class="botao botao-cheio" href="/conta/criar">Criar uma conta</a></p>
+          </article>
           <article class="caminho">
             <h3>Conduzir um estudo</h3>
             <p>
@@ -543,9 +593,12 @@
         <div class="ressalva">
           <p>
             <strong>Estado honesto do projeto.</strong> O núcleo de confiança está implementado e testado:
-            trilha de auditoria, sorteio verificável, pré-registro e análise. As etapas de campo —
-            sessões, redação, avaliação cega e desmascaramento — têm esquema de banco e regras definidas,
-            mas ainda não têm interface. A plataforma ainda não foi usada com participantes reais.
+            trilha de auditoria, sorteio verificável, pré-registro e análise. Na leitura estruturada
+            automatizada já funcionam as contas com perfil, a confirmação por e-mail, os painéis e os
+            avisos ao administrador; o questionário, o envio aos médiuns e a conferência automática são
+            as próximas etapas. Na leitura pareada, as etapas de campo têm esquema de banco e regras
+            definidas, mas ainda não têm interface. A plataforma ainda não foi usada com participantes
+            reais.
           </p>
         </div>
       </div>

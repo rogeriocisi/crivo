@@ -8,13 +8,37 @@ A mediunidade é um ramo da plataforma — na literatura, *recepção anômala d
 
 ## Catálogo de protocolos
 
-| Código | Protocolo | Ramo | Acaso | Automação |
-|---|---|---|---|---|
-| **P1** | [Leitura pareada cega](docs/SPEC.md) | AIR (mediunidade) | 50% | Parcial: a sessão é síncrona, com experimentador *proxy* |
-| **P2** | Escolha forçada precognitiva | ESP (precognição) | 25% | Integral — qualquer pessoa faz pelo navegador |
-| **P3** | Visão remota com quatro alvos | ESP (resposta livre) | 25% | Integral — qualquer pessoa faz pelo navegador |
+O catálogo tem duas seções: **protocolos AIR**, com o automatizado em destaque, e **experimentos extras**.
 
-Os três herdam as mesmas garantias, e cada um declara na própria página **o que o seu resultado não sustenta**. Os dois testes de ESP não dizem nada sobre mediunidade: eles estão ali porque são integralmente verificáveis por quem os faz — no fim da sessão a semente é revelada, e você recomputa todos os alvos por conta própria. Em `/testes`, no site.
+| Seção | Código | Protocolo | Acaso | Automação |
+|---|---|---|---|---|
+| Protocolos AIR | **P4** | [Leitura estruturada automatizada](docs/SPEC.md#e13-leitura-estruturada-automatizada-p4) | 50% | **Integral**: conta, pedido, leitura, conferência e avisos sem ninguém da equipe |
+| Protocolos AIR | **P1** | [Leitura pareada cega](docs/SPEC.md) | 50% | Parcial: exige equipe — sessão síncrona com experimentador *proxy* e redator |
+| Experimentos extras | **P2** | Escolha forçada precognitiva (ESP) | 25% | Integral — qualquer pessoa faz pelo navegador, sem conta |
+| Experimentos extras | **P3** | Visão remota com quatro alvos (ESP) | 25% | Integral — qualquer pessoa faz pelo navegador, sem conta |
+
+Todos herdam as mesmas garantias, e cada um declara na própria página **o que o seu resultado não sustenta**. Os dois testes de ESP não dizem nada sobre mediunidade: eles estão ali porque são integralmente verificáveis por quem os faz. Em `/testes`, no site.
+
+### O AIR automatizado (P4), em uma frase
+
+O consulente informa o primeiro nome da pessoa falecida e responde a um questionário fechado sobre ela; um médium sorteado recebe só o primeiro nome e responde ao mesmo questionário; o sistema confere campo a campo contra o alvo verdadeiro e contra um chamariz de perfil parecido — **ninguém julga se uma afirmação "encaixa"**. A especificação completa, com a matriz de visibilidade e os limites declarados, está no épico [E13 da SPEC](docs/SPEC.md#e13-leitura-estruturada-automatizada-p4).
+
+### Como participar do P4: conta, perfil e telas
+
+1. **Crie uma conta** em `/conta/criar`: nome, e-mail, senha e aceite do termo.
+2. **Escolha o perfil** — **consulente** (faz o pedido de consulta) ou **médium** (responde aos pedidos). O perfil é fixo: o banco recusa a troca.
+3. **Confirme o e-mail** pelo link, que vale por 48 horas. No perfil local nenhum e-mail sai da máquina: o link aparece no log da aplicação (`Perfil local: link de confirmacao da conta …`) e na caixa de saída do administrador.
+4. **Entre** em `/login` com e-mail e senha; cada perfil cai no seu painel.
+
+| Perfil | Telas |
+|---|---|
+| **Consulente** | Painel com a situação do pedido · Novo pedido (questionário) · Devolutiva depois do fim do estudo · Minha conta (dados, termo, excluir conta) |
+| **Médium** | Painel com pedidos recebidos e prazos · Leitura (primeiros nomes e questionário) · Minha conta |
+| **Administrador** | Painel com contagens — nunca notas — e situação da instalação · Avisos de cada etapa concluída · Caixa de saída (perfil local) · Sinalizações e estudo (fases seguintes) |
+
+O administrador **não é um perfil escolhível**: é a conta do pesquisador, definida na configuração do servidor (ver *Entrar na aplicação*).
+
+**Estado:** a fase A do E13 está implementada — contas com perfil fixo, confirmação por e-mail, entrada, painéis por perfil e avisos de conta ao administrador. O questionário (fase B), o envio dos pedidos aos médiuns (fase C) e a conferência automática com relatório (fase D) vêm a seguir, e os painéis dizem isso.
 
 O Crivo não existe para provar que a mediunidade é real, nem que não é. Ele existe para que **a resposta, qualquer que seja, seja defensável**.
 
@@ -22,7 +46,7 @@ O Crivo não existe para provar que a mediunidade é real, nem que não é. Ele 
 
 ## Status
 
-🧱 **Fase 0 → 1: fundamentos implementados.** O núcleo de confiança está de pé: trilha de auditoria encadeada por hash, sorteio reproduzível com compromisso → revelação, pré-registro congelável e CLI de verificação. Os épicos de campo (sessões, redação, avaliação cega, desmascaramento) estão com o esquema de banco pronto e a implementação pendente. Ver a tabela de estado em [`docs/PLAN.md`](docs/PLAN.md).
+🧱 **Fase 0 → 1: fundamentos implementados.** O núcleo de confiança está de pé: trilha de auditoria encadeada por hash, sorteio reproduzível com compromisso → revelação, pré-registro congelável e CLI de verificação. No AIR automatizado (P4), a fase A está no ar: contas com perfil fixo, confirmação por e-mail, painéis por perfil e avisos ao administrador; questionário, envio aos médiuns e conferência automática vêm a seguir. Na leitura pareada (P1), os épicos de campo (sessões, redação, avaliação cega, desmascaramento) estão com o esquema de banco pronto e a implementação pendente. Ver a tabela de estado em [`docs/PLAN.md`](docs/PLAN.md).
 
 ## Como rodar
 
@@ -70,7 +94,7 @@ O Codespaces encaminha a porta 8080 e abre a aplicação numa aba. Se a aba não
 
 ### Entrar na aplicação
 
-A entrada em `/login` é para quem **conduz** o estudo, não para participantes — estes recebem link de uso único e nunca têm conta. Hoje ela ainda não leva a telas de pesquisador: a conta existe para proteger o que vem a seguir.
+A entrada em `/login` serve a três perfis. **Consulentes e médiuns** do P4 entram com e-mail e senha da conta que criaram. **O administrador** entra com o usuário da configuração:
 
 - **Usuário**: `pesquisador`.
 - **Senha, no perfil local**: gerada a cada execução e impressa uma vez no log, numa linha de aviso `Perfil local: usuario "pesquisador" com senha temporaria desta execucao: …`. Nada fica salvo entre execuções, e nenhuma credencial vai para o repositório.
@@ -103,6 +127,17 @@ Os testes de cegamento e de integridade da trilha rodam contra um PostgreSQL rea
 
 Perfil `prod`: PostgreSQL do sistema operacional escutando só em `127.0.0.1`, aplicação como serviço (`systemd` no Linux, serviço do Windows), Caddy na borda com HTTPS automático. Os segredos vêm do ambiente ou de um `.env` não versionado — ver [`.env.example`](.env.example). As regras completas estão na Constitution, em *Implantação por fase*.
 
+**Inscrição do P4 em produção.** Fica fechada até que existam envio de e-mail e um contato humano (SPEC E10, travas 3 e 5):
+
+| Variável | Para quê |
+|---|---|
+| `SPRING_MAIL_HOST`, `SPRING_MAIL_PORT`, `SPRING_MAIL_USERNAME`, `SPRING_MAIL_PASSWORD` | Servidor SMTP que envia a confirmação de conta e os avisos |
+| `AIRLAB_MAIL_FROM` | Remetente dos e-mails |
+| `AIRLAB_CONTACT_EMAIL` | Contato humano mostrado na página de inscrição |
+| `AIRLAB_ADMIN_EMAIL` | Opcional: quem recebe por e-mail os avisos de etapa concluída (sempre aparecem no painel) |
+
+Antes de abrir a inscrição a pessoas reais, vale a trava 4 do E10: aprovação do comitê de ética (CEP/Plataforma Brasil).
+
 ## Contribuir
 
 ```bash
@@ -127,16 +162,17 @@ Em caso de conflito entre documentos, a **Constitution prevalece**.
 
 ## Stack
 
-Java 21 (LTS) · Spring Boot · Spring Modulith · PostgreSQL (embarcado em desenvolvimento, do sistema em produção) · Flyway · Thymeleaf + HTMX · JUnit 5 · Maven Wrapper
+Java 21 (LTS) · Spring Boot · Spring Modulith · Spring Boot Mail · PostgreSQL (embarcado em desenvolvimento, do sistema em produção) · Flyway · Thymeleaf + HTMX · JUnit 5 · Maven Wrapper
 
 Sem Docker: todo passo do projeto — build, teste, execução, implantação e verificação — roda por linha de comando em Windows e Linux com um JDK instalado.
 
 ## Próximos passos
 
-1. E4 (sessões) e E5 (redação), consumindo o evento do sorteio
-2. E6 (avaliação cega) com links de uso único
-3. E7 (desmascaramento e análise primária) e o relatório neutro
-4. Carimbo de tempo RFC 3161 e pacote de verificação (E8/E9)
+1. P4, fases B a D (E13): questionário e pedido com compromisso salgado; pareamento, sorteio do médium e leitura; conferência automática, desmascaramento no N e devolutiva
+2. E4 (sessões) e E5 (redação), consumindo o evento do sorteio
+3. E6 (avaliação cega) com links de uso único
+4. E7 (desmascaramento e análise primária) e o relatório neutro
+5. Carimbo de tempo RFC 3161 e pacote de verificação (E8/E9)
 
 ## Autor
 

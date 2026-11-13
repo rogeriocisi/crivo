@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Painel do médium — Crivo</title>
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="/css/crivo.css">
+</head>
+<body>
+<a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+<div class="faixa">
+  <header th:replace="~{fragments/site :: topo}"></header>
+</div>
+
+<main id="conteudo">
+  <section class="abertura">
+    <div class="faixa">
+      <p class="rotulo">Médium · <code th:text="${conta.code}">MED-0000</code></p>
+      <h1 th:text="'Olá, ' + ${conta.firstName}">Olá</h1>
+      <p class="chamada">
+        Aqui chegam os pedidos sorteados para você. Cada pedido traz só os primeiros nomes de duas
+        pessoas falecidas e o questionário em branco. Você não vê quem fez o pedido nem as respostas
+        dessa pessoa, e não vê nota nenhuma antes do fim do estudo.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <div class="faixa">
+      <h2>Pedidos recebidos</h2>
+      <dl class="contagens">
+        <div><dt>Aguardando leitura</dt><dd>0</dd></div>
+        <div><dt>Leituras enviadas</dt><dd>0</dd></div>
+      </dl>
+
+      <div class="ressalva">
+        <p>
+          <strong>O envio de pedidos aos médiuns ainda está em construção.</strong> Quando estiver no
+          ar, cada pedido aparece aqui com o prazo de resposta, e você recebe um e-mail ao ser
+          sorteado. Sua conta já está pronta para isso.
+        </p>
+      </div>
+
+      <h3>Como vai ser uma leitura</h3>
+      <ol class="etapas">
+        <li><div><h3>O pedido chega</h3><p>Dois primeiros nomes, em ordem sorteada, e o prazo — 14 dias, salvo outro valor declarado no estudo.</p></div></li>
+        <li><div><h3>Você responde</h3><p>O mesmo questionário de múltipla escolha que o consulente respondeu. Para cada campo, uma opção ou "não recebi".</p></div></li>
+        <li><div><h3>A leitura trava</h3><p>Ao enviar, as respostas travam, e a trilha pública recebe o hash delas.</p></div></li>
+        <li><div><h3>Notas no fim</h3><p>Quando o estudo é concluído, você vê a nota de cada leitura sua.</p></div></li>
+      </ol>
+    </div>
+  </section>
+
+  <section>
+    <div class="faixa">
+      <p class="acoes">
+        <a class="botao botao-vazio" href="/conta">Minha conta</a>
+      </p>
+      <form method="post" th:action="@{/logout}">
+        <button class="botao botao-vazio" type="submit">Sair</button>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer th:replace="~{fragments/site :: rodape}"></footer>
+</body>
+</html>

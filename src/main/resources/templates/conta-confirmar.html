@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Confirmar e-mail — Crivo</title>
+  <meta name="robots" content="noindex">
+  <meta name="referrer" content="no-referrer">
+  <link rel="stylesheet" href="/css/crivo.css">
+</head>
+<body>
+<a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+<div class="faixa">
+  <header th:replace="~{fragments/site :: topo}"></header>
+</div>
+
+<main id="conteudo">
+  <section class="abertura">
+    <div class="faixa">
+      <p class="rotulo">Confirmar e-mail</p>
+
+      <th:block th:unless="${resultado}">
+        <h1>Confirme a sua conta</h1>
+        <p class="chamada">
+          Falta só apertar o botão. A confirmação é feita por um botão, e não ao abrir o link, porque
+          alguns serviços de e-mail abrem os links sozinhos para checar se são seguros.
+        </p>
+        <form class="formulario" method="post" th:action="@{/conta/confirmar}">
+          <input type="hidden" name="token" th:value="${token}">
+          <button class="botao botao-cheio" type="submit">Confirmar meu e-mail</button>
+        </form>
+      </th:block>
+
+      <th:block th:if="${resultado == 'CONFIRMED'}">
+        <h1>Conta confirmada</h1>
+        <p class="chamada">Pronto. Agora é só entrar com o seu e-mail e a sua senha.</p>
+        <p class="acoes"><a class="botao botao-cheio" href="/login">Entrar</a></p>
+      </th:block>
+
+      <th:block th:if="${resultado == 'ALREADY_USED'}">
+        <h1>Este link já foi usado</h1>
+        <p class="chamada">A conta já está confirmada. Basta entrar.</p>
+        <p class="acoes"><a class="botao botao-cheio" href="/login">Entrar</a></p>
+      </th:block>
+
+      <th:block th:if="${resultado == 'EXPIRED'}">
+        <h1>Este link expirou</h1>
+        <p class="chamada">
+          Crie a conta de novo, com o mesmo e-mail, para receber um link novo. O perfil escolhido da
+          primeira vez continua valendo.
+        </p>
+        <p class="acoes"><a class="botao botao-cheio" href="/conta/criar">Receber outro link</a></p>
+      </th:block>
+
+      <th:block th:if="${resultado == 'UNKNOWN'}">
+        <h1>Link não reconhecido</h1>
+        <p class="chamada">
+          Confira se o endereço foi copiado inteiro. Se a conta foi excluída, o link deixa de valer.
+        </p>
+        <p class="acoes"><a class="botao botao-vazio" href="/conta/criar">Criar conta</a></p>
+      </th:block>
+    </div>
+  </section>
+</main>
+
+<footer th:replace="~{fragments/site :: rodape}"></footer>
+</body>
+</html>

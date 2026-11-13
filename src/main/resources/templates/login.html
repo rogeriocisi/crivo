@@ -18,32 +18,31 @@
 <main id="conteudo">
   <section class="abertura">
     <div class="faixa">
-      <p class="rotulo">Área do pesquisador</p>
+      <p class="rotulo">Entrar</p>
       <h1>Entrar</h1>
       <p class="chamada">
-        Esta entrada é para quem <strong>conduz</strong> um estudo nesta instalação. Não é para
-        participantes: quem vai avaliar leituras recebe um link de uso único por mensagem, e nunca
-        precisa de conta.
+        <strong>Consulentes e médiuns</strong> da leitura estruturada automatizada entram com o
+        e-mail e a senha da conta. <strong>O administrador</strong> entra com o usuário definido na
+        configuração do servidor. Cada um cai no painel do seu perfil.
       </p>
-
-      <div class="ressalva">
-        <p>
-          <strong>Hoje o login ainda não leva a lugar nenhum.</strong> As telas do pesquisador —
-          cadastro de estudo, pré-registro, sessões, avaliação — ainda não existem. A conta e a
-          proteção já estão de pé para o que vem a seguir; por enquanto, tudo o que a plataforma
-          mostra está nas páginas públicas, e o trabalho real se faz pela linha de comando.
-        </p>
-      </div>
+      <p class="nota">
+        Ainda não tem conta? <a href="/conta/criar">Crie uma</a>. Quem participa da leitura pareada
+        (P1) não precisa de conta: recebe um link de uso único na hora de avaliar.
+      </p>
 
       <form class="formulario" method="post" th:action="@{/login}">
         <p class="erro" th:if="${param.error}" role="alert">
-          Usuário ou senha incorretos.
+          E-mail, usuário ou senha incorretos.
+        </p>
+        <p class="erro" th:if="${param.naoConfirmada}" role="alert">
+          A conta ainda não foi confirmada. Abra o link que enviamos por e-mail; se ele expirou,
+          <a href="/conta/criar">crie a conta de novo</a> para receber outro.
         </p>
         <p class="aviso" th:if="${param.logout}" role="status">
           Sessão encerrada.
         </p>
 
-        <label for="username">Usuário</label>
+        <label for="username">E-mail ou usuário</label>
         <input id="username" name="username" type="text" autocomplete="username" required
                autocapitalize="none" spellcheck="false">
 
@@ -54,7 +53,7 @@
       </form>
 
       <div class="credencial" th:if="${localProfile}">
-        <p class="rotulo">Onde está a credencial, no perfil local</p>
+        <p class="rotulo">Credencial do administrador, no perfil local</p>
         <p>
           O usuário é <code>pesquisador</code>. A senha é <strong>gerada a cada execução</strong> e
           aparece uma vez no log da aplicação, numa linha de aviso como esta:
@@ -69,7 +68,7 @@
       </div>
 
       <div class="credencial" th:unless="${localProfile}">
-        <p class="rotulo">Credencial em produção</p>
+        <p class="rotulo">Credencial do administrador em produção</p>
         <p class="nota">
           O usuário e o hash bcrypt da senha vêm do ambiente
           (<code>AIRLAB_RESEARCHER_USER</code> e <code>AIRLAB_RESEARCHER_PASSWORD_HASH</code>).

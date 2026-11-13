@@ -19,9 +19,10 @@ Instruções para o Claude Code neste repositório.
 - **Privacidade (P6)**: nada de dados pessoais em logs, mensagens de exceção, nomes de arquivo ou fixtures com dados reais. Apenas o módulo `participant` acessa o esquema `identity`.
 - **IA (P10)**: nenhum código usa IA para avaliar leituras ou pontuar.
 - **Nenhum resultado parcial antes do desmascaramento (E10, trava 1)**: nenhuma tela, API ou projeção pode expor função dos escores enquanto o estudo corre. Progresso é contagem de unidades, nunca desempenho; há teste estrutural em `BlindingMatrixTest`. Vale também para as sessões de autoatendimento: `trials.SessionProgress` não tem campo de desfecho, e o alvo de uma tentativa não existe no banco antes do travamento.
-- **Escopo da plataforma**: o Crivo cobre **cognição anômala**, com a mediunidade (AIR) como um ramo e os testes de ESP como outro. Não chame um teste de precognição de AIR: na literatura, AIR é informação sobre pessoa falecida. O codinome técnico **AIR Lab** permanece em pacotes, CLI e artefatos Maven, por herança do primeiro protocolo.
+- **Escopo da plataforma**: o Crivo cobre **cognição anômala**, com a mediunidade (AIR) como um ramo e os testes de ESP como outro. O ramo AIR tem dois protocolos: o **P4, leitura estruturada automatizada** (E13), em destaque no site, e o **P1, leitura pareada**, conduzido por equipe. Os testes de ESP aparecem como **experimentos extras**. Não chame um teste de precognição de AIR: na literatura, AIR é informação sobre pessoa falecida. O codinome técnico **AIR Lab** permanece em pacotes, CLI e artefatos Maven, por herança do primeiro protocolo.
 - **Todo protocolo novo entra pelo catálogo** (`catalog.ProtocolCatalog`, SPEC 1.1) e **declara o que o resultado dele não sustenta**. O construtor de `Protocol` recusa lista de limites vazia, e há teste que exige isso de cada protocolo.
 - **Um papel por pessoa em cada estudo (E10, trava 2)**: recusado na camada de domínio e registrado na trilha.
+- **Contas do P4 (E13)**: perfil fixo (consulente ou médium), imposto por *trigger*; nenhum caminho do site cria administrador, que vem da configuração do servidor. O principal da sessão é o código pseudônimo, nunca o e-mail. Avisos ao administrador carregam só tipo, código e hora. No P4, nenhuma nota existe antes do desmascaramento: a conferência só roda depois dele.
 - **Análise vedada**: nunca multiplicar as probabilidades individuais dos itens como se fossem independentes (Hyslop, 1919). Para dados de acurácia de leitura, a análise do campo é o teste de permutação de Pratt e Birge (`analysis.PermutationTest`).
 - **Reprodutibilidade do sorteio (P5)**: tudo que o sorteio decide tem de ser independente da ordem em que as entradas chegam. Ordene em forma canônica antes de usar a semente; há teste que tenta violar isso.
 - **Simplicidade (P8)**: monólito modular; justifique por escrito qualquer dependência nova.
@@ -33,7 +34,7 @@ Instruções para o Claude Code neste repositório.
 
 ## Convenções
 
-- Pacote base: `io.github.rogeriocisi.airlab`; módulos `study`, `allocation`, `session`, `redaction`, `scoring`, `unblinding`, `analysis`, `participant`, `audit`, `catalog`, `trials`.
+- Pacote base: `io.github.rogeriocisi.airlab`; módulos `study`, `allocation`, `session`, `redaction`, `scoring`, `unblinding`, `analysis`, `participant`, `audit`, `catalog`, `trials`, `notification`.
 - Código, identificadores e commits em **inglês**; documentação e interface em **português**.
 - Commits pequenos, no padrão Conventional Commits.
 - Vocabulário neutro (P3): *reading*, *item*, *target*, *decoy*, *score*. Nunca linguagem que pressuponha a origem da informação.
@@ -43,14 +44,15 @@ Instruções para o Claude Code neste repositório.
 
 Já implementado (ver `docs/PLAN.md`, seção 2, para a tabela completa):
 
-1. Plano técnico, migrações `V1`–`V15` dos esquemas `research`/`identity`/`audit` e papel `airlab_app`
+1. Plano técnico, migrações `V1`–`V17` dos esquemas `research`/`identity`/`audit` e papel `airlab_app`
 2. `audit`: trilha append-only encadeada por hash + CLI `airlab verify`
 3. `allocation`: sorteio reproduzível (`SecureRandom` para a semente, SHA-256 em modo contador para a expansão), compromisso → revelação, custódia cifrada da semente
 4. `study` (E1) e `participant` (E2), com pareamento
 5. Partes puras de E5 (`ClueScrubber`) e E7 (Wilcoxon pareado exato como medida primária, binomial exato, permutação de Pratt e Birge, `PowerCheck`)
 6. Escala de itens de cinco categorias com justificativa obrigatória (E6) e desvios de protocolo append-only (E1/E7)
 7. `catalog` (SPEC 1.1) e `trials` (E11, E12): seção de testes no site e os dois protocolos de ESP integralmente automatizados, com semente comprometida, alvo derivado no travamento e impressão travada antes das candidatas
+8. E13, fase A: catálogo em duas seções (protocolos AIR e experimentos extras), páginas do P4, contas com perfil fixo, confirmação por e-mail, painéis por perfil e avisos ao administrador
 
-A fazer, nesta ordem: E4 (sessões), E5 (persistência da redação), E6 (avaliação cega), E7 (desmascaramento e relatório), E8/E9 (carimbo de tempo e pacote de verificação).
+A fazer, nesta ordem: E13 fases B a D (questionário e pedido; envio ao médium e leitura; conferência, desmascaramento e devolutiva), E4 (sessões), E5 (persistência da redação), E6 (avaliação cega), E7 (desmascaramento e relatório), E8/E9 (carimbo de tempo e pacote de verificação).
 
 A suíte da matriz de cegamento cresce junto: cada linha nova da matriz da SPEC, seção 4, entra como teste antes da tela correspondente.

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Painel do administrador — Crivo</title>
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="/css/crivo.css">
+</head>
+<body>
+<a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+<div class="faixa">
+  <header th:replace="~{fragments/site :: topo}"></header>
+</div>
+
+<main id="conteudo">
+  <section class="abertura">
+    <div class="faixa">
+      <p class="rotulo">Administrador</p>
+      <h1>Painel</h1>
+      <p class="chamada">
+        Contagens e avisos, nunca notas. Você não vê respostas, nomes de falecidos nem leituras antes
+        do desmascaramento — e as notas nem existem antes dele (SPEC, E13).
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <div class="faixa">
+      <h2>Contas</h2>
+      <dl class="contagens">
+        <div><dt>Consulentes confirmados</dt><dd th:text="${contas.sittersConfirmed}">0</dd></div>
+        <div><dt>Consulentes aguardando e-mail</dt><dd th:text="${contas.sittersPending}">0</dd></div>
+        <div><dt>Médiuns confirmados</dt><dd th:text="${contas.mediumsConfirmed}">0</dd></div>
+        <div><dt>Médiuns aguardando e-mail</dt><dd th:text="${contas.mediumsPending}">0</dd></div>
+      </dl>
+
+      <h3>Situação da instalação</h3>
+      <ul>
+        <li>Inscrição:
+          <strong th:text="${inscricaoAberta} ? 'aberta' : 'fechada'">aberta</strong></li>
+        <li>E-mail:
+          <strong th:text="${caixaLocal} ? 'caixa de saída local (nada sai da máquina)'
+                           : (${emailAtivo} ? 'SMTP configurado' : 'desativado')">local</strong>
+          <a th:if="${caixaLocal}" href="/caixa-de-saida">abrir a caixa de saída</a></li>
+        <li>Avisos por e-mail:
+          <strong th:text="${avisoPorEmail} ? 'ligados' : 'só no painel'">só no painel</strong>
+          <span class="nota" th:unless="${avisoPorEmail}">(defina <code>AIRLAB_ADMIN_EMAIL</code>)</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <div class="faixa">
+      <h2>Pedidos, leituras e progresso</h2>
+      <dl class="contagens">
+        <div><dt>Pedidos travados</dt><dd>—</dd></div>
+        <div><dt>Pares enviados</dt><dd>—</dd></div>
+        <div><dt>Leituras recebidas</dt><dd>—</dd></div>
+        <div><dt>Progresso até o N</dt><dd>—</dd></div>
+      </dl>
+      <p class="nota">
+        Entram com as fases B a D do E13: questionário e pedido, envio ao médium e leitura,
+        conferência e relatório. Sempre como contagem de unidades, nunca como desempenho.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <div class="faixa">
+      <h2>Avisos</h2>
+      <p class="nota">Um aviso por etapa concluída: tipo, código pseudônimo e hora (UTC). Nada além disso.</p>
+      <p th:if="${#lists.isEmpty(avisos)}">Nenhum aviso ainda.</p>
+      <ul class="avisos" th:unless="${#lists.isEmpty(avisos)}">
+        <li th:each="aviso : ${avisos}">
+          <time th:datetime="${aviso.at}" th:text="${@datas.utc(aviso.at)}">2026-11-13 10:00</time>
+          <span><span th:text="${aviso.kind.label()}">Conta confirmada</span> ·
+            <code th:text="${aviso.subjectCode}">CON-0000</code></span>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <div class="faixa">
+      <form method="post" th:action="@{/logout}">
+        <button class="botao botao-vazio" type="submit">Sair</button>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer th:replace="~{fragments/site :: rodape}"></footer>
+</body>
+</html>

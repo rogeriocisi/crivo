@@ -80,14 +80,64 @@ public final class ProtocolCatalog {
                     "O conjunto público é exploratório, pelas mesmas razões do P2."),
             "E12");
 
+    private static final Protocol STRUCTURED_READING = new Protocol(
+            "P4",
+            "leitura-estruturada",
+            "Leitura estruturada automatizada",
+            Protocol.Branch.AIR,
+            1, 2,
+            Protocol.Automation.FULL,
+            Protocol.Status.IN_PROGRESS,
+            "O consulente cria uma conta, informa o primeiro nome do falecido e responde a um "
+                    + "questionário fechado sobre ele; as respostas são travadas antes de qualquer "
+                    + "médium receber o pedido. O médium recebe só o primeiro nome e responde ao mesmo "
+                    + "questionário. O sistema confere as respostas campo a campo contra o alvo "
+                    + "verdadeiro e contra um chamariz de perfil semelhante, e ninguém julga se uma "
+                    + "afirmação encaixa. Tudo acontece pelo site, sem ninguém da equipe no circuito.",
+            List.of(
+                    "Não distingue sobrevivência de telepatia com pessoas vivas: as respostas "
+                            + "existem na memória do consulente e no banco de dados.",
+                    "Não tem experimentador proxy. Nos dois estudos em que o médium não interagiu "
+                            + "com ninguém o resultado foi nulo (Silva e Moreira-Almeida, 2022), e um "
+                            + "nulo aqui não refuta a leitura pareada.",
+                    "O questionário fechado só captura o que cabe nos campos: as afirmações livres e "
+                            + "específicas, que costumam ser as mais marcantes, ficam fora da nota.",
+                    "O primeiro nome carrega informação, como o gênero e às vezes a geração. O "
+                            + "pareamento e os campos fora da nota reduzem esse vazamento, mas não o "
+                            + "eliminam.",
+                    "Com inscrição aberta, o conluio entre médium e consulente que se conhecem e usam "
+                            + "e-mails diferentes não é detectável com certeza."),
+            "E13");
+
     private static final List<Protocol> ALL =
-            List.of(PAIRED_READING, PRECOGNITIVE_FORCED_CHOICE, REMOTE_VIEWING);
+            List.of(PAIRED_READING, PRECOGNITIVE_FORCED_CHOICE, REMOTE_VIEWING, STRUCTURED_READING);
+
+    /** The AIR section of the catalog, automated protocol first: it is the one featured. */
+    private static final List<Protocol> AIR = List.of(STRUCTURED_READING, PAIRED_READING);
+
+    /** The extra experiments: the ESP tests, which say nothing about mediumship. */
+    private static final List<Protocol> EXTRAS = List.of(PRECOGNITIVE_FORCED_CHOICE, REMOTE_VIEWING);
 
     private ProtocolCatalog() {
     }
 
+    /** Every protocol, in code order. */
     public static List<Protocol> all() {
         return ALL;
+    }
+
+    /** AIR protocols, in the order the site presents them. */
+    public static List<Protocol> air() {
+        return AIR;
+    }
+
+    /** Extra experiments, in the order the site presents them. */
+    public static List<Protocol> extras() {
+        return EXTRAS;
+    }
+
+    public static Protocol structuredReading() {
+        return STRUCTURED_READING;
     }
 
     public static Optional<Protocol> bySlug(String slug) {

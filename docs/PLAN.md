@@ -1,6 +1,6 @@
 # Plano técnico do MVP — Crivo (AIR Lab)
 
-> Derivado de `CONSTITUTION.md` (prevalece) e de `SPEC.md`. Versão 1.2 · novembro/2026.
+> Derivado de `CONSTITUTION.md` (prevalece) e de `SPEC.md`. Versão 1.3 · novembro/2026 · 1.3: protocolo P4 (SPEC E13), fase A — contas com perfil fixo, e-mail e avisos ao administrador.
 > Este documento registra as decisões de implementação do MVP: estrutura de módulos,
 > esquemas e migrações, execução por linha de comando e justificativa de cada dependência.
 
@@ -40,7 +40,8 @@ quem pode depender; `ModularityTest` verifica isso no build.
 | `audit` | E8 | **Implementado**: trilha append-only encadeada por hash, verificação da cadeia |
 | `allocation` | E3 | **Implementado**: sorteio reproduzível, compromisso → revelação, custódia da semente |
 | `study` | E1 | **Implementado**: estudo, documento canônico do pré-registro, congelamento, emendas |
-| `participant` | E2 | **Implementado**: participantes, consentimento, alvos, pareamento, desistência |
+| `participant` | E2, E13 | **Implementado**: participantes, consentimento, alvos, pareamento, desistência; **contas do P4** (`AccountService`) com perfil fixo, confirmação de e-mail por link de uso único e exclusão que mantém o código |
+| `notification` | E13 | **Implementado (fase A)**: `Mailer` — caixa de saída em memória nos perfis `local`/`test`, SMTP em produção, desativado sem SMTP — e `AdminNotices`, avisos ao administrador só com tipo, código e hora |
 | `redaction` | E5 | Parcial: `ClueScrubber` (guarda de pistas). Persistência e telas pendentes |
 | `analysis` | E7 | Parcial: Wilcoxon pareado exato (medida primária), binomial exato, permutação de Pratt e Birge, `PowerCheck`, política de rótulo e redução às unidades independentes. Persistência e relatório pendentes |
 | `session` | E4 | Pendente (tabelas prontas; os slots contrabalanceados já saem do sorteio) |
@@ -49,7 +50,7 @@ quem pode depender; `ModularityTest` verifica isso no build.
 | `cli` | E8 | **Implementado**: `airlab verify` |
 | `catalog` | — | **Implementado**: catálogo de protocolos (SPEC 1.1), sem estado e sem dependência de outro módulo |
 | `trials` | E11, E12 | **Implementado**: sessões de autoatendimento dos dois testes de ESP — semente comprometida, alvo derivado só no travamento, impressão travada antes das candidatas, sessão abandonada registrada |
-| `support`, `platform`, `web` | — | Infraestrutura e páginas públicas |
+| `support`, `platform`, `web` | — | Infraestrutura, páginas públicas, criação de conta, entrada e painéis por perfil (consulente, médium, administrador) |
 
 Dependências entre módulos: `audit` não depende de nenhum módulo de domínio; todos os outros
 dependem dele. O plano de alocação sai do módulo `allocation` apenas como evento de domínio
@@ -78,6 +79,7 @@ Flyway, em `src/main/resources/db/migration`. Histórico no esquema `research`.
 | `V14` | Índice cego do contato em `identity.participant`, para detectar papel duplo sem guardar contato em claro (E10) |
 | `V15` | `research.test_session` e `research.test_trial` dos testes de autoatendimento, com `CHECK` que impede alvo antes do travamento e *trigger* que torna a tentativa travada imutável (E11/E12) |
 | `V16` | Entropia do participante: `participant_nonce` e `server_seed_hex`, *trigger* que recusa tentativa de sessão sem a metade do participante, e preenchimento das sessões anteriores (`server_seed_hex = seed_hex`, porque antes a semente era toda do servidor) |
+| `V17` | Contas do P4 (`identity.account`, `identity.email_confirmation`) e avisos (`research.admin_notice`). *Trigger* recusa troca de perfil, de código, reabertura de conta encerrada, reescrita da data de confirmação e qualquer `DELETE`; `CHECK` impede perfil fora de consulente e médium e exige dados apagados na conta encerrada; índice único parcial: uma conta ativa por e-mail (E13) |
 
 **Migração aplicada não se edita**: corrigir o vocabulário dos comentários mudaria o checksum
 do Flyway e quebraria a validação em qualquer banco já migrado — inclusive o do próprio autor.
@@ -113,6 +115,21 @@ ficam as decisões de implementação.
 exploratório — autoatendimento anônimo não controla quem testa, quantas vezes nem em que
 condições. Para resultado confirmatório, vale a política de rótulo que já existe: pré-registro
 congelado, participantes identificados e N declarado antes da coleta.
+
+## 4.1 Leitura estruturada automatizada (P4, E13) — fase A
+
+| Decisão | Por quê |
+|---|---|
+| Conta no módulo `participant` | Conta é dado identificável, e só `participant` lê o esquema `identity` (regra arquitetural 2) |
+| Perfil fixo, imposto por *trigger* | A forma mais simples da trava 2 do E10: com um e-mail, ninguém fica dos dois lados. Nenhum caminho do site cria administrador; ele vem da configuração |
+| Principal da sessão = código pseudônimo | O e-mail serve só para achar a conta pelo índice cego; depois da entrada, nada na sessão o carrega (P6) |
+| Conta não confirmada é recusada **depois** da senha | A checagem usa "credencial expirada", que roda depois da senha, e não "conta desativada", que roda antes: uma senha errada não revela se o e-mail está cadastrado |
+| Cadastro repetido mostra a mesma página | O formulário não serve para descobrir quem participa; o e-mail enviado diz o que aconteceu |
+| Confirmação por botão, não ao abrir o link | Serviços de e-mail abrem links sozinhos para checá-los; um GET que confirmasse seria consumido por eles |
+| Token de confirmação só como hash, 48 horas | Mesmo esquema do `AccessLink` do E6 |
+| Inscrição fechada sem e-mail ou sem contato humano | Travas 3 e 5 do E10. No perfil local, nada sai da máquina: o link vai para a caixa de saída (só o administrador abre) e para o log, com código e sem endereço |
+| Aviso ao administrador só com tipo, código e hora | Painel e e-mail não são canais cegos. O registro não tem coluna para mais nada |
+| Notas não existem antes do desmascaramento (fases B a D) | A conferência só roda depois dele; não é questão de esconder, é de não calcular |
 
 ## 5. Decisões metodológicas impostas pelo código
 
@@ -189,6 +206,7 @@ O que resta decidir é qual efeito declarar: os efeitos por seção de leitura e
 | `flyway-core`, `flyway-database-postgresql` | Migrações auditáveis | Baixo |
 | `postgresql` (driver) | Banco de referência | Baixo |
 | `io.zonky.test:embedded-postgres` + binários `linux-amd64` e `windows-amd64` (PostgreSQL 16.9) | **Substitui o Testcontainers e o Docker Compose**: PostgreSQL real em desenvolvimento e teste sem container, nos dois sistemas operacionais | Médio: é preciso acompanhar a versão dos binários do PostgreSQL. Aceito porque remove a dependência de Docker, exigida pela regra arquitetural 8. **Os binários 17.x falham no `initdb` em Windows** (`coluna "attnum" não existe`); a versão está fixada em 16.9.0 e só deve subir depois de testada nos dois sistemas |
+| `spring-boot-starter-mail` (Jakarta Mail) | Confirmação de conta e avisos do P4 por SMTP externo (SPEC E13, E10 trava 3). É o cliente de e-mail do próprio Spring, sem serviço adicional: em desenvolvimento nada é enviado, em produção basta um SMTP | Baixo, versão alinhada pelo parent |
 | Nenhuma biblioteca de estatística | A análise primária é um teste binomial exato, escrito em aritmética racional (~40 linhas) e validado contra valores de referência | Nenhum |
 | Nenhuma biblioteca de JSON para hashing | A forma canônica é escrita no projeto (`CanonicalJson`), porque o hash não pode mudar quando uma biblioteca muda de versão | Nenhum |
 
@@ -212,6 +230,8 @@ sorteio na CLI, nunca para calcular hash.
 | `PermutationTestTest` | P9 | Permutação exata; reproduz o resultado nulo publicado por O'Keeffe e Wiseman |
 | `ItemScoreEntryTest` | P1, E6 | Justificativa obrigatória nos valores interpretativos; só o encaixe óbvio conta |
 | `ModularityTest` | Regra 1 e 2 | Fronteiras de módulo |
+| `AccountIntegrationTest` | P6, E13 | PostgreSQL real: confirmação de uso único e com prazo, perfil fixo e `DELETE` recusados pelo banco, um e-mail por conta, nada pessoal na trilha, exclusão que mantém o código |
+| `AccountPagesTest` | P1, E13 | Segurança real: do cadastro ao painel, cada perfil só alcança o próprio painel, senha errada não revela conta não confirmada, cadastro repetido não revela nada |
 | `TargetDerivationTest` | P5 | Unitário: alvo reproduzível pela semente, dentro do intervalo, candidatas distintas e banco pequeno recusado |
 | `ProtocolCatalogTest` | SPEC 1.1 | Unitário: todo protocolo declara o que não sustenta, e protocolo sem limites não compila em tempo de execução |
 | `TrialSessionIntegrationTest` | E10 trava 1, E11, E12 | PostgreSQL real: semente só no fim, alvo ausente do banco antes do travamento, impressão não reescrita, tentativa travada imutável, fechamento idempotente, **nada acontece antes da entropia do participante — recusado no serviço e pelo *trigger*** |

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Caixa de saída — Crivo</title>
+  <meta name="robots" content="noindex">
+  <meta name="referrer" content="no-referrer">
+  <link rel="stylesheet" href="/css/crivo.css">
+</head>
+<body>
+<a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+<div class="faixa">
+  <header th:replace="~{fragments/site :: topo}"></header>
+</div>
+
+<main id="conteudo">
+  <section class="abertura">
+    <div class="faixa">
+      <p class="rotulo">Administrador · perfil local</p>
+      <h1>Caixa de saída</h1>
+      <p class="chamada" th:if="${caixaLocal}">
+        No perfil local nenhum e-mail sai desta máquina. As mensagens ficam aqui, na memória, e somem
+        quando a aplicação reinicia. Até 50, da mais nova para a mais antiga.
+      </p>
+      <p class="chamada" th:unless="${caixaLocal}">
+        Esta instalação envia e-mail de verdade, ou não envia nenhum; não há caixa de saída local.
+      </p>
+
+      <p th:if="${caixaLocal and #lists.isEmpty(mensagens)}">Nenhuma mensagem ainda.</p>
+
+      <article class="credencial" th:each="m : ${mensagens}">
+        <p class="rotulo">
+          <span th:text="${@datas.utc(m.at)}">quando</span> UTC ·
+          para <span th:text="${m.to}">destino</span>
+        </p>
+        <h3 th:text="${m.subject}">Assunto</h3>
+        <pre class="comando" th:text="${m.body}">Corpo</pre>
+      </article>
+
+      <p class="acoes nota-espacada"><a class="botao botao-vazio" href="/painel/adm">Voltar ao painel</a></p>
+    </div>
+  </section>
+</main>
+
+<footer th:replace="~{fragments/site :: rodape}"></footer>
+</body>
+</html>

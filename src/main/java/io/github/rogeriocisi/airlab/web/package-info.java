@@ -7,5 +7,5 @@
 @org.springframework.modulith.ApplicationModule(
         displayName = "web",
         allowedDependencies = {"audit", "study", "participant", "allocation", "analysis",
-                "catalog", "trials", "support"})
+                "catalog", "trials", "notification", "support"})
 package io.github.rogeriocisi.airlab.web;

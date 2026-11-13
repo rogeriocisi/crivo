@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Criar conta — Crivo</title>
+  <th:block th:replace="~{fragments/site :: social('Criar conta — Crivo', 'Crie uma conta de consulente ou de médium para participar da leitura estruturada automatizada, o protocolo AIR que roda inteiro pelo site.')}"></th:block>
+  <link rel="stylesheet" href="/css/crivo.css">
+</head>
+<body>
+<a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+<div class="faixa">
+  <header th:replace="~{fragments/site :: topo}"></header>
+</div>
+
+<main id="conteudo">
+  <section class="abertura">
+    <div class="faixa">
+      <p class="rotulo">Leitura estruturada automatizada · P4</p>
+      <h1>Criar conta</h1>
+      <p class="chamada">
+        A conta serve para participar do protocolo AIR que roda inteiro pelo site. Você escolhe
+        agora o seu perfil — <strong>consulente</strong> ou <strong>médium</strong> — e ele não muda
+        depois. <a href="/testes/leitura-estruturada">Veja antes como o protocolo funciona</a>.
+      </p>
+
+      <div class="ressalva" th:unless="${inscricaoAberta}">
+        <p>
+          <strong>As inscrições estão fechadas nesta instalação.</strong> Para abrir, ela precisa de
+          envio de e-mail configurado — sem ele ninguém confirmaria a conta — e de um contato humano
+          divulgado nesta página. Quem administra a instalação encontra as variáveis no README.
+        </p>
+      </div>
+
+      <form class="formulario formulario-largo" method="post" th:action="@{/conta/criar}"
+            th:object="${form}" th:if="${inscricaoAberta}">
+        <p class="erro" th:if="${erro}" th:text="${erro}" role="alert">Erro</p>
+
+        <fieldset>
+          <legend>Perfil — escolha uma vez</legend>
+          <label class="opcao">
+            <input type="radio" name="perfil" value="consulente" th:checked="*{perfil == 'consulente'}" required>
+            <span>
+              Consulente
+              <small>Perdi alguém e quero fazer um pedido de consulta: informo o primeiro nome e
+                respondo a um questionário sobre a pessoa.</small>
+            </span>
+          </label>
+          <label class="opcao">
+            <input type="radio" name="perfil" value="medium" th:checked="*{perfil == 'medium'}">
+            <span>
+              Médium
+              <small>Quero receber pedidos: vejo só o primeiro nome e respondo ao mesmo
+                questionário.</small>
+            </span>
+          </label>
+        </fieldset>
+
+        <label for="nome">Nome</label>
+        <input id="nome" type="text" th:field="*{nome}" autocomplete="name" required maxlength="200">
+
+        <label for="email">E-mail</label>
+        <input id="email" type="email" th:field="*{email}" autocomplete="email" required
+               autocapitalize="none" spellcheck="false" maxlength="254">
+
+        <label for="senha">Senha</label>
+        <input id="senha" type="password" name="senha" autocomplete="new-password" required
+               th:attr="minlength=${senhaMinima}" maxlength="72">
+
+        <label for="confirmacao">Repita a senha</label>
+        <input id="confirmacao" type="password" name="confirmacao" autocomplete="new-password" required
+               th:attr="minlength=${senhaMinima}" maxlength="72">
+        <p class="nota" th:text="'Pelo menos ' + ${senhaMinima} + ' caracteres.'">Pelo menos 10 caracteres.</p>
+
+        <fieldset>
+          <legend th:text="'Termo de participação · versão ' + ${versaoTermo}">Termo</legend>
+          <p class="nota">
+            Seus dados de cadastro — nome e e-mail — ficam cifrados, num esquema do banco separado dos
+            dados da pesquisa, que usam só um código. As informações sobre a pessoa falecida são
+            tratadas como dados sensíveis (LGPD). Você pode excluir a conta a qualquer momento, sem
+            justificativa: os dados identificáveis são apagados e só o código permanece. Ninguém da
+            equipe lê as suas respostas antes do fim do estudo, e não há inteligência artificial na
+            pontuação.
+          </p>
+          <label class="opcao">
+            <input type="checkbox" name="aceite" value="true" required>
+            <span>Li e aceito o termo, inclusive o tratamento de dados sensíveis.</span>
+          </label>
+          <input type="hidden" name="termo" th:value="${versaoTermo}">
+        </fieldset>
+
+        <button class="botao botao-cheio" type="submit">Criar conta</button>
+      </form>
+
+      <div class="credencial">
+        <p class="rotulo">Fale com uma pessoa</p>
+        <p th:if="${contato}">
+          Se algo aqui pesar, ou se você tiver qualquer dúvida, escreva para
+          <a th:href="'mailto:' + ${contato}" th:text="${contato}">contato</a>. Quem responde é uma
+          pessoa, não um robô.
+        </p>
+        <p class="nota" th:unless="${contato}">
+          Nenhum contato humano configurado. No perfil local isso é aceitável; em produção, sem
+          <code>AIRLAB_CONTACT_EMAIL</code>, a inscrição fica fechada.
+        </p>
+        <p class="nota" th:if="${perfilLocal}">
+          Perfil local: nenhum e-mail sai desta máquina. O link de confirmação aparece no log da
+          aplicação e na caixa de saída do administrador.
+        </p>
+      </div>
+
+      <p class="nota nota-espacada">Já tem conta? <a href="/login">Entrar</a>.</p>
+    </div>
+  </section>
+</main>
+
+<footer th:replace="~{fragments/site :: rodape}"></footer>
+</body>
+</html>

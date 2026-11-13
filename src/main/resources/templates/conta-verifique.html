@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Confirme o e-mail — Crivo</title>
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="/css/crivo.css">
+</head>
+<body>
+<a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+<div class="faixa">
+  <header th:replace="~{fragments/site :: topo}"></header>
+</div>
+
+<main id="conteudo">
+  <section class="abertura">
+    <div class="faixa">
+      <p class="rotulo">Criar conta</p>
+      <h1>Falta um passo: confirme o e-mail</h1>
+      <p class="chamada">
+        Enviamos uma mensagem para o endereço informado. Abra o link dela em até
+        <strong th:text="${horas} + ' horas'">48 horas</strong> para ativar a conta. Sem essa
+        confirmação, a conta não vale.
+      </p>
+      <p>
+        Se o e-mail já tinha uma conta, a mensagem diz isso, e nada novo é criado. Esta página é a
+        mesma nos dois casos, para que ninguém descubra por aqui quem participa.
+      </p>
+      <p class="nota">Não chegou? Veja a caixa de spam. Passado o prazo, crie a conta de novo para receber outro link.</p>
+
+      <div class="ressalva" th:if="${perfilLocal}">
+        <p>
+          <strong>Perfil local.</strong> Nenhum e-mail sai desta máquina. O link de confirmação está
+          no log da aplicação, numa linha que começa com <code>Perfil local: link de confirmacao</code>,
+          e na <a href="/caixa-de-saida">caixa de saída</a>, que só o administrador abre.
+        </p>
+      </div>
+
+      <p class="acoes">
+        <a class="botao botao-vazio" href="/login">Ir para a entrada</a>
+      </p>
+    </div>
+  </section>
+</main>
+
+<footer th:replace="~{fragments/site :: rodape}"></footer>
+</body>
+</html>

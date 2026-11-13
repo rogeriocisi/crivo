@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Painel do consulente — Crivo</title>
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="/css/crivo.css">
+</head>
+<body>
+<a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+<div class="faixa">
+  <header th:replace="~{fragments/site :: topo}"></header>
+</div>
+
+<main id="conteudo">
+  <section class="abertura">
+    <div class="faixa">
+      <p class="rotulo">Consulente · <code th:text="${conta.code}">CON-0000</code></p>
+      <h1 th:text="'Olá, ' + ${conta.firstName}">Olá</h1>
+      <p class="chamada">
+        Aqui você acompanha o seu pedido de consulta, etapa por etapa. Nenhuma nota aparece antes do
+        fim do estudo — nem para você, nem para o médium, nem para quem administra a plataforma.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <div class="faixa">
+      <h2>Seu pedido</h2>
+      <dl class="contagens">
+        <div><dt>Pedidos</dt><dd>0</dd></div>
+        <div><dt>Situação</dt><dd>—</dd></div>
+      </dl>
+
+      <div class="ressalva">
+        <p>
+          <strong>O pedido de consulta ainda está em construção.</strong> O questionário sobre a
+          pessoa falecida entra na próxima etapa da plataforma. Quando ele estiver no ar, este painel
+          ganha o botão <em>Novo pedido</em>, e você será avisado por e-mail. Sua conta já está
+          pronta para isso.
+        </p>
+      </div>
+
+      <h3>O que vai acontecer com o seu pedido</h3>
+      <ol class="etapas">
+        <li><div><h3>Rascunho</h3><p>Você informa o primeiro nome e responde ao questionário, com calma, e pode revisar.</p></div></li>
+        <li><div><h3>Travado</h3><p>Ao confirmar, as respostas travam. A trilha pública recebe só um compromisso criptográfico delas, nunca as respostas.</p></div></li>
+        <li><div><h3>Aguardando par</h3><p>O sistema junta o seu pedido a outro de perfil parecido; cada um serve de comparação para o outro.</p></div></li>
+        <li><div><h3>Enviado ao médium</h3><p>Um médium sorteado recebe só o primeiro nome e responde ao mesmo questionário.</p></div></li>
+        <li><div><h3>Aguardando o fim do estudo</h3><p>A conferência só acontece quando o estudo atinge o número de pares declarado.</p></div></li>
+        <li><div><h3>Devolutiva</h3><p>Você vê as respostas do médium ao lado das suas, e a nota.</p></div></li>
+      </ol>
+    </div>
+  </section>
+
+  <section>
+    <div class="faixa">
+      <p class="acoes">
+        <a class="botao botao-vazio" href="/conta">Minha conta</a>
+      </p>
+      <form method="post" th:action="@{/logout}">
+        <button class="botao botao-vazio" type="submit">Sair</button>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer th:replace="~{fragments/site :: rodape}"></footer>
+</body>
+</html>

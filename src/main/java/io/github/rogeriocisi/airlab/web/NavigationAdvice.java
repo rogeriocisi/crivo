@@ -28,4 +28,13 @@ class NavigationAdvice {
         int slash = first.indexOf('/');
         return slash < 0 ? first : first.substring(0, slash);
     }
+
+    /**
+     * Whether someone is signed in, so the header offers "Painel" instead of "Entrar". Only a
+     * boolean: who it is stays out of the shared layout.
+     */
+    @ModelAttribute("logado")
+    boolean signedIn(HttpServletRequest request) {
+        return request.getUserPrincipal() != null;
+    }
 }

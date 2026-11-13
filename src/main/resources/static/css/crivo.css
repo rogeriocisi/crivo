@@ -1309,3 +1309,198 @@ form.enviando button {
     color: var(--verdete);
     border-color: var(--verdete);
 }
+
+/* ---------- protocolo em destaque, contas e painéis (P4, SPEC E13) ---------- */
+
+.protocolos > li.destaque {
+    border: 2px solid var(--verdete);
+    background: color-mix(in srgb, var(--verdete) 6%, transparent);
+}
+
+.protocolos > li.destaque .selo::before {
+    content: "em destaque · ";
+    color: var(--verdete);
+}
+
+.formulario textarea,
+.formulario select {
+    font-family: var(--mono);
+    font-size: 0.95rem;
+    padding: 0.6rem 0.7rem;
+    border: 1px solid var(--fio-forte);
+    background: var(--papel);
+    color: var(--tinta);
+}
+
+.formulario fieldset {
+    margin: 0.75rem 0 0;
+    padding: 0.75rem 1rem 1rem;
+    border: 1px solid var(--fio-forte);
+    display: grid;
+    gap: 0.6rem;
+}
+
+.formulario legend {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--tinta-suave);
+    padding: 0 0.35rem;
+}
+
+.formulario .opcao {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.6rem;
+    align-items: start;
+    font-family: var(--serifada);
+    font-size: 0.98rem;
+    letter-spacing: normal;
+    text-transform: none;
+    color: var(--tinta);
+    margin: 0;
+}
+
+.formulario .opcao input {
+    margin-top: 0.3rem;
+}
+
+.formulario .opcao small {
+    display: block;
+    color: var(--tinta-suave);
+    font-size: 0.88rem;
+}
+
+.formulario-largo {
+    max-width: 34rem;
+}
+
+.perfis {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.perfil {
+    border: 1px solid var(--fio-forte);
+    border-radius: 14px;
+    padding: 1.25rem 1.25rem 1rem;
+}
+
+.perfil h3 {
+    margin-top: 0;
+}
+
+.perfil ul {
+    padding-left: 1.1rem;
+    margin: 0.5rem 0 0;
+}
+
+.perfil li {
+    margin-bottom: 0.45rem;
+}
+
+.perfil li strong {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    letter-spacing: 0.06em;
+}
+
+.etapas {
+    list-style: none;
+    counter-reset: etapa;
+    padding: 0;
+    margin: 2rem 0 0;
+    display: grid;
+    gap: 1rem;
+}
+
+.etapas > li {
+    counter-increment: etapa;
+    display: grid;
+    grid-template-columns: 2.25rem 1fr;
+    gap: 0.75rem;
+    align-items: baseline;
+}
+
+.etapas > li::before {
+    content: counter(etapa);
+    font-family: var(--mono);
+    color: var(--verdete);
+    border: 1px solid var(--verdete);
+    border-radius: 50%;
+    width: 1.9rem;
+    height: 1.9rem;
+    display: grid;
+    place-items: center;
+    font-size: 0.85rem;
+}
+
+.etapas h3 {
+    margin: 0 0 0.25rem;
+    font-size: 1.1rem;
+}
+
+.etapas p {
+    margin: 0;
+    color: var(--tinta-suave);
+}
+
+.contagens {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0 0;
+}
+
+.contagens div {
+    border: 1px solid var(--fio);
+    padding: 0.9rem 1rem;
+}
+
+.contagens dt {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--tinta-suave);
+}
+
+.contagens dd {
+    margin: 0.3rem 0 0;
+    font-family: var(--mono);
+    font-size: 1.6rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.avisos {
+    list-style: none;
+    padding: 0;
+    margin: 1.25rem 0 0;
+    border-top: 1px solid var(--fio);
+}
+
+.avisos li {
+    display: grid;
+    grid-template-columns: 11rem 1fr;
+    gap: 1rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--fio);
+    font-size: 0.95rem;
+}
+
+.avisos time,
+.avisos code {
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    color: var(--tinta-suave);
+}
+
+@media (max-width: 40rem) {
+    .avisos li {
+        grid-template-columns: 1fr;
+        gap: 0.2rem;
+    }
+}

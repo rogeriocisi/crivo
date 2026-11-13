@@ -12,6 +12,9 @@ import org.springframework.http.HttpStatus;
 /**
  * The tests section: the catalog and one page per protocol (SPEC, section 1.1).
  *
+ * <p>The catalog is shown in two sections: the AIR protocols, with the automated one featured,
+ * and the extra experiments, which are the ESP tests (SPEC 1.1).
+ *
  * <p>Each protocol page prints what that protocol's result does not support, straight from the
  * catalog, because catalog rule 2 makes it mandatory text rather than a footnote.
  */
@@ -20,7 +23,8 @@ class ProtocolsController {
 
     @GetMapping("/testes")
     String catalog(Model model) {
-        model.addAttribute("protocolos", ProtocolCatalog.all());
+        model.addAttribute("air", ProtocolCatalog.air());
+        model.addAttribute("extras", ProtocolCatalog.extras());
         return "testes";
     }
 

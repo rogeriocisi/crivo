@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Testes — Crivo</title>
-  <th:block th:replace="~{fragments/site :: social('Testes — Crivo', 'Os protocolos de cognição anômala da plataforma Crivo: leitura pareada cega, escolha forçada precognitiva e visão remota com quatro alvos. Dois deles você pode fazer agora, no navegador, e conferir depois.')}"></th:block>
+  <title>Protocolos — Crivo</title>
+  <th:block th:replace="~{fragments/site :: social('Protocolos — Crivo', 'Os protocolos da plataforma Crivo: dois protocolos AIR — a leitura estruturada automatizada e a leitura pareada cega — e dois experimentos extras de percepção extrassensorial, que você pode fazer agora no navegador.')}"></th:block>
   <link rel="stylesheet" href="/css/crivo.css">
 </head>
 <body>
@@ -18,12 +18,14 @@
 
   <section class="abertura">
     <div class="faixa">
-      <p class="rotulo aparece">Testes</p>
-      <h1 class="aparece">Três protocolos, uma garantia</h1>
+      <p class="rotulo aparece">Protocolos</p>
+      <h1 class="aparece">Dois protocolos AIR e dois experimentos extras</h1>
       <p class="chamada aparece">
         O Crivo é uma plataforma de protocolos cegos para pesquisa de <strong>cognição
         anômala</strong>. A mediunidade é um ramo dela — na literatura, <em>recepção anômala de
-        informação</em>, ou AIR. Os testes de percepção extrassensorial são outro.
+        informação</em>, ou AIR. Há dois protocolos AIR: um que roda inteiro pelo site e outro
+        conduzido por uma equipe. Os testes de percepção extrassensorial ficam numa seção à parte,
+        de experimentos extras.
       </p>
       <p class="tese aparece">
         O que todo protocolo daqui tem em comum: <strong>pré-registro congelado, sorteio com
@@ -34,28 +36,58 @@
     </div>
   </section>
 
-  <section>
+  <section id="air">
     <div class="faixa">
-      <h2>O catálogo</h2>
+      <p class="rotulo">Mediunidade</p>
+      <h2>Protocolos AIR</h2>
 
       <ul class="protocolos">
-        <li th:each="p : ${protocolos}">
+        <li th:each="p, it : ${air}" th:classappend="${it.first} ? 'destaque'">
           <p class="selo">
-            <span th:text="${p.code}">P1</span> ·
-            <span th:text="${p.branch.label()}">Ramo</span> ·
+            <span th:text="${p.code}">P4</span> ·
             <span th:text="'automação ' + ${#strings.toLowerCase(p.automation.label())}">Automação</span> ·
+            <span th:text="'acaso ' + ${p.chancePercent()} + '%'">acaso</span> ·
+            <span th:text="${#strings.toLowerCase(p.status.label())}">situação</span>
+          </p>
+          <h3><a th:href="'/testes/' + ${p.slug}" th:text="${p.name}">Nome</a></h3>
+          <p th:text="${p.summary}">Resumo</p>
+          <p class="acoes">
+            <a class="botao botao-vazio" th:href="'/testes/' + ${p.slug}">Como funciona</a>
+            <a class="botao botao-cheio" th:if="${p.automation.name() == 'FULL'}"
+               href="/conta/criar">Criar uma conta</a>
+            <span class="nota" th:if="${p.automation.name() != 'FULL'}">
+              Este protocolo precisa de uma equipe — experimentador e redator — e não roda sozinho
+              pelo site.
+            </span>
+          </p>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="extras">
+    <div class="faixa">
+      <p class="rotulo">Percepção extrassensorial</p>
+      <h2>Experimentos extras</h2>
+      <p>
+        Testes rápidos, anônimos e sem conta, que qualquer pessoa faz agora no navegador e confere
+        depois. <strong>Eles não dizem nada sobre mediunidade</strong>, e as replicações grandes
+        dos achados de precognição deram nulo. Estão aqui porque são integralmente verificáveis por
+        quem os faz — uma demonstração do método, não uma promessa de efeito.
+      </p>
+
+      <ul class="protocolos">
+        <li th:each="p : ${extras}">
+          <p class="selo">
+            <span th:text="${p.code}">P2</span> ·
+            <span th:text="${p.branch.label()}">Ramo</span> ·
             <span th:text="'acaso ' + ${p.chancePercent()} + '%'">acaso</span>
           </p>
           <h3><a th:href="'/testes/' + ${p.slug}" th:text="${p.name}">Nome</a></h3>
           <p th:text="${p.summary}">Resumo</p>
           <p class="acoes">
             <a class="botao botao-vazio" th:href="'/testes/' + ${p.slug}">Como funciona</a>
-            <a class="botao botao-cheio"
-               th:if="${p.automation.name() == 'FULL'}"
-               th:href="'/testes/' + ${p.slug} + '/rodar'">Fazer o teste agora</a>
-            <span class="nota" th:if="${p.automation.name() != 'FULL'}">
-              Este protocolo precisa de sessão com experimentador: não roda sozinho pelo site.
-            </span>
+            <a class="botao botao-cheio" th:href="'/testes/' + ${p.slug} + '/rodar'">Fazer o teste agora</a>
           </p>
         </li>
       </ul>
@@ -64,33 +96,31 @@
 
   <section>
     <div class="faixa">
-      <h2>Por que dois dos testes são automáticos e o primeiro não</h2>
-      <div class="confronto">
-        <div class="hoje">
+      <h2>Por que dois protocolos AIR</h2>
+      <div class="caminhos">
+        <article class="caminho">
+          <h3>Leitura estruturada automatizada</h3>
+          <p>
+            Consulente e médium respondem ao mesmo questionário fechado, e o sistema confere as
+            respostas contra o alvo verdadeiro e contra um chamariz. Ninguém julga se uma afirmação
+            "encaixa", e ninguém da equipe fica no circuito. O preço: não há experimentador
+            intermediário, e só conta o que cabe nos campos.
+          </p>
+        </article>
+        <article class="caminho">
           <h3>Leitura pareada</h3>
           <p>
-            Depende de uma sessão síncrona com experimentador intermediário. Isso não é
-            comodismo: nos dois estudos em que o médium não interagiu com ninguém, o resultado
-            foi nulo. Trocar a sessão por um formulário eliminaria justamente a variável que
-            mais separa os estudos positivos dos nulos.
+            Depende de uma sessão síncrona com experimentador intermediário e de um redator. Nos
+            dois estudos em que o médium não interagiu com ninguém, o resultado foi nulo — e é por
+            isso que este protocolo continua existindo ao lado do automatizado. O preço: a
+            pontuação depende do julgamento do consulente.
           </p>
-        </div>
-        <div class="crivo">
-          <h3>Testes de ESP</h3>
-          <p>
-            O alvo é sorteado pelo próprio sistema, não existe pessoa falecida envolvida e não
-            existe ninguém no circuito. Dá para automatizar por inteiro — e, no caso da escolha
-            forçada, o vazamento sensorial fica <strong>impossível por construção</strong>: no
-            instante da sua resposta o alvo ainda não foi calculado.
-          </p>
-        </div>
+        </article>
       </div>
 
       <p class="nota nota-espacada">
-        Uma ressalva que a plataforma faz questão de escrever: os testes de ESP
-        <strong>não dizem nada sobre mediunidade</strong>, e as replicações grandes dos achados
-        de precognição deram nulo. Eles estão aqui porque são integralmente verificáveis por
-        quem os faz — são uma demonstração do método, não uma promessa de efeito.
+        Um resultado de um não vale como replicação do outro: cada um paga um preço diferente, e
+        cada página diz qual.
       </p>
     </div>
   </section>

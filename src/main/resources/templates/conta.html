@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Minha conta — Crivo</title>
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="/css/crivo.css">
+</head>
+<body>
+<a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+<div class="faixa">
+  <header th:replace="~{fragments/site :: topo}"></header>
+</div>
+
+<main id="conteudo">
+  <section class="abertura">
+    <div class="faixa">
+      <p class="rotulo">Minha conta</p>
+      <h1 th:text="${conta.firstName}">Nome</h1>
+
+      <dl class="leituras">
+        <dt>Perfil</dt>
+        <dd th:text="${conta.profile.label()} + ' (fixo)'">Consulente</dd>
+        <dt>Código na pesquisa</dt>
+        <dd><code th:text="${conta.code}">CON-0000</code></dd>
+        <dt>Termo aceito</dt>
+        <dd th:text="${conta.termVersion}">conta-v1</dd>
+        <dt>Conta criada em</dt>
+        <dd th:text="${@datas.dia(conta.createdAt)}">13/11/2026</dd>
+        <dt>E-mail confirmado em</dt>
+        <dd th:text="${@datas.dia(conta.emailConfirmedAt)}">13/11/2026</dd>
+      </dl>
+      <p class="nota">
+        Os dados da pesquisa usam só o código acima. Seu nome e seu e-mail ficam cifrados, em um
+        esquema separado do banco.
+      </p>
+
+      <p class="acoes">
+        <a class="botao botao-vazio" href="/painel">Voltar ao painel</a>
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <div class="faixa">
+      <h2>Excluir a conta</h2>
+      <p>
+        Você pode sair a qualquer momento, sem justificativa. Nome, e-mail e senha são apagados na
+        hora; o código pseudônimo permanece, marcado como encerrado, para que a trilha de auditoria
+        continue íntegra. Não há como desfazer.
+      </p>
+      <p class="erro" th:if="${param.confirmeExclusao}" role="alert">
+        Marque a caixa de confirmação para excluir a conta.
+      </p>
+      <form class="formulario" method="post" th:action="@{/conta/excluir}">
+        <label class="opcao">
+          <input type="checkbox" name="confirmo" value="true">
+          <span>Entendo que a exclusão é definitiva.</span>
+        </label>
+        <button class="botao botao-vazio" type="submit">Excluir minha conta</button>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer th:replace="~{fragments/site :: rodape}"></footer>
+</body>
+</html>

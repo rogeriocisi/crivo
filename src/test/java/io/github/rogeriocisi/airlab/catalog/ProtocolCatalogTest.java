@@ -15,12 +15,12 @@ import org.junit.jupiter.api.Test;
 class ProtocolCatalogTest {
 
     @Test
-    @DisplayName("o catalogo tem os tres protocolos, com codigos e slugs unicos")
-    void the_catalog_has_three_protocols() {
+    @DisplayName("o catalogo tem os quatro protocolos, com codigos e slugs unicos")
+    void the_catalog_has_four_protocols() {
         List<Protocol> all = ProtocolCatalog.all();
 
-        assertThat(all).hasSize(3);
-        assertThat(all.stream().map(Protocol::code)).containsExactly("P1", "P2", "P3");
+        assertThat(all).hasSize(4);
+        assertThat(all.stream().map(Protocol::code)).containsExactly("P1", "P2", "P3", "P4");
         assertThat(all.stream().map(Protocol::slug)).doesNotHaveDuplicates();
         assertThat(all.stream().map(Protocol::name)).doesNotHaveDuplicates();
     }
@@ -71,12 +71,40 @@ class ProtocolCatalogTest {
         assertThat(ProtocolCatalog.pairedReading().chancePercent()).isEqualTo(50);
         assertThat(ProtocolCatalog.precognitiveForcedChoice().chancePercent()).isEqualTo(25);
         assertThat(ProtocolCatalog.remoteViewing().chancePercent()).isEqualTo(25);
+        assertThat(ProtocolCatalog.structuredReading().chancePercent()).isEqualTo(50);
 
         assertThatThrownBy(() -> new Protocol("P9", "x", "X", Protocol.Branch.ESP, 4, 4,
                 Protocol.Automation.FULL, Protocol.Status.PLANNED, "resumo",
                 List.of("um limite declarado com tamanho suficiente"), "E9"))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("chance");
+    }
+
+    @Test
+    @DisplayName("as duas secoes cobrem o catalogo inteiro, com o AIR automatizado em destaque")
+    void the_two_sections_cover_the_catalog() {
+        assertThat(ProtocolCatalog.air().stream().map(Protocol::code)).containsExactly("P4", "P1");
+        assertThat(ProtocolCatalog.extras().stream().map(Protocol::code)).containsExactly("P2", "P3");
+        assertThat(ProtocolCatalog.air()).allMatch(p -> p.branch() == Protocol.Branch.AIR);
+        assertThat(ProtocolCatalog.extras()).allMatch(p -> p.branch() == Protocol.Branch.ESP);
+        assertThat(ProtocolCatalog.air().size() + ProtocolCatalog.extras().size())
+                .isEqualTo(ProtocolCatalog.all().size());
+    }
+
+    @Test
+    @DisplayName("o AIR automatizado declara a falta de proxy, o vazamento pelo nome e a telepatia")
+    void the_structured_reading_states_its_limits() {
+        String limits = String.join(" ", ProtocolCatalog.structuredReading().limits()).toLowerCase();
+        assertThat(limits).contains("telepatia").contains("proxy").contains("primeiro nome")
+                .contains("conluio");
+        assertThat(ProtocolCatalog.structuredReading().automation()).isEqualTo(Protocol.Automation.FULL);
+    }
+
+    @Test
+    @DisplayName("so os testes de ESP sao testes rapidos anonimos; o P4 exige conta")
+    void only_esp_tests_are_quick_tests() {
+        assertThat(ProtocolCatalog.all().stream().filter(Protocol::quickTest).map(Protocol::code))
+                .containsExactly("P2", "P3");
     }
 
     @Test

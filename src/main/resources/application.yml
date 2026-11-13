@@ -43,6 +43,12 @@ logging:
     org.hibernate.SQL: WARN
 
 airlab:
+  # P4 (SPEC E13): quem recebe os avisos de etapa concluida, o contato humano mostrado na
+  # inscricao (E10, trava 5) e o remetente dos e-mails. O SMTP em si vem das variaveis
+  # SPRING_MAIL_HOST, SPRING_MAIL_PORT, SPRING_MAIL_USERNAME e SPRING_MAIL_PASSWORD.
+  admin-email: ${AIRLAB_ADMIN_EMAIL:}
+  contact-email: ${AIRLAB_CONTACT_EMAIL:}
+  mail-from: ${AIRLAB_MAIL_FROM:crivo@localhost}
   storage:
     path: ${AIRLAB_STORAGE_PATH:./data/media}
   identity:
