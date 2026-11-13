@@ -132,7 +132,7 @@ class P4UnblindingTest {
         assertThat(studies.current()).isEmpty();
         fixture.account(AccountProfile.MEDIUM);
         StructuredStudyView study = studies.open(new StructuredStudyTerms("Estudo de desmascaramento", 2, 14, 0.5,
-                "As leituras coincidem mais com o alvo.", "Qualquer medium confirmado."), "pesquisador");
+                "As leituras coincidem mais com o alvo.", "Qualquer medium confirmado.", 2), "pesquisador");
 
         P4Fixture.Stratum first = new P4Fixture.Stratum("feminino", "60-79", "1-5-anos");
         P4Fixture.Stratum second = new P4Fixture.Stratum("masculino", "40-59", "mais-15-anos");
@@ -238,6 +238,49 @@ class P4UnblindingTest {
     }
 
     @Test
+    @DisplayName("com teto 1, o segundo par espera ate surgir outro medium elegivel")
+    void the_cap_holds_a_pair_until_another_medium_is_eligible() {
+        assertThat(studies.current()).isEmpty();
+        // This database is the test's own: closing the mediums of earlier scenarios leaves a pool of one.
+        accounts.activeMediumCodes().forEach(accounts::close);
+        String first = fixture.account(AccountProfile.MEDIUM);
+        StructuredStudyView study = studies.open(new StructuredStudyTerms("Estudo com teto", 2, 14, 0.5,
+                "As leituras coincidem mais com o alvo.", "Qualquer medium confirmado.", 1), "pesquisador");
+        P4Fixture.Stratum one = new P4Fixture.Stratum("feminino", "18-39", "menos-1-ano");
+        P4Fixture.Stratum two = new P4Fixture.Stratum("masculino", "60-79", "5-15-anos");
+        Map<String, Integer> variant = new HashMap<>();
+        variant.put(file(one, "Iolanda", 1, false).code(), 1);
+        variant.put(file(one, "Jurema", 2, false).code(), 2);
+        variant.put(file(two, "Kleber", 1, false).code(), 1);
+        variant.put(file(two, "Lauro", 2, false).code(), 2);
+        studies.runCycle(Instant.now());
+
+        assertThat(studies.progress().activePairs()).isEqualTo(2);
+        assertThat(studies.progress().openAssignments()).isEqualTo(1);
+        assertThat(studies.progress().pairsWaitingMedium()).isEqualTo(1);
+
+        String second = fixture.account(AccountProfile.MEDIUM);
+        studies.runCycle(Instant.now());
+        assertThat(studies.progress().openAssignments()).isEqualTo(2);
+
+        List<Map<String, Object>> sends = jdbc.queryForList("SELECT code, medium_code, first_request, second_request "
+                + "FROM research.reading_assignment WHERE state = 'OPEN' AND pair_code IN "
+                + "(SELECT code FROM research.structured_pair WHERE study_id = ?)", study.studyId());
+        assertThat(sends).extracting(row -> row.get("medium_code")).containsExactlyInAnyOrder(first, second);
+        for (Map<String, Object> sent : sends) {
+            for (int position = 1; position <= 2; position++) {
+                String request = (String) sent.get(position == 1 ? "first_request" : "second_request");
+                mediumReadings.lock((String) sent.get("medium_code"), (String) sent.get("code"), position,
+                        P4Fixture.mediumAnswers(variant.get(request)));
+            }
+        }
+        // Completing it leaves the database ready for the next scenario, and shows the cap held.
+        assertThat(studies.runCycle(Instant.now()).unblindedStudies()).isEqualTo(1);
+        assertThat(studies.report(study.studyCode()).orElseThrow().mediumResults())
+                .extracting(StructuredReport.MediumResult::pairs).containsOnly(1);
+    }
+
+    @Test
     @DisplayName("a devolutiva aparece so depois do desmascaramento, para cada um a sua")
     void the_pages_show_the_feedback_only_after_the_unblinding() throws Exception {
         Scenario scenario = scenario("Eulalia", "Felisberta", "Gaspar", "Horacio");
@@ -245,6 +288,13 @@ class P4UnblindingTest {
         RequestPostProcessor b1 = user(scenario.b1().sitter()).roles("SITTER");
 
         mvc.perform(get("/painel/consulente/devolutiva").with(a1)).andExpect(redirectedUrl("/painel/consulente"));
+        // Public page while collecting: the preregistration and counts, no report.
+        mvc.perform(get("/estudos/{code}", scenario.study().studyCode()))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Documento do pré-registro")))
+                // "Wilcoxon" is in the preregistration itself; the revealed seed exists only after.
+                .andExpect(content().string(not(containsString("Semente revelada"))))
+                .andExpect(content().string(not(containsString(scenario.medium()))));
 
         lockLast(scenario);
         studies.runCycle(Instant.now());
@@ -280,5 +330,16 @@ class P4UnblindingTest {
                 .andExpect(content().string(containsString("Por médium")))
                 .andExpect(content().string(containsString(studies.report(scenario.study().studyCode())
                         .orElseThrow().seedHex())));
+
+        // Public, with nobody signed in: the list and the whole report.
+        mvc.perform(get("/estudos"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString(scenario.study().studyCode())));
+        mvc.perform(get("/estudos/{code}", scenario.study().studyCode()))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Wilcoxon")))
+                .andExpect(content().string(containsString(studies.report(scenario.study().studyCode())
+                        .orElseThrow().documentSha256())))
+                .andExpect(content().string(not(containsString("Eulalia"))));
     }
 }

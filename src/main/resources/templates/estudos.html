@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Estudos — Crivo</title>
+  <link rel="stylesheet" href="/css/crivo.css">
+</head>
+<body>
+<a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+<div class="faixa">
+  <header th:replace="~{fragments/site :: topo}"></header>
+</div>
+
+<main id="conteudo">
+  <section class="abertura">
+    <div class="faixa">
+      <p class="rotulo">Leitura estruturada automatizada · P4</p>
+      <h1>Estudos e relatórios</h1>
+      <p class="chamada">
+        Cada estudo é declarado e congelado antes de qualquer pareamento. Aqui está o que foi declarado,
+        com o hash que permite conferir que nada mudou depois, e, quando o estudo termina, o relatório
+        inteiro — dê o resultado que der.
+      </p>
+      <p class="nota">
+        Enquanto um estudo coleta, só aparecem contagens. Notas não existem antes do desmascaramento,
+        para ninguém.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <div class="faixa">
+      <h2>Em andamento</h2>
+      <p th:unless="${aberto}">Nenhum estudo coletando agora.</p>
+      <p th:if="${aberto}">
+        <a th:href="@{/estudos/{c}(c=${aberto.studyCode})}"><code th:text="${aberto.studyCode}">STD-0000</code></a> ·
+        <span th:text="${aberto.title}">Título</span> ·
+        <span th:text="${aberto.targetPairs} + ' pares declarados'">30 pares declarados</span>
+      </p>
+
+      <h2>Concluídos</h2>
+      <p th:if="${#lists.isEmpty(concluidos)}">Nenhum estudo concluído ainda.</p>
+      <ul th:unless="${#lists.isEmpty(concluidos)}">
+        <li th:each="concluido : ${concluidos}">
+          <a th:href="@{/estudos/{c}(c=${concluido.studyCode})}"><code th:text="${concluido.studyCode}">STD-0000</code></a> ·
+          <span th:text="${concluido.title}">Título</span> · relatório publicado
+        </li>
+      </ul>
+    </div>
+  </section>
+</main>
+
+<footer th:replace="~{fragments/site :: rodape}"></footer>
+</body>
+</html>

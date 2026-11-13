@@ -12,7 +12,8 @@ import java.util.Map;
  * verification package — can rerun it.
  *
  * <p>Same stratum (gender, age band, period of death); within a stratum, by lock time and then
- * code, two by two; requests of the same sitter never together. The input is sorted here, so the
+ * code, two by two; requests of the same sitter never together, nor of two sitters flagged as
+ * possibly the same person (SPEC E13, phase E). The input is sorted here, so the
  * order in which the database returned the rows cannot change who is paired with whom (P5).
  * When the limit binds, the pairs that became possible first — the earlier of the two second
  * locks — go first.
@@ -31,6 +32,14 @@ final class StructuredPairing {
     }
 
     static List<Pairing> form(List<ConsultationRef> waiting, int limit) {
+        return form(waiting, limit, (one, other) -> false);
+    }
+
+    /**
+     * @param keptApart whether two sitters must not be paired — a pending or confirmed flag
+     */
+    static List<Pairing> form(List<ConsultationRef> waiting, int limit,
+                              java.util.function.BiPredicate<String, String> keptApart) {
         if (limit <= 0) {
             return List.of();
         }
@@ -49,7 +58,8 @@ final class StructuredPairing {
                 ConsultationRef first = remaining.remove(0);
                 int match = -1;
                 for (int i = 0; i < remaining.size(); i++) {
-                    if (!remaining.get(i).sitterCode().equals(first.sitterCode())) {
+                    String candidate = remaining.get(i).sitterCode();
+                    if (!candidate.equals(first.sitterCode()) && !keptApart.test(first.sitterCode(), candidate)) {
                         match = i;
                         break;
                     }

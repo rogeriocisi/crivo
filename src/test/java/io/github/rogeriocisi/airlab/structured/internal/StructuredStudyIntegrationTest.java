@@ -271,6 +271,33 @@ class StructuredStudyIntegrationTest {
     }
 
     @Test
+    @DisplayName("o medium sinalizado com um consulente nunca e sorteado para o par dele")
+    void a_flagged_medium_is_never_drawn_for_that_sitter() {
+        P4Fixture.Stratum stratum = new P4Fixture.Stratum("outro", "40-59", "1-5-anos");
+        String shared = io.github.rogeriocisi.airlab.TestNames.unique("Cosme");
+        String sitter = fixture.account(AccountProfile.SITTER, shared);
+        String flagged = fixture.account(AccountProfile.MEDIUM, shared);
+        assertThat(accounts.keptApart(List.of(sitter)).get(sitter)).contains(flagged);
+
+        fixture.ensureStudy();
+        studies.runCycle(Instant.now());
+        if (fixture.waiting(stratum) > 0) {
+            fixture.request(stratum, "Sobrante", 0);
+            studies.runCycle(Instant.now());
+        }
+        P4Fixture.Request a = fixture.request(stratum, "Damiao", 1, sitter);
+        fixture.request(stratum, "Bento", 2);
+        studies.runCycle(Instant.now());
+
+        Map<String, Object> sent = jdbc.queryForMap("SELECT a.medium_code, a.pool FROM research.reading_assignment a "
+                + "JOIN research.structured_pair p ON p.code = a.pair_code WHERE p.dissolved_at IS NULL "
+                + "AND (p.request_a = ? OR p.request_b = ?) AND a.state = 'OPEN'", a.code(), a.code());
+        assertThat(sent.get("medium_code")).isNotEqualTo(flagged);
+        assertThat((String) sent.get("pool")).doesNotContain(flagged);
+        assertThat(accounts.activeMediumCodes()).contains(flagged);
+    }
+
+    @Test
     @DisplayName("o progresso e contagem e o fluxo do pedido so anda pelos passos previstos")
     void progress_is_counts_and_the_flow_has_only_its_steps() {
         P4Fixture.Pair pair = fixture.pairOf(new P4Fixture.Stratum("masculino", "ate-17", "1-5-anos"), "Caetano", "Romeu");

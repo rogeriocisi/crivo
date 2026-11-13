@@ -117,6 +117,7 @@ class PanelController {
         model.addAttribute("pedidos", consultations.counts());
         model.addAttribute("estudo", structuredStudies.current().orElse(null));
         model.addAttribute("progresso", structuredStudies.progress());
+        model.addAttribute("sinalizacoesPendentes", accounts.pendingFlags());
         model.addAttribute("pedidosAbertos", gate.requestsOpen());
         model.addAttribute("avisos", notices.recent(50));
         model.addAttribute("caixaLocal", mailer.localOutbox());

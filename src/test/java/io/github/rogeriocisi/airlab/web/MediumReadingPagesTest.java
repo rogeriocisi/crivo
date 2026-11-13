@@ -163,5 +163,14 @@ class MediumReadingPagesTest {
                 .andExpect(content().string(not(containsString("Florisbela"))))
                 .andExpect(content().string(not(containsString(pair.medium()))))
                 .andExpect(content().string(not(containsString(pair.assignment()))));
+
+        // The public page of the open study: preregistration and counts, nothing blind.
+        mvc.perform(get("/estudos/{code}", studies.current().orElseThrow().studyCode()))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Documento do pré-registro")))
+                .andExpect(content().string(not(containsString("Florisbela"))))
+                .andExpect(content().string(not(containsString(pair.medium()))))
+                .andExpect(content().string(not(containsString(pair.assignment()))))
+                .andExpect(content().string(not(containsString(pair.code()))));
     }
 }

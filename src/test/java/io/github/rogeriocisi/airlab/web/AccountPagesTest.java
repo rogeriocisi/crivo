@@ -1,5 +1,6 @@
 package io.github.rogeriocisi.airlab.web;
 
+import io.github.rogeriocisi.airlab.TestNames;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin;
@@ -47,7 +48,7 @@ class AccountPagesTest {
 
     private String signUp(String email, String profile) throws Exception {
         mvc.perform(post("/conta/criar").with(csrf())
-                        .param("nome", "Pessoa de Teste")
+                        .param("nome", TestNames.unique("Pessoa"))
                         .param("email", email)
                         .param("senha", PASSWORD)
                         .param("confirmacao", PASSWORD)
@@ -149,7 +150,7 @@ class AccountPagesTest {
         String email = uniqueEmail();
         signUp(email, "consulente");
         mvc.perform(post("/conta/criar").with(csrf())
-                        .param("nome", "Outra Pessoa")
+                        .param("nome", TestNames.unique("Outra"))
                         .param("email", email)
                         .param("senha", PASSWORD)
                         .param("confirmacao", PASSWORD)
@@ -163,7 +164,7 @@ class AccountPagesTest {
     @DisplayName("erro de formulario volta para a pagina, sem devolver a senha")
     void a_form_error_returns_to_the_page() throws Exception {
         mvc.perform(post("/conta/criar").with(csrf())
-                        .param("nome", "Pessoa")
+                        .param("nome", TestNames.unique("Pessoa"))
                         .param("email", uniqueEmail())
                         .param("senha", PASSWORD)
                         .param("confirmacao", "outra-senha-qualquer")

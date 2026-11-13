@@ -33,6 +33,7 @@ import java.math.BigDecimal;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -120,6 +121,9 @@ class DefaultStructuredStudyService implements StructuredStudyService {
             throw new IllegalArgumentException("O número de pares vai de 1 a "
                     + StructuredStudyTerms.MAXIMUM_TARGET_PAIRS + ".");
         }
+        if (terms.maxPairsPerMedium() < 1 || terms.maxPairsPerMedium() > terms.targetPairs()) {
+            throw new IllegalArgumentException("O teto de pares por médium vai de 1 ao número de pares (N).");
+        }
         if (terms.deadlineDays() < 1 || terms.deadlineDays() > StructuredStudyTerms.MAXIMUM_DEADLINE_DAYS) {
             throw new IllegalArgumentException("O prazo do médium vai de 1 a "
                     + StructuredStudyTerms.MAXIMUM_DEADLINE_DAYS + " dias.");
@@ -157,7 +161,7 @@ class DefaultStructuredStudyService implements StructuredStudyService {
                 StructuredPreregistration.plan(terms),
                 StructuredPreregistration.annex(questionnaire, terms), actorCode);
         structuredStudies.save(new StructuredStudyEntity(study.id(), questionnaire.version(),
-                terms.targetPairs(), terms.deadlineDays(), clock.instant()));
+                terms.targetPairs(), terms.deadlineDays(), terms.maxPairsPerMedium(), clock.instant()));
         String commitment = allocation.commitSeed(study.id(), study.code());
         studies.freeze(study.id(), commitment, actorCode);
 
@@ -213,7 +217,7 @@ class DefaultStructuredStudyService implements StructuredStudyService {
         PreregistrationSnapshot preregistration = studies.currentPreregistration(study.id()).orElseThrow();
         return new StructuredStudyView(study.id(), study.code(), study.title(), study.status(),
                 structured.questionnaireVersion(), structured.targetPairs(), structured.deadlineDays(),
-                preregistration.sha256(), allocation.commitment(study.id()).orElse(""),
+                structured.maxPairsPerMedium(), preregistration.sha256(), allocation.commitment(study.id()).orElse(""),
                 preregistration.frozenAt().orElse(null), preregistration.document());
     }
 
@@ -378,8 +382,13 @@ class DefaultStructuredStudyService implements StructuredStudyService {
 
     private int formPairs(StructuredStudyEntity study, Instant now) {
         int room = study.targetPairs() - (int) pairs.countByStudyIdAndDissolvedAtIsNull(study.studyId());
+        List<ConsultationRef> waiting = waitingRequests(study);
+        // Phase E: two sitters flagged as possibly the same person never form a pair.
+        Map<String, Set<String>> apart = accounts.keptApart(
+                waiting.stream().map(ConsultationRef::sitterCode).distinct().toList());
         int formed = 0;
-        for (StructuredPairing.Pairing pairing : StructuredPairing.form(waitingRequests(study), room)) {
+        for (StructuredPairing.Pairing pairing : StructuredPairing.form(waiting, room,
+                (one, other) -> apart.getOrDefault(one, Set.of()).contains(other))) {
             String code = Codes.of("PAR");
             pairs.save(new StructuredPairEntity(code, study.studyId(), pairing.first().code(),
                     pairing.second().code(), now));
@@ -397,17 +406,38 @@ class DefaultStructuredStudyService implements StructuredStudyService {
 
     private int sendPairs(StructuredStudyEntity study, Instant now) {
         List<String> activeMediums = accounts.activeMediumCodes();
-        int sent = 0;
-        for (StructuredPairEntity pair : pairs.findByStudyIdAndDissolvedAtIsNullOrderByCodeAsc(study.studyId())) {
+        List<StructuredPairEntity> active = pairs.findByStudyIdAndDissolvedAtIsNullOrderByCodeAsc(study.studyId());
+        // Phase E: pairs already received by each medium in this study, open and completed.
+        Map<String, Integer> load = new HashMap<>();
+        Map<String, List<ReadingAssignmentEntity>> histories = new HashMap<>();
+        for (StructuredPairEntity pair : active) {
             List<ReadingAssignmentEntity> history = assignments.findByPairCodeOrderByAttemptAsc(pair.code());
+            histories.put(pair.code(), history);
+            history.stream().filter(assignment -> assignment.state() == AssignmentState.OPEN
+                            || assignment.state() == AssignmentState.COMPLETED)
+                    .forEach(assignment -> load.merge(assignment.mediumCode(), 1, Integer::sum));
+        }
+        Integer cap = study.maxPairsPerMedium();
+        int sent = 0;
+        for (StructuredPairEntity pair : active) {
+            List<ReadingAssignmentEntity> history = histories.get(pair.code());
             if (history.stream().anyMatch(assignment -> assignment.state() == AssignmentState.OPEN
                     || assignment.state() == AssignmentState.COMPLETED)) {
                 continue;
             }
             Set<String> earlier = new HashSet<>();
             history.forEach(assignment -> earlier.add(assignment.mediumCode()));
+            List<String> sitters = consultations.requestsByCode(pair.requests()).stream()
+                    .map(ConsultationRef::sitterCode).toList();
+            Set<String> apart = new HashSet<>();
+            accounts.keptApart(sitters).values().forEach(apart::addAll);
+
             List<String> pool = new ArrayList<>(new TreeSet<>(activeMediums));
             pool.removeAll(earlier);
+            // Never a medium flagged with either sitter, never one at the cap. The pool recorded
+            // below is this filtered one, so the draw can still be redone from it.
+            pool.removeAll(apart);
+            pool.removeIf(medium -> cap != null && load.getOrDefault(medium, 0) >= cap);
             if (pool.isEmpty()) {
                 continue;
             }
@@ -436,6 +466,7 @@ class DefaultStructuredStudyService implements StructuredStudyService {
             payload.put("dueAt", due.toString());
             audit(AuditEventType.READING_REQUEST_SENT, "assignment:" + code, payload);
             events.publishEvent(new ReadingRequestSent(pair.code(), code, medium, due));
+            load.merge(medium, 1, Integer::sum);
             sent++;
         }
         return sent;

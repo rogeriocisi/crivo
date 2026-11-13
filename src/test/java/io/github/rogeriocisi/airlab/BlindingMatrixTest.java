@@ -170,9 +170,10 @@ class BlindingMatrixTest {
                     .isIn(int.class, long.class));
         }
         assertNoFieldsNamedLike(io.github.rogeriocisi.airlab.structured.StructuredStudyView.class, P4_CONTENT_AND_OUTCOME);
-        // N is a count; what must be absent is any code of a pair, a send, a medium or a reading.
+        // N and the cap per medium are declared numbers; what must be absent is any code of a
+        // pair, a send, a medium or a reading.
         assertNoFieldsNamedLike(io.github.rogeriocisi.airlab.structured.StructuredStudyView.class,
-                "medium", "paircode", "assignment", "reading", "leitura");
+                "mediumcode", "paircode", "assignment", "reading", "leitura");
     }
 
     @Test
@@ -268,6 +269,17 @@ class BlindingMatrixTest {
         assertThat(slot.toString()).doesNotContain("Sebastiao");
         assertThat(new io.github.rogeriocisi.airlab.structured.MediumReadingDraft("ENV-1", 1,
                 java.util.Map.of("causa", "cancer")).toString()).doesNotContain("cancer");
+    }
+
+    // --- P4, fase E: sinalizacoes e pagina publica ----------------------------------------------
+
+    @Test
+    @DisplayName("P4: a sinalizacao traz codigos, perfis e o tipo de sinal, nunca nome, e-mail ou impressao")
+    void p4_flags_carry_no_name_email_or_fingerprint() {
+        assertNoFieldsNamedLike(io.github.rogeriocisi.airlab.participant.AccountFlag.class,
+                "name", "email", "fingerprint", "address");
+        assertNoFieldsNamedLike(io.github.rogeriocisi.airlab.participant.AccountsFlagged.class,
+                "account", "name", "email");
     }
 
     private static void assertNoFieldsNamedLike(Class<?> type, String... forbidden) {

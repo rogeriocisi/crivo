@@ -1,5 +1,6 @@
 package io.github.rogeriocisi.airlab.participant;
 
+import io.github.rogeriocisi.airlab.TestNames;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -44,7 +45,7 @@ class AccountIntegrationTest {
     }
 
     private static AccountSignUp signUp(String email, AccountProfile profile) {
-        return new AccountSignUp("Maria Teste da Silva", email, PASSWORD, profile,
+        return new AccountSignUp(TestNames.unique("Maria"), email, PASSWORD, profile,
                 AccountService.CURRENT_TERM_VERSION, true);
     }
 

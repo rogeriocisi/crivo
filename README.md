@@ -34,7 +34,8 @@ O consulente informa o primeiro nome da pessoa falecida e responde a um question
 |---|---|
 | **Consulente** | Painel com a situação do pedido · Novo pedido (questionário) · Devolutiva depois do fim do estudo · Minha conta (dados, termo, excluir conta) |
 | **Médium** | Painel com pedidos recebidos e prazos · Leitura de cada nome do par, com revisão antes de travar · Minha conta |
-| **Administrador** | Painel com contagens — nunca notas — e situação da instalação · **Estudo P4**: pré-registro, congelamento e progresso · Avisos de cada etapa concluída · Caixa de saída (perfil local) · Sinalizações (fase seguinte) |
+| **Administrador** | Painel com contagens — nunca notas — e situação da instalação · **Estudo P4**: pré-registro com teto de pares por médium, congelamento, progresso e relatório · **Sinalizações** de contas que parecem da mesma pessoa · Avisos de cada etapa concluída · Caixa de saída (perfil local) |
+| **Público** | **Estudos e relatórios** (`/estudos`): o pré-registro de cada estudo P4, contagens enquanto coleta e o relatório inteiro quando termina |
 
 O administrador **não é um perfil escolhível**: é a conta do pesquisador, definida na configuração do servidor (ver *Entrar na aplicação*).
 
@@ -182,11 +183,10 @@ Sem Docker: todo passo do projeto — build, teste, execução, implantação e 
 
 ## Próximos passos
 
-1. P4, pendências (E13): sinalização de contas ligadas, teto de pares por médium e página pública do relatório
-2. E4 (sessões) e E5 (redação), consumindo o evento do sorteio
-3. E6 (avaliação cega) com links de uso único
-4. E7 (desmascaramento e análise primária) e o relatório neutro
-5. Carimbo de tempo RFC 3161 e pacote de verificação (E8/E9)
+1. P1: E4 (sessões) e E5 (redação), consumindo o evento do sorteio
+2. P1: E6 (avaliação cega) com links de uso único
+3. P1: E7 (desmascaramento e análise primária) e o relatório neutro
+4. Carimbo de tempo RFC 3161 e pacote de verificação (E8/E9)
 
 ## Autor
 

@@ -60,7 +60,8 @@ class SecurityConfiguration {
                         .requestMatchers("/", "/sobre", "/historia", "/referencias",
                                 "/consulente", "/login", "/css/**", "/js/**", "/targets/**",
                                 "/testes", "/testes/**", "/error", "/actuator/health",
-                                "/conta/criar", "/conta/verifique-seu-email", "/conta/confirmar")
+                                "/conta/criar", "/conta/verifique-seu-email", "/conta/confirmar",
+                                "/estudos", "/estudos/**")
                         .permitAll()
                         .requestMatchers("/painel/adm", "/painel/adm/**", "/caixa-de-saida").hasRole("ADMIN")
                         .requestMatchers("/painel/consulente", "/painel/consulente/**").hasRole("SITTER")

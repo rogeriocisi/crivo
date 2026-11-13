@@ -66,7 +66,8 @@ class StructuredStudyPagesTest {
                 .param("prazo", "10")
                 .param("efeito", "0.5")
                 .param("hipotese", "As leituras coincidem mais com o alvo.")
-                .param("criterios", "Qualquer medium confirmado.");
+                .param("criterios", "Qualquer medium confirmado.")
+                .param("teto", "5");
     }
 
     @Test
@@ -88,7 +89,8 @@ class StructuredStudyPagesTest {
         mvc.perform(post("/painel/adm/estudo-p4/congelar").with(ADMIN).with(csrf()).session(session))
                 .andExpect(redirectedUrl("/painel/adm/estudo-p4?congelado"));
         verify(studies).open(argThat((StructuredStudyTerms terms) -> terms.targetPairs() == 40
-                && terms.deadlineDays() == 10 && terms.title().equals("Estudo de telas")), eq("pesquisador"));
+                && terms.deadlineDays() == 10 && terms.maxPairsPerMedium() == 5
+                && terms.title().equals("Estudo de telas")), eq("pesquisador"));
     }
 
     @Test

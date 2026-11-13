@@ -57,6 +57,30 @@ public interface AccountService {
      */
     Optional<String> mailAddress(String code);
 
+    // --- Phase E: linked accounts ---------------------------------------------------------------
+
+    /** Every linked-accounts flag, pending first, then newest first, for the administrator. */
+    List<AccountFlag> flags();
+
+    /** Pending flags, for the administrator's panel. */
+    long pendingFlags();
+
+    /**
+     * Records the administrator's decision on a flag. Made once; the trail gets the flag code and
+     * the decision, not the accounts.
+     *
+     * @throws IllegalArgumentException when the flag does not exist
+     * @throws IllegalStateException    when it was already decided
+     */
+    void reviewFlag(String flagCode, FlagDecision decision, String reviewerCode);
+
+    /**
+     * For each given account, the accounts it must be kept apart from in the draw: those it shares
+     * a pending or confirmed flag with (SPEC E13, phase E). An account without flags maps to an
+     * empty set.
+     */
+    java.util.Map<String, java.util.Set<String>> keptApart(java.util.Collection<String> accountCodes);
+
     /**
      * Closes the account at the owner's request, without justification (P6): name, e-mail and
      * password hash are erased, and the pseudonymous code stays, marked as closed.

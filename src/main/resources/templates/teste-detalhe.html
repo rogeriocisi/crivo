@@ -68,6 +68,7 @@
            th:href="'/testes/' + ${protocolo.slug} + '/rodar'">Fazer o teste agora</a>
         <a class="botao botao-cheio"
            th:if="${protocolo.code == 'P4'}" href="/conta/criar">Criar uma conta</a>
+        <a class="botao botao-vazio" th:if="${protocolo.code == 'P4'}" href="/estudos">Estudos e relatórios</a>
         <a class="botao botao-vazio" href="/testes">Voltar ao catálogo</a>
       </p>
     </div>

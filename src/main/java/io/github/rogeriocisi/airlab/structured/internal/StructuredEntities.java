@@ -36,16 +36,25 @@ class StructuredStudyEntity {
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
+    @Column(name = "max_pairs_per_medium", updatable = false)
+    private Integer maxPairsPerMedium;
+
     protected StructuredStudyEntity() {
     }
 
     StructuredStudyEntity(Long studyId, String questionnaireVersion, int targetPairs, int deadlineDays,
-                          Instant createdAt) {
+                          int maxPairsPerMedium, Instant createdAt) {
         this.studyId = studyId;
         this.questionnaireVersion = questionnaireVersion;
         this.targetPairs = targetPairs;
         this.deadlineDays = deadlineDays;
+        this.maxPairsPerMedium = maxPairsPerMedium;
         this.createdAt = createdAt;
+    }
+
+    /** Null for a study frozen before the cap existed: no cap. */
+    Integer maxPairsPerMedium() {
+        return maxPairsPerMedium;
     }
 
     Long studyId() {

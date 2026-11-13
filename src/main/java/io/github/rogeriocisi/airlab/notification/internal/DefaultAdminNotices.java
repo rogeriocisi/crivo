@@ -5,6 +5,7 @@ import io.github.rogeriocisi.airlab.notification.AdminNotices;
 import io.github.rogeriocisi.airlab.notification.Mailer;
 import io.github.rogeriocisi.airlab.notification.NoticeKind;
 import io.github.rogeriocisi.airlab.participant.AccountConfirmed;
+import io.github.rogeriocisi.airlab.participant.AccountsFlagged;
 import io.github.rogeriocisi.airlab.participant.ConsultationLocked;
 import io.github.rogeriocisi.airlab.structured.PairReadingsReceived;
 import io.github.rogeriocisi.airlab.structured.ReadingRequestExpired;
@@ -85,6 +86,12 @@ class DefaultAdminNotices implements AdminNotices {
     @EventListener
     void on(ConsultationLocked event) {
         record(NoticeKind.REQUEST_LOCKED, event.code());
+    }
+
+    /** Phase E: the flag code, never the two accounts. */
+    @EventListener
+    void on(AccountsFlagged event) {
+        record(NoticeKind.ACCOUNTS_FLAGGED, event.flagCode());
     }
 
     // Phase C: the notice carries the pair code, never the medium's (P4 matrix).

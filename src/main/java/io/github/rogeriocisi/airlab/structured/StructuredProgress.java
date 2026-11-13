@@ -7,7 +7,8 @@ package io.github.rogeriocisi.airlab.structured;
  * @param targetPairs          N declared in the preregistration (0 when there is no study)
  * @param waitingRequests      locked requests in the frozen questionnaire version, without a pair
  * @param activePairs          pairs formed and not dissolved
- * @param pairsWaitingMedium   active pairs with no open or completed request to a medium
+ * @param pairsWaitingMedium   active pairs with no open or completed request to a medium — no
+ *                             eligible medium yet, or every eligible one at the cap
  * @param openAssignments      requests to a medium awaiting the readings
  * @param completedPairs       active pairs whose medium locked both readings
  * @param lockedReadings       readings locked, in any request to a medium

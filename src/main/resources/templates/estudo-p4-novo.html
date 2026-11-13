@@ -52,6 +52,10 @@
                th:attr="max=${paresMaximo}" th:value="${termos.targetPairs}">
         <p class="nota">O pareamento para em N pares ativos; o desmascaramento vem quando todos têm as duas leituras.</p>
 
+        <label for="teto">Teto de pares por médium</label>
+        <input id="teto" name="teto" type="number" min="1" required th:value="${termos.maxPairsPerMedium}">
+        <p class="nota">Nenhum médium recebe mais pares que isso no estudo, para que o resultado não seja o de uma pessoa só. Entre 1 e N.</p>
+
         <label for="prazo">Prazo do médium, em dias</label>
         <input id="prazo" name="prazo" type="number" min="1" required
                th:attr="max=${prazoMaximo}" th:value="${termos.deadlineDays}">

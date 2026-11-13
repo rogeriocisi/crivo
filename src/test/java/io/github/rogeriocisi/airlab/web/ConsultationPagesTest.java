@@ -1,5 +1,6 @@
 package io.github.rogeriocisi.airlab.web;
 
+import io.github.rogeriocisi.airlab.TestNames;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin;
@@ -48,7 +49,7 @@ class ConsultationPagesTest {
 
     private MockHttpSession signedIn(AccountProfile profile) throws Exception {
         String email = "telas-" + UUID.randomUUID() + "@exemplo.test";
-        AccountRegistration registration = accounts.register(new AccountSignUp("Pessoa Teste", email, PASSWORD,
+        AccountRegistration registration = accounts.register(new AccountSignUp(TestNames.unique("Pessoa"), email, PASSWORD,
                 profile, AccountService.CURRENT_TERM_VERSION, true));
         accounts.confirmEmail(registration.confirmationToken());
         return (MockHttpSession) mvc.perform(formLogin("/login").user(email).password(PASSWORD))

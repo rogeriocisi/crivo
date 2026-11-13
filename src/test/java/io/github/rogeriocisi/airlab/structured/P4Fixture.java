@@ -1,5 +1,6 @@
 package io.github.rogeriocisi.airlab.structured;
 
+import io.github.rogeriocisi.airlab.TestNames;
 import io.github.rogeriocisi.airlab.catalog.Questionnaire;
 import io.github.rogeriocisi.airlab.catalog.Questionnaires;
 import io.github.rogeriocisi.airlab.participant.AccountProfile;
@@ -62,12 +63,18 @@ public final class P4Fixture {
     public StructuredStudyView ensureStudy() {
         return studies.current().orElseGet(() -> studies.open(new StructuredStudyTerms("Estudo P4 de teste",
                 StructuredStudyTerms.MAXIMUM_TARGET_PAIRS, StructuredStudyTerms.DEFAULT_DEADLINE_DAYS, 0.5,
-                "Hipotese de teste.", "Qualquer medium confirmado."), "pesquisador"));
+                "Hipotese de teste.", "Qualquer medium confirmado.", StructuredStudyTerms.MAXIMUM_TARGET_PAIRS),
+                "pesquisador"));
     }
 
     /** A confirmed account; its e-mail is random and its password is {@link #PASSWORD}. */
     public String account(AccountProfile profile) {
-        AccountRegistration registration = accounts.register(new AccountSignUp("Pessoa Teste",
+        return account(profile, TestNames.unique("Pessoa"));
+    }
+
+    /** A confirmed account with a chosen full name — to make two accounts share one on purpose. */
+    public String account(AccountProfile profile, String fullName) {
+        AccountRegistration registration = accounts.register(new AccountSignUp(fullName,
                 "p4-" + UUID.randomUUID() + "@exemplo.test", PASSWORD, profile,
                 AccountService.CURRENT_TERM_VERSION, true));
         accounts.confirmEmail(registration.confirmationToken());
@@ -99,7 +106,11 @@ public final class P4Fixture {
     }
 
     public Request request(Stratum stratum, String firstName, int variant) {
-        String sitter = account(AccountProfile.SITTER);
+        return request(stratum, firstName, variant, account(AccountProfile.SITTER));
+    }
+
+    /** A request filed by a given sitter account. */
+    public Request request(Stratum stratum, String firstName, int variant, String sitter) {
         String code = consultations.submit(sitter, new ConsultationDraft(firstName, answers(stratum, variant))).code();
         return new Request(code, sitter, firstName);
     }

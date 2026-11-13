@@ -1,5 +1,6 @@
 package io.github.rogeriocisi.airlab.participant.internal;
 
+import io.github.rogeriocisi.airlab.TestNames;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -62,7 +63,7 @@ class ConsultationIntegrationTest {
     JdbcTemplate jdbc;
 
     private String confirmedAccount(AccountProfile profile) {
-        AccountRegistration registration = accounts.register(new AccountSignUp("Pessoa Teste",
+        AccountRegistration registration = accounts.register(new AccountSignUp(TestNames.unique("Pessoa"),
                 "pedido-" + UUID.randomUUID() + "@exemplo.test", "senha-de-teste-123", profile,
                 AccountService.CURRENT_TERM_VERSION, true));
         accounts.confirmEmail(registration.confirmationToken());

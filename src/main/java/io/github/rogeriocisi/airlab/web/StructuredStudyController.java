@@ -66,12 +66,13 @@ class StructuredStudyController {
                   @RequestParam(name = "efeito", defaultValue = "0") double expectedEffect,
                   @RequestParam(name = "hipotese", defaultValue = "") String hypothesis,
                   @RequestParam(name = "criterios", defaultValue = "") String criteria,
+                  @RequestParam(name = "teto", defaultValue = "0") int maxPairsPerMedium,
                   HttpSession session, Model model) {
         if (studies.current().isPresent()) {
             return "redirect:" + PAGE;
         }
         StructuredStudyTerms terms = new StructuredStudyTerms(title, targetPairs, deadlineDays, expectedEffect,
-                hypothesis, criteria);
+                hypothesis, criteria, maxPairsPerMedium);
         session.setAttribute(DRAFT, terms);
         try {
             studies.check(terms);

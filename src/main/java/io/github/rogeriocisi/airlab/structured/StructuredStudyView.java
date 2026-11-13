@@ -6,6 +6,8 @@ import java.time.Instant;
 /**
  * The P4 study as the administrator sees it: what was frozen, with the hashes to check it. The
  * preregistration document is public by design (P2, P7), so it can be shown whole.
+ *
+ * @param maxPairsPerMedium null for a study frozen before the cap existed
  */
 public record StructuredStudyView(long studyId,
                                   String studyCode,
@@ -14,6 +16,7 @@ public record StructuredStudyView(long studyId,
                                   String questionnaireVersion,
                                   int targetPairs,
                                   int deadlineDays,
+                                  Integer maxPairsPerMedium,
                                   String documentSha256,
                                   String seedCommitment,
                                   Instant frozenAt,

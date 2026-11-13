@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Estudo P4 — Crivo</title>
+  <link rel="stylesheet" href="/css/crivo.css">
+</head>
+<body>
+<a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+<div class="faixa">
+  <header th:replace="~{fragments/site :: topo}"></header>
+</div>
+
+<main id="conteudo">
+  <section class="abertura">
+    <div class="faixa">
+      <p class="rotulo">Estudo P4 · <code th:text="${estudo.studyCode}">STD-0000</code></p>
+      <h1 th:text="${estudo.title}">Título</h1>
+      <p class="chamada" th:unless="${relatorio}">
+        Em andamento. Abaixo, o que foi declarado antes do primeiro par e quanto da coleta já foi feito
+        — em contagens, nunca em notas.
+      </p>
+      <p class="chamada" th:if="${relatorio}">
+        Concluído. O relatório foi escrito pelo próprio sistema quando os pares declarados tiveram as
+        duas leituras, e o hash dele está na trilha pública de auditoria.
+      </p>
+    </div>
+  </section>
+
+  <section th:if="${progresso}">
+    <div class="faixa">
+      <h2>Coleta</h2>
+      <dl class="contagens">
+        <div><dt>Pares com as duas leituras</dt>
+          <dd th:text="${progresso.completedPairs} + ' / ' + ${progresso.targetPairs}">0 / 30</dd></div>
+        <div><dt>Pares formados</dt><dd th:text="${progresso.activePairs}">0</dd></div>
+        <div><dt>Leituras travadas</dt><dd th:text="${progresso.lockedReadings}">0</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section th:if="${relatorio}">
+    <div class="faixa">
+      <h2>Resultado</h2>
+      <dl class="contagens">
+        <div><dt>Pares analisados</dt><dd th:text="${relatorio.pairs}">2</dd></div>
+        <div><dt>Wilcoxon (primária)</dt><dd th:text="'p = ' + ${#numbers.formatDecimal(relatorio.primaryPValue, 1, 4, 'COMMA')}">p = 0,25</dd></div>
+        <div><dt>Sinal (secundária)</dt><dd th:text="'p = ' + ${#numbers.formatDecimal(relatorio.signPValue, 1, 4, 'COMMA')}">p = 0,25</dd></div>
+        <div><dt>Permutação (secundária)</dt><dd th:text="'p = ' + ${#numbers.formatDecimal(relatorio.permutationPValue, 1, 4, 'COMMA')}">p = 0,25</dd></div>
+      </dl>
+      <p th:text="${relatorio.primaryBelowAlpha()} ? 'O p da análise primária está abaixo de 0,05, o limite declarado. É uma afirmação sobre o teste, não sobre a origem da informação.' : 'O p da análise primária não está abaixo de 0,05, o limite declarado. Este estudo não detectou o efeito; isso não prova que ele não existe.'">Leitura</p>
+      <div class="ressalva" th:unless="${relatorio.integrityHolds()}">
+        <p><strong>Atenção:</strong> algum compromisso não conferiu no desmascaramento. O relatório diz quantos.</p>
+      </div>
+      <dl class="leituras">
+        <dt>Semente revelada</dt><dd><code class="hash" th:text="${relatorio.seedHex}">semente</code></dd>
+        <dt>Hash do relatório (SHA-256)</dt><dd><code class="hash" th:text="${relatorio.documentSha256}">hash</code></dd>
+      </dl>
+      <h3>Relatório</h3>
+      <pre class="documento" th:text="${relatorio.document}">relatório</pre>
+    </div>
+  </section>
+
+  <section>
+    <div class="faixa">
+      <h2>O que foi declarado antes</h2>
+      <dl class="leituras">
+        <dt>Congelado em</dt>
+        <dd><time th:if="${estudo.frozenAt}" th:text="${@datas.utc(estudo.frozenAt)}">2026-11-13</time> (UTC)</dd>
+        <dt>Questionário</dt><dd><code th:text="${estudo.questionnaireVersion}">v1</code></dd>
+        <dt>Número de pares (N)</dt><dd th:text="${estudo.targetPairs}">30</dd>
+        <dt>Teto de pares por médium</dt><dd th:text="${estudo.maxPairsPerMedium} ?: 'sem teto'">10</dd>
+        <dt>Hash do pré-registro (SHA-256)</dt><dd><code class="hash" th:text="${estudo.documentSha256}">hash</code></dd>
+        <dt>Compromisso da semente</dt><dd><code class="hash" th:text="${estudo.seedCommitment}">hash</code></dd>
+      </dl>
+      <h3>Documento do pré-registro</h3>
+      <pre class="documento" th:text="${estudo.document}">documento</pre>
+      <p class="nota nota-espacada"><a href="/estudos">Todos os estudos</a></p>
+    </div>
+  </section>
+</main>
+
+<footer th:replace="~{fragments/site :: rodape}"></footer>
+</body>
+</html>

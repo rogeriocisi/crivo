@@ -85,6 +85,13 @@
         </p>
         <p class="acoes"><a class="botao botao-cheio" href="/painel/adm/estudo-p4">Criar o estudo P4</a></p>
       </th:block>
+
+      <h3>Sinalizações</h3>
+      <p>
+        <strong th:text="${sinalizacoesPendentes}">0</strong> sinalização(ões) de contas ligadas aguardando revisão.
+        <a href="/painel/adm/sinalizacoes">Revisar</a> ·
+        <a href="/estudos">Página pública dos estudos</a>
+      </p>
     </div>
   </section>
 

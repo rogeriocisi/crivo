@@ -129,13 +129,17 @@
         <dd><time th:if="${estudo.frozenAt}" th:text="${@datas.utc(estudo.frozenAt)}">2026-11-13</time> (UTC)</dd>
         <dt>Questionário</dt><dd><code th:text="${estudo.questionnaireVersion}">v1-rascunho</code></dd>
         <dt>Número de pares (N)</dt><dd th:text="${estudo.targetPairs}">30</dd>
+        <dt>Teto de pares por médium</dt><dd th:text="${estudo.maxPairsPerMedium} ?: 'sem teto'">10</dd>
         <dt>Prazo do médium</dt><dd th:text="${estudo.deadlineDays} + ' dias'">14 dias</dd>
         <dt>Hash do documento (SHA-256)</dt><dd><code class="hash" th:text="${estudo.documentSha256}">hash</code></dd>
         <dt>Compromisso da semente</dt><dd><code class="hash" th:text="${estudo.seedCommitment}">hash</code></dd>
       </dl>
       <h3>Documento do pré-registro</h3>
       <pre class="documento" th:text="${estudo.document}">documento</pre>
-      <p class="nota nota-espacada"><a href="/painel/adm">Voltar ao painel</a></p>
+      <p class="nota nota-espacada">
+        <a th:href="@{/estudos/{c}(c=${estudo.studyCode})}">Página pública deste estudo</a> ·
+        <a href="/painel/adm">Voltar ao painel</a>
+      </p>
     </div>
   </section>
 </main>

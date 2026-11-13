@@ -21,8 +21,8 @@ import java.util.Map;
 final class StructuredPreregistration {
 
     static final String PAIRING_CRITERIA = "Mesmo genero, mesma faixa etaria no obito e mesmo periodo do "
-            + "falecimento; pedidos de consulentes diferentes; dentro do estrato, por ordem de travamento "
-            + "(e pelo codigo, no empate), dois a dois, ate N pares ativos.";
+            + "falecimento; pedidos de consulentes diferentes e nao sinalizados entre si; dentro do estrato, "
+            + "por ordem de travamento (e pelo codigo, no empate), dois a dois, ate N pares ativos.";
 
     static final List<String> SCORING_SCALE = List.of(
             "Acerto: a resposta da leitura e igual a do consulente no campo.",
@@ -93,6 +93,9 @@ final class StructuredPreregistration {
         root.put("pairingFields", List.of(Questionnaires.GENDER, Questionnaires.AGE_BAND, Questionnaires.DEATH_PERIOD));
         root.put("targetPairs", terms.targetPairs());
         root.put("mediumDeadlineDays", terms.deadlineDays());
+        root.put("maxPairsPerMedium", terms.maxPairsPerMedium());
+        root.put("keptApart", "a medium never reads the pair of a sitter flagged with them, and two flagged "
+                + "sitters are never paired, while the flag is pending or confirmed (SPEC E13, phase E)");
         root.put("mediumAnswers", "scored fields only; each one an option or \"" + Questionnaire.NOT_RECEIVED + "\"");
         root.put("mediumDraw", "SeedStream(seed, \"p4-medium:\" + pair + \":\" + attempt).nextInt over the eligible "
                 + "mediums in canonical order; eligible = confirmed, active medium accounts at the draw, minus "

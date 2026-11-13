@@ -79,4 +79,18 @@ class StructuredPairingTest {
 
         assertThat(codes(StructuredPairing.form(waiting, 10))).containsExactly(List.of("PED-1", "PED-3"));
     }
+
+    @Test
+    @DisplayName("dois consulentes sinalizados entre si nunca formam par")
+    void flagged_sitters_are_never_paired() {
+        List<ConsultationRef> waiting = List.of(
+                request("PED-1", "CON-1", "feminino", "60-79", "1-5-anos", 1),
+                request("PED-2", "CON-2", "feminino", "60-79", "1-5-anos", 2),
+                request("PED-3", "CON-3", "feminino", "60-79", "1-5-anos", 3));
+
+        List<StructuredPairing.Pairing> pairings = StructuredPairing.form(waiting, 10,
+                (one, other) -> java.util.Set.of(one, other).equals(java.util.Set.of("CON-1", "CON-2")));
+
+        assertThat(codes(pairings)).containsExactly(List.of("PED-1", "PED-3"));
+    }
 }

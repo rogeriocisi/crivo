@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sinalizações — Crivo</title>
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="/css/crivo.css">
+</head>
+<body>
+<a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+<div class="faixa">
+  <header th:replace="~{fragments/site :: topo}"></header>
+</div>
+
+<main id="conteudo">
+  <section class="abertura">
+    <div class="faixa">
+      <p class="rotulo">Administrador · sinalizações</p>
+      <h1>Contas que parecem ligadas</h1>
+      <p class="aviso" th:if="${param.revisada}" role="status">Decisão registrada.</p>
+      <p class="chamada">
+        Duas contas que têm o mesmo nome completo, ou o mesmo e-mail escrito de outro jeito. Sinalizar
+        não é bloquear: ninguém é recusado. Enquanto a sinalização estiver pendente, ou se você
+        confirmar que é a mesma pessoa, o sorteio só evita que as duas se encontrem num par.
+      </p>
+      <p class="nota">
+        Você vê os códigos e o tipo de sinal, não os nomes nem os e-mails. A decisão vale uma vez e não
+        muda; a trilha registra a sinalização e a decisão sem os códigos das contas.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <div class="faixa">
+      <p th:if="${#lists.isEmpty(sinalizacoes)}">Nenhuma sinalização.</p>
+      <div class="tabela" th:unless="${#lists.isEmpty(sinalizacoes)}">
+        <table class="tentativas">
+          <thead>
+            <tr><th scope="col">Sinalização</th><th scope="col">Contas</th><th scope="col">Sinal</th>
+              <th scope="col">Quando (UTC)</th><th scope="col">Decisão</th></tr>
+          </thead>
+          <tbody>
+            <tr th:each="sinal : ${sinalizacoes}">
+              <td><code th:text="${sinal.code}">SIN-0000</code></td>
+              <td>
+                <code th:text="${sinal.accountA}">CON-0000</code>
+                (<span th:text="${sinal.profileA} ? ${sinal.profileA.label()} : 'encerrada'">Consulente</span>)
+                e <code th:text="${sinal.accountB}">MED-0000</code>
+                (<span th:text="${sinal.profileB} ? ${sinal.profileB.label()} : 'encerrada'">Médium</span>)
+              </td>
+              <td th:text="${sinal.signal.label()}">Mesmo nome completo</td>
+              <td><time th:text="${@datas.utc(sinal.createdAt)}">2026-11-13</time></td>
+              <td>
+                <span th:unless="${sinal.pending()}" th:text="${sinal.decision.label()}">Sem relação</span>
+                <form th:if="${sinal.pending()}" class="decisao" method="post"
+                      th:action="@{/painel/adm/sinalizacoes/{c}(c=${sinal.code})}">
+                  <button class="botao botao-vazio" type="submit" name="decisao" value="UNRELATED">Sem relação</button>
+                  <button class="botao botao-cheio" type="submit" name="decisao" value="LINKED">Mesma pessoa</button>
+                </form>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="nota nota-espacada"><a href="/painel/adm">Voltar ao painel</a></p>
+    </div>
+  </section>
+</main>
+
+<footer th:replace="~{fragments/site :: rodape}"></footer>
+</body>
+</html>

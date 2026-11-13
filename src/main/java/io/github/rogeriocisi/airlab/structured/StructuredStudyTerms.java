@@ -18,13 +18,19 @@ import java.io.Serializable;
  * @param hypothesis              the hypothesis, in the researcher's words
  * @param mediumInclusionCriteria who may read; declared because selecting mediums on past
  *                                performance inflates the effect
+ * @param maxPairsPerMedium       the most pairs one medium may receive in the study, open and
+ *                                completed together, so that no medium carries the result alone
+ *                                (SPEC E13, phase E)
  */
 public record StructuredStudyTerms(String title,
                                    int targetPairs,
                                    int deadlineDays,
                                    double expectedEffect,
                                    String hypothesis,
-                                   String mediumInclusionCriteria) implements Serializable {
+                                   String mediumInclusionCriteria,
+                                   int maxPairsPerMedium) implements Serializable {
+
+    public static final int DEFAULT_MAX_PAIRS_PER_MEDIUM = 10;
 
     public static final int DEFAULT_DEADLINE_DAYS = 14;
     public static final int MAXIMUM_DEADLINE_DAYS = 90;
@@ -39,6 +45,7 @@ public record StructuredStudyTerms(String title,
                 0.5,
                 "As leituras dos médiuns coincidem mais com as respostas do consulente-alvo do que com as "
                         + "do consulente-chamariz do mesmo par (d > 0).",
-                "Qualquer conta de médium com e-mail confirmado, sem triagem por desempenho anterior.");
+                "Qualquer conta de médium com e-mail confirmado, sem triagem por desempenho anterior.",
+                DEFAULT_MAX_PAIRS_PER_MEDIUM);
     }
 }
