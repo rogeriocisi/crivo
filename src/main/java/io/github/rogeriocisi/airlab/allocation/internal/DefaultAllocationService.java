@@ -125,6 +125,12 @@ class DefaultAllocationService implements AllocationService {
     @Override
     @Transactional
     public String revealSeed(long studyId, String actorCode) {
+        return revealSeed(studyId, ActorRole.RESEARCHER, actorCode);
+    }
+
+    @Override
+    @Transactional
+    public String revealSeed(long studyId, ActorRole role, String actorCode) {
         AllocationSet set = sets.findByStudyId(studyId)
                 .orElseThrow(() -> new IllegalStateException("no draw for study " + studyId));
         if (set.seedHex() != null) {
@@ -137,7 +143,7 @@ class DefaultAllocationService implements AllocationService {
         Map<String, Object> payload = new LinkedHashMap<>();
         payload.put("commitment", set.seedCommitment());
         payload.put("seedSha256", Hashes.sha256Hex(seedHex));
-        auditTrail.append(AuditEventType.SEED_REVEALED, ActorRole.RESEARCHER, actorCode,
+        auditTrail.append(AuditEventType.SEED_REVEALED, role, actorCode,
                 "study:" + studyId, payload);
         return seedHex;
     }

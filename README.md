@@ -38,7 +38,7 @@ O consulente informa o primeiro nome da pessoa falecida e responde a um question
 
 O administrador **não é um perfil escolhível**: é a conta do pesquisador, definida na configuração do servidor (ver *Entrar na aplicação*).
 
-**Estado:** as fases A, B e C do E13 estão implementadas. Contas com perfil fixo, confirmação por e-mail, painéis por perfil e avisos ao administrador; o **pedido de consulta**, com o questionário (versão `v1-rascunho`, ainda em revisão) travado e só o compromisso salgado na trilha; e o **fluxo até a leitura**: o administrador congela o estudo P4, e um ciclo do servidor, a cada minuto, forma os pares, sorteia o médium, libera os dois primeiros nomes, controla o prazo e reenvia o que vencer. O médium responde, revê e trava cada leitura. A conferência automática, o desmascaramento no N e a devolutiva (fase D) vêm a seguir.
+**Estado:** as quatro fases do E13 estão implementadas. Contas com perfil fixo, confirmação por e-mail, painéis por perfil e avisos ao administrador; o **pedido de consulta**, com o questionário (versão `v1-rascunho`, ainda em revisão) travado e só o compromisso salgado na trilha; e o **fluxo até a leitura**: o administrador congela o estudo P4, e um ciclo do servidor, a cada minuto, forma os pares, sorteia o médium, libera os dois primeiros nomes, controla o prazo e reenvia o que vencer. O médium responde, revê e trava cada leitura. Quando os N pares têm as duas leituras, o próprio ciclo **desmascara o estudo**, confere os compromissos, pontua, roda a análise pré-registrada e escreve o relatório; o consulente vê a leitura do seu alvo ao lado das suas respostas, o médium vê as notas das próprias leituras, e o administrador, o relatório inteiro.
 
 **Para experimentar no perfil local:** crie uma conta de médium e duas de consulente e faça dois pedidos com o mesmo gênero, a mesma faixa etária e o mesmo período do falecimento. Depois entre como administrador, abra **Estudo P4** e congele o pré-registro. Em até um minuto, o médium vê o pedido no painel.
 
@@ -48,7 +48,7 @@ O Crivo não existe para provar que a mediunidade é real, nem que não é. Ele 
 
 ## Status
 
-🧱 **Fase 0 → 1: fundamentos implementados.** O núcleo de confiança está de pé: trilha de auditoria encadeada por hash, sorteio reproduzível com compromisso → revelação, pré-registro congelável e CLI de verificação. No AIR automatizado (P4), as fases A, B e C estão no ar: contas com perfil fixo, pedido de consulta com compromisso salgado, estudo P4 congelado, pareamento e sorteio do médium automáticos, leitura travada e prazos com reenvio; a conferência automática e a devolutiva vêm a seguir. Na leitura pareada (P1), os épicos de campo (sessões, redação, avaliação cega, desmascaramento) estão com o esquema de banco pronto e a implementação pendente. Ver a tabela de estado em [`docs/PLAN.md`](docs/PLAN.md).
+🧱 **Fase 0 → 1: fundamentos implementados.** O núcleo de confiança está de pé: trilha de auditoria encadeada por hash, sorteio reproduzível com compromisso → revelação, pré-registro congelável e CLI de verificação. No AIR automatizado (P4), o fluxo inteiro está no ar: contas com perfil fixo, pedido de consulta com compromisso salgado, estudo P4 congelado, pareamento e sorteio do médium automáticos, leitura travada, prazos com reenvio e, no N, desmascaramento, conferência, relatório e devolutiva automáticos. Na leitura pareada (P1), os épicos de campo (sessões, redação, avaliação cega, desmascaramento) estão com o esquema de banco pronto e a implementação pendente. Ver a tabela de estado em [`docs/PLAN.md`](docs/PLAN.md).
 
 ## Como rodar
 
@@ -104,6 +104,16 @@ A entrada em `/login` serve a três perfis. **Consulentes e médiuns** do P4 ent
 - **Em produção**: as duas variáveis são obrigatórias; sem elas a aplicação não inicia.
 
 Opções úteis: `--profile prod` (`-AppProfile prod` no PowerShell), `--port 9090`, `--rebuild` (build com a suíte de testes), `--skip-build`.
+
+### E-mail no perfil local (Mailpit)
+
+Por padrão, o perfil local não envia e-mail: as mensagens ficam na **Caixa de saída** do administrador e o link de confirmação sai no log. Para ver os e-mails como e-mails — confirmação de conta, aviso de pedido ao médium, devolutiva — sem que nenhum saia da máquina, use o [Mailpit](https://mailpit.axllent.org), um executável único, sem Docker:
+
+1. Instale: `winget install --id axllent.mailpit` no Windows; no Linux, veja as instruções do projeto.
+2. Rode `mailpit` num terminal à parte. Ele recebe SMTP na porta 1025 e mostra a caixa em http://localhost:8025.
+3. No `.env` (não versionado), defina `SPRING_MAIL_HOST=localhost`, `SPRING_MAIL_PORT=1025` e `SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE=false`, e reinicie a aplicação.
+
+Com `SPRING_MAIL_HOST` definida, o perfil local passa a usar SMTP; sem ela, volta à caixa de saída. O link de confirmação continua no log nos dois casos, e os testes usam sempre a caixa de saída.
 
 ### Verificação (auditoria)
 
@@ -172,7 +182,7 @@ Sem Docker: todo passo do projeto — build, teste, execução, implantação e 
 
 ## Próximos passos
 
-1. P4, fase D (E13): desmascaramento automático no N, conferência, análise primária, relatório e devolutiva
+1. P4, pendências (E13): sinalização de contas ligadas, teto de pares por médium e página pública do relatório
 2. E4 (sessões) e E5 (redação), consumindo o evento do sorteio
 3. E6 (avaliação cega) com links de uso único
 4. E7 (desmascaramento e análise primária) e o relatório neutro

@@ -35,7 +35,12 @@
           <div><dt>Pedido</dt><dd><code th:text="${situacao.code}">PED-0000</code></dd></div>
           <div><dt>Situação</dt><dd th:text="${situacao.state.label()}">Travado</dd></div>
         </dl>
-        <p class="acoes"><a class="botao botao-cheio" href="/painel/consulente/pedido">Ver meu pedido</a></p>
+        <p class="acoes">
+          <a class="botao botao-cheio" th:if="${situacao.state.name() == 'UNBLINDED'}"
+             href="/painel/consulente/devolutiva">Ver a devolutiva</a>
+          <a class="botao" th:classappend="${situacao.state.name() == 'UNBLINDED'} ? 'botao-vazio' : 'botao-cheio'"
+             href="/painel/consulente/pedido">Ver meu pedido</a>
+        </p>
         <div class="ressalva" th:switch="${situacao.state.name()}">
           <th:block th:case="'LOCKED'">
             <p th:unless="${estudoAberto}">
@@ -58,6 +63,10 @@
           <p th:case="'READING_RECEIVED'">
             <strong>Leitura recebida e travada.</strong> Ninguém vê o resultado ainda: a conferência só
             acontece quando o estudo atingir o número de pares declarado.
+          </p>
+          <p th:case="'UNBLINDED'">
+            <strong>O estudo terminou.</strong> A devolutiva mostra as respostas do médium ao lado das suas
+            e o resultado do estudo inteiro.
           </p>
           <p th:case="*">Seu pedido está travado.</p>
         </div>

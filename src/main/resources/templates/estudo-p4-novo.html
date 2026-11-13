@@ -73,6 +73,17 @@
         <button class="botao botao-cheio" type="submit">Rever antes de congelar</button>
       </form>
 
+      <th:block th:unless="${#lists.isEmpty(concluidos)}">
+        <h2>Estudos concluídos</h2>
+        <ul>
+          <li th:each="concluido : ${concluidos}">
+            <a th:href="@{/painel/adm/estudo-p4/{c}(c=${concluido.studyCode})}">
+              <code th:text="${concluido.studyCode}">STD-0000</code></a> ·
+            <span th:text="${concluido.title}">Título</span> · relatório pronto
+          </li>
+        </ul>
+      </th:block>
+
       <p class="nota nota-espacada"><a href="/painel/adm">Voltar ao painel</a></p>
     </div>
   </section>

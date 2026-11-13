@@ -181,11 +181,52 @@ class BlindingMatrixTest {
         for (Method method : io.github.rogeriocisi.airlab.structured.StructuredStudyService.class.getMethods()) {
             assertThat(method.getReturnType())
                     .describedAs("StructuredStudyService.%s", method.getName())
-                    .isIn(void.class, boolean.class, java.util.Optional.class,
+                    .isIn(void.class, boolean.class, java.util.Optional.class, java.util.List.class,
                             io.github.rogeriocisi.airlab.structured.StructuredStudyView.class,
                             io.github.rogeriocisi.airlab.structured.StructuredProgress.class,
                             io.github.rogeriocisi.airlab.structured.CycleReport.class);
         }
+        // The report is the one place with scores and the pair-to-medium link, and it comes only
+        // wrapped in an Optional that stays empty until the unblinding (integration test).
+        assertThat(java.util.Arrays.stream(io.github.rogeriocisi.airlab.structured.StructuredStudyService.class.getMethods())
+                .filter(method -> method.getName().equals("report"))
+                .map(Method::getReturnType)).containsOnly(java.util.Optional.class);
+    }
+
+    // --- P4, fase D: a devolutiva (SPEC E13, matriz do P4 depois do desmascaramento) -----------
+
+    @Test
+    @DisplayName("P4: a devolutiva do consulente traz a leitura do proprio alvo, nunca as respostas do outro nem o medium")
+    void p4_sitter_feedback_has_no_partner_answers_or_medium() {
+        assertNoFieldsNamedLike(io.github.rogeriocisi.airlab.structured.TargetFeedback.class,
+                "medium", "partner", "other", "sitter", "decoyanswer", "salt", "email", "name");
+    }
+
+    @Test
+    @DisplayName("P4: a devolutiva do medium e contagem, nunca as respostas dos consulentes")
+    void p4_medium_feedback_has_counts_only() {
+        assertNoFieldsNamedLike(io.github.rogeriocisi.airlab.structured.ReadingFeedback.class,
+                "answer", "resposta", "sitter", "consulente", "request", "pedido", "salt", "email");
+    }
+
+    @Test
+    @DisplayName("P4: as respostas reveladas nao levam o primeiro nome nem o sal, e o aviso do fim nao leva nota")
+    void p4_revealed_answers_and_report_event_carry_no_name_salt_or_score() {
+        assertNoFieldsNamedLike(io.github.rogeriocisi.airlab.participant.RevealedAnswers.class, "name", "salt", "email");
+        assertNoFieldsNamedLike(io.github.rogeriocisi.airlab.structured.StructuredStudyReported.class,
+                P4_CONTENT_AND_OUTCOME);
+    }
+
+    @Test
+    @DisplayName("P4: devolutivas e respostas reveladas nao vazam por toString")
+    void p4_feedback_does_not_leak_through_to_string() {
+        java.util.Map<String, String> answers = java.util.Map.of("causa", "cancer");
+        assertThat(new io.github.rogeriocisi.airlab.structured.TargetFeedback("STD-1", "v1", answers,
+                java.util.List.of("causa"), 1, 0).toString()).doesNotContain("cancer");
+        assertThat(new io.github.rogeriocisi.airlab.structured.ReadingFeedback("STD-1", "ENV-1", 1, "Sebastiao",
+                1, 1, 0, 1).toString()).doesNotContain("Sebastiao");
+        assertThat(new io.github.rogeriocisi.airlab.participant.RevealedAnswers("PED-1", "v1", answers, true)
+                .toString()).doesNotContain("cancer");
     }
 
     @Test

@@ -12,6 +12,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -43,6 +44,19 @@ class StructuredStudyController {
         }
         StructuredStudyTerms draft = (StructuredStudyTerms) session.getAttribute(DRAFT);
         return formPage(model, draft == null ? StructuredStudyTerms.defaults() : draft);
+    }
+
+    /** A P4 study by its code: the open one, or a concluded one with its report (phase D). */
+    @GetMapping(PAGE + "/{code}")
+    String study(@PathVariable String code, Model model) {
+        Optional<StructuredStudyView> study = studies.byCode(code);
+        if (study.isEmpty()) {
+            return "redirect:" + PAGE;
+        }
+        model.addAttribute("estudo", study.get());
+        model.addAttribute("progresso", studies.progress());
+        model.addAttribute("relatorio", studies.report(code).orElse(null));
+        return "estudo-p4";
     }
 
     @PostMapping(PAGE + "/revisar")
@@ -92,6 +106,7 @@ class StructuredStudyController {
         model.addAttribute("termos", terms);
         model.addAttribute("prazoMaximo", StructuredStudyTerms.MAXIMUM_DEADLINE_DAYS);
         model.addAttribute("paresMaximo", StructuredStudyTerms.MAXIMUM_TARGET_PAIRS);
+        model.addAttribute("concluidos", studies.concluded());
         addQuestionnaire(model);
         return "estudo-p4-novo";
     }

@@ -3,13 +3,15 @@ package io.github.rogeriocisi.airlab.platform;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * The PostgreSQL the application starts by itself in development and dry-run.
+ * Embedded PostgreSQL settings, for the {@code local} and {@code test} profiles only.
  *
- * @param enabled       true in the {@code local} profile only; never in production
- * @param port          loopback port the embedded instance listens on
- * @param dataDirectory where the cluster lives, relative to the working directory, so the
- *                      same value works on Windows and on Linux
+ * @param databaseName     database inside the cluster; empty means the default {@code postgres}.
+ *                         A test that needs a database of its own — the P4 unblinding scenario,
+ *                         which must start from no open study — names one here
+ * @param recreateDatabase drop and recreate {@code databaseName} when the context starts, so the
+ *                         scenario starts clean on every run. Never applies to {@code postgres}
  */
 @ConfigurationProperties(prefix = "airlab.local-database")
-public record LocalDatabaseProperties(boolean enabled, int port, String dataDirectory) {
+public record LocalDatabaseProperties(boolean enabled, int port, String dataDirectory,
+                                      String databaseName, boolean recreateDatabase) {
 }

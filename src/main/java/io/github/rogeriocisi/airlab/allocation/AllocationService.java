@@ -49,6 +49,9 @@ public interface AllocationService {
      */
     String revealSeed(long studyId, String actorCode);
 
+    /** Same, recording who acted: the P4 unblinding reveals the seed as the system (SPEC E13, phase D). */
+    String revealSeed(long studyId, io.github.rogeriocisi.airlab.audit.ActorRole role, String actorCode);
+
     /** Snapshot for the verification CLI and the verification package (P7, Epic E8/E9). */
     Optional<AllocationSnapshot> snapshot(long studyId);
 

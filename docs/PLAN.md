@@ -1,6 +1,6 @@
 # Plano técnico do MVP — Crivo (AIR Lab)
 
-> Derivado de `CONSTITUTION.md` (prevalece) e de `SPEC.md`. Versão 1.5 · novembro/2026 · 1.3: protocolo P4 (SPEC E13), fase A — contas com perfil fixo, e-mail e avisos ao administrador · 1.4: fase B — questionário versionado e pedido de consulta travado com compromisso salgado · 1.5: fase C — módulo `structured`: estudo P4, ciclo automático, pareamento, sorteio do médium, leitura travada e prazos.
+> Derivado de `CONSTITUTION.md` (prevalece) e de `SPEC.md`. Versão 1.6 · novembro/2026 · 1.3: protocolo P4 (SPEC E13), fase A — contas com perfil fixo, e-mail e avisos ao administrador · 1.4: fase B — questionário versionado e pedido de consulta travado com compromisso salgado · 1.5: fase C — módulo `structured`: estudo P4, ciclo automático, pareamento, sorteio do médium, leitura travada e prazos · 1.6: fase D — desmascaramento automático no N, conferência, análise, relatório e devolutiva.
 > Este documento registra as decisões de implementação do MVP: estrutura de módulos,
 > esquemas e migrações, execução por linha de comando e justificativa de cada dependência.
 
@@ -42,9 +42,9 @@ quem pode depender; `ModularityTest` verifica isso no build.
 | `study` | E1 | **Implementado**: estudo, documento canônico do pré-registro, congelamento, emendas |
 | `participant` | E2, E13 | **Implementado**: participantes, consentimento, alvos, pareamento, desistência; **contas do P4** (`AccountService`) com perfil fixo, confirmação de e-mail por link de uso único e exclusão que mantém o código; **pedidos de consulta do P4** (`ConsultationService`), travados na criação, com compromisso salgado (`ConsultationCommitment`), e a **liberação dos primeiros nomes** só ao médium sorteado |
 | `notification` | E13 | **Implementado**: `Mailer` — caixa de saída em memória nos perfis `local`/`test`, SMTP em produção, desativado sem SMTP —, `AdminNotices`, avisos ao administrador só com tipo, código e hora, e o e-mail ao médium sorteado, sem nomes |
-| `structured` | E13 | **Implementado (fase C)**: estudo P4 congelado com o questionário no anexo (`StructuredStudyService`), ciclo automático — pareamento, sorteio do médium, envio, prazos e reenvio —, leitura do médium travada com compromisso salgado (`MediumReadingService`, `ReadingCommitment`). Desmascaramento e conferência: fase D |
+| `structured` | E13 | **Implementado (fases C e D)**: estudo P4 congelado com o questionário no anexo (`StructuredStudyService`), ciclo automático — pareamento, sorteio do médium, envio, prazos e reenvio —, leitura do médium travada com compromisso salgado (`MediumReadingService`, `ReadingCommitment`); no N, desmascaramento automático, conferência (`StructuredScoring`), análise, relatório (`StructuredReport`) e devolutiva (`FeedbackService`) |
 | `redaction` | E5 | Parcial: `ClueScrubber` (guarda de pistas). Persistência e telas pendentes |
-| `analysis` | E7 | Parcial: Wilcoxon pareado exato (medida primária), binomial exato, permutação de Pratt e Birge, `PowerCheck`, política de rótulo e redução às unidades independentes. Persistência e relatório pendentes |
+| `analysis` | E7 | Parcial: Wilcoxon pareado exato (medida primária), binomial exato, permutação de Pratt e Birge e a sua versão **dentro dos estratos** (`StratifiedPermutationTest`, P4), `PowerCheck`, política de rótulo e redução às unidades independentes. Persistência e relatório pendentes |
 | `session` | E4 | Pendente (tabelas prontas; os slots contrabalanceados já saem do sorteio) |
 | `scoring` | E6 | Parcial: escala de cinco categorias com justificativa obrigatória e a lógica do link de uso único (`AccessLink`). Pacotes e telas pendentes |
 | `unblinding` | E7 | Pendente (tabelas prontas) |
@@ -83,6 +83,7 @@ Flyway, em `src/main/resources/db/migration`. Histórico no esquema `research`.
 | `V17` | Contas do P4 (`identity.account`, `identity.email_confirmation`) e avisos (`research.admin_notice`). *Trigger* recusa troca de perfil, de código, reabertura de conta encerrada, reescrita da data de confirmação e qualquer `DELETE`; `CHECK` impede perfil fora de consulente e médium e exige dados apagados na conta encerrada; índice único parcial: uma conta ativa por e-mail (E13) |
 | `V18` | Pedido de consulta do P4: `research.consultation_request` (código, consulente, versão do questionário, atributos de pareamento, compromisso, estado) e `identity.consultation_detail` (primeiro nome, respostas e sal, cifrados). *Triggers*: pedido travado só muda de estado, retirado é final, nada se apaga, e o detalhe só admite o apagamento na desistência; índice único parcial: um pedido ativo por consulente (E13, fase B) |
 | `V19` | P4, fase C: `research.structured_study` (versão do questionário, N, prazo; imutável), `research.structured_pair` (dois pedidos travados; só se desfaz), `research.reading_assignment` (envio a um médium sorteado, com a lista de elegíveis e a ordem dos nomes; só se encerra), `research.structured_reading` (leitura cifrada com compromisso; imutável) e `identity.first_name_release` (a quem o nome foi liberado; só se revoga). Chaves estrangeiras para `consultation_request`: não existe par nem envio sobre pedido que não esteja travado (E13, fase C) |
+| `V20` | P4, fase D: `research.structured_score` (campos comparáveis, as quatro contagens e o `d` de cada par, com o médium revelado) e `research.structured_report` (números da análise e documento canônico com hash). *Trigger*: as duas recusam linha de estudo que não esteja desmascarado, e nenhuma linha muda nem some — nenhuma nota existe antes do desmascaramento, nem por SQL (E13, fase D) |
 
 **Migração aplicada não se edita**: corrigir o vocabulário dos comentários mudaria o checksum
 do Flyway e quebraria a validação em qualquer banco já migrado — inclusive o do próprio autor.
@@ -149,6 +150,13 @@ congelado, participantes identificados e N declarado antes da coleta.
 | Liberação do nome registrada no esquema `identity` | `participant` recusa o nome a quem não tem liberação não revogada; vencimento, cancelamento e retirada revogam |
 | O médium responde só aos campos da nota | Os de pareamento não contam e são iguais (ou dedutíveis do nome) dentro do par |
 | E-mail ao médium depois do *commit* | Ninguém é avisado de um envio que um *rollback* desfez; o e-mail não leva nome nem código de par |
+| **Fase D**: desmascaramento no ciclo, no módulo `structured` | É automático e as entradas estão ali; o módulo `unblinding` continua reservado ao P1, onde o desmascaramento é uma operação explícita |
+| Uma transação, em ordem fixa | Coleta encerrada → semente revelada → desmascarado → *flush* → respostas reveladas → compromissos conferidos → notas → análise → relatório → relatado. O *flush* põe o estado no banco antes da primeira nota, que o *trigger* confere |
+| Respostas só para pedido em "estudo concluído" | `ConsultationService.revealedAnswers` devolve nada para outro estado, e confere o compromisso de cada pedido onde estão o nome e o sal |
+| Permutação dentro dos estratos | Leituras de estratos diferentes não são trocáveis sob a hipótese nula: o nome e o estrato já as separam |
+| Relatório com o médium de cada par | Depois do desmascaramento a ligação é pública (matriz do P4), e a tabela por médium mostra se um só carrega o resultado (questão 12) |
+| Devolutiva construída a partir das notas | Sem nota, não há o que montar: a regra "nada antes do desmascaramento" não depende de um `if` |
+| Banco próprio para o teste de ponta a ponta | O banco de teste compartilhado mantém um estudo P4 aberto com N grande; `airlab.local-database.database-name` e `recreate-database` dão ao `P4UnblindingTest` um banco recriado a cada execução, no mesmo cluster embarcado |
 
 ## 5. Decisões metodológicas impostas pelo código
 
@@ -257,6 +265,9 @@ sorteio na CLI, nunca para calcular hash.
 | `StructuredStudyIntegrationTest` | P1, P2, P4, P5, E13 | PostgreSQL real: anexo e compromisso da semente no documento, um estudo por vez, nome só para o médium sorteado, trilha sem código de médium, sorteio refeito a partir da semente e das entradas registradas, leitura com compromisso recalculável e imutável, prazo vencido vai a outro médium, retirada desfaz o par, banco recusa reescritas |
 | `MediumReadingPagesTest` | P1, E13 | Segurança real: ver os nomes, responder, rever e travar; outro médium, o consulente e o administrador não veem os nomes |
 | `StructuredStudyPagesTest` | P2, E13 | Preencher, rever com o poder declarado e congelar; questionário em rascunho não congela onde rascunho não vale |
+| `StructuredScoringTest` | P10, E13 | Unitário: campos comparáveis, "não sei" fora para os dois, "não recebi" nunca acerta, respostas iguais empatam |
+| `StratifiedPermutationTestTest` | P5, E13 | Unitário: só permuta dentro do estrato, um estrato equivale ao teste comum, amostragem reproduzível pela semente |
+| `P4UnblindingTest` | P1, P4, P5, P7, E13 | Ponta a ponta, em banco próprio: antes da última leitura não há nota nem relatório, nem por SQL; no N o estudo se desmascara sozinho; os `d`, os três *p* e a integridade são os esperados; o hash do relatório está na trilha; a devolutiva de cada um mostra só o que é dele |
 | `AccountPagesTest` | P1, E13 | Segurança real: do cadastro ao painel, cada perfil só alcança o próprio painel, senha errada não revela conta não confirmada, cadastro repetido não revela nada |
 | `TargetDerivationTest` | P5 | Unitário: alvo reproduzível pela semente, dentro do intervalo, candidatas distintas e banco pequeno recusado |
 | `ProtocolCatalogTest` | SPEC 1.1 | Unitário: todo protocolo declara o que não sustenta, e protocolo sem limites não compila em tempo de execução |

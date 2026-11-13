@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Devolutiva — Crivo</title>
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="/css/crivo.css">
+</head>
+<body>
+<a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+<div class="faixa">
+  <header th:replace="~{fragments/site :: topo}"></header>
+</div>
+
+<main id="conteudo">
+  <section class="abertura">
+    <div class="faixa">
+      <p class="rotulo">Consulente · devolutiva · estudo <code th:text="${devolutiva.studyCode}">STD-0000</code></p>
+      <h1 th:text="'Sobre ' + ${pedido.firstName}">Sobre a pessoa</h1>
+      <p class="chamada">
+        O estudo terminou. Abaixo estão as suas respostas ao lado das respostas que o médium deu,
+        conhecendo só o primeiro nome. Obrigado por ter participado.
+      </p>
+      <div class="ressalva">
+        <p>
+          <strong>Antes de ler.</strong> Esta comparação não é uma mensagem da pessoa que faleceu, e um
+          resultado individual não diz nada sobre ela nem sobre o médium. Coincidências acontecem por
+          acaso — "morreu do coração" acerta com muita gente. O que o estudo avalia é o conjunto de
+          todos os pares, no fim da página.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="faixa">
+      <h2>Campo a campo</h2>
+      <dl class="contagens">
+        <div><dt>Coincidiram com as suas respostas</dt>
+          <dd th:text="${devolutiva.targetMatches} + ' de ' + ${#lists.size(devolutiva.comparableFields)}">0 de 0</dd></div>
+        <div><dt>Com as do outro consulente do par</dt>
+          <dd th:text="${devolutiva.decoyMatches} + ' de ' + ${#lists.size(devolutiva.comparableFields)}">0 de 0</dd></div>
+      </dl>
+      <p class="nota">
+        O mesmo texto do médium foi comparado com as suas respostas e com as de outra pessoa de perfil
+        parecido, que serve de comparação. O que conta é a diferença entre as duas contagens, não o
+        número de coincidências sozinho. As respostas da outra pessoa não aparecem aqui.
+      </p>
+
+      <div class="tabela">
+      <table class="tentativas comparacao">
+        <thead>
+          <tr><th scope="col">Pergunta</th><th scope="col">Você</th><th scope="col">Médium</th><th scope="col">Conta?</th></tr>
+        </thead>
+        <tbody>
+          <tr th:each="linha : ${linhas}" th:classappend="${linha.match} ? 'coincide'">
+            <th scope="row" th:text="${linha.question}">Pergunta</th>
+            <td th:text="${linha.mine}">Sua resposta</td>
+            <td th:text="${linha.reading}">Resposta do médium</td>
+            <td th:text="${!linha.comparable} ? 'Fora da comparação' : (${linha.match} ? 'Coincidiu' : 'Não coincidiu')">Coincidiu</td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="nota">
+        "Fora da comparação": você ou a outra pessoa do par marcou "não sei" nesse campo, e ele não
+        conta para ninguém do par.
+      </p>
+    </div>
+  </section>
+
+  <section th:if="${relatorio}">
+    <div class="faixa">
+      <h2>O resultado do estudo inteiro</h2>
+      <p>
+        O estudo reuniu <strong th:text="${relatorio.pairs}">2</strong> pares. A análise declarada antes
+        da coleta — o teste de Wilcoxon sobre a diferença de cada par — deu
+        <strong th:text="'p = ' + ${#numbers.formatDecimal(relatorio.primaryPValue, 1, 4, 'COMMA')}">p = 0,25</strong>.
+      </p>
+      <p th:if="${relatorio.primaryBelowAlpha()}">
+        Esse valor está abaixo de 0,05, o limite declarado: as leituras coincidiram com os alvos mais do
+        que o acaso explicaria com facilidade. É uma afirmação sobre o teste, não sobre a origem da
+        informação, e o protocolo tem limites declarados — por exemplo, não distingue a comunicação com
+        quem faleceu de outras explicações.
+      </p>
+      <p th:unless="${relatorio.primaryBelowAlpha()}">
+        Esse valor não está abaixo de 0,05, o limite declarado: no conjunto, as leituras não coincidiram
+        com os alvos mais do que o acaso explica. Um resultado assim não prova que o fenômeno não existe;
+        diz que este estudo não o detectou.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <div class="faixa">
+      <p class="acoes"><a class="botao botao-vazio" href="/painel/consulente">Voltar ao painel</a></p>
+    </div>
+  </section>
+</main>
+
+<footer th:replace="~{fragments/site :: rodape}"></footer>
+</body>
+</html>

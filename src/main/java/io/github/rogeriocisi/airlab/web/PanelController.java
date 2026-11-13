@@ -5,6 +5,7 @@ import io.github.rogeriocisi.airlab.notification.Mailer;
 import io.github.rogeriocisi.airlab.participant.AccountService;
 import io.github.rogeriocisi.airlab.participant.AccountView;
 import io.github.rogeriocisi.airlab.participant.ConsultationService;
+import io.github.rogeriocisi.airlab.structured.FeedbackService;
 import io.github.rogeriocisi.airlab.structured.MediumAssignment;
 import io.github.rogeriocisi.airlab.structured.MediumReadingService;
 import io.github.rogeriocisi.airlab.structured.StructuredStudyService;
@@ -35,6 +36,7 @@ class PanelController {
     private final ConsultationService consultations;
     private final StructuredStudyService structuredStudies;
     private final MediumReadingService mediumReadings;
+    private final FeedbackService feedback;
     private final AdminNotices notices;
     private final Mailer mailer;
     private final SignUpGate gate;
@@ -42,11 +44,13 @@ class PanelController {
 
     PanelController(AccountService accounts, ConsultationService consultations,
                     StructuredStudyService structuredStudies, MediumReadingService mediumReadings,
-                    AdminNotices notices, Mailer mailer, SignUpGate gate, Environment environment) {
+                    FeedbackService feedback, AdminNotices notices, Mailer mailer, SignUpGate gate,
+                    Environment environment) {
         this.accounts = accounts;
         this.consultations = consultations;
         this.structuredStudies = structuredStudies;
         this.mediumReadings = mediumReadings;
+        this.feedback = feedback;
         this.notices = notices;
         this.mailer = mailer;
         this.gate = gate;
@@ -90,6 +94,8 @@ class PanelController {
         model.addAttribute("enviados", requests.stream().filter(assignment -> !assignment.open()).toList());
         model.addAttribute("leiturasEnviadas", requests.stream().mapToLong(MediumAssignment::lockedSlots).sum());
         model.addAttribute("encerrados", mediumReadings.closedWithoutReading(principal.getName()));
+        // Phase D: counts for each reading of a concluded study, never the sitters' answers.
+        model.addAttribute("notas", feedback.forMedium(principal.getName()));
         return ownPanel(principal, model, request, "painel-medium");
     }
 

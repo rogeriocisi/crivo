@@ -9,6 +9,25 @@
 <body>
 
   <!--
+    O que o P4 nao e (SPEC, E13): nao e mensagem do falecido nem resposta a perguntas do consulente.
+    Usado na pagina inicial e na pagina do protocolo, para que as duas digam a mesma coisa.
+  -->
+  <div th:fragment="o-que-nao-e" class="ressalva esclarecimento" id="o-que-nao-e">
+    <p>
+      <strong>O que este experimento não é.</strong> Não é uma carta, nem uma mensagem enviada pela
+      pessoa falecida. Também não é um espaço para o consulente fazer perguntas e receber respostas:
+      o consulente não pergunta nada ao médium, e o médium não responde a perguntas de ninguém.
+    </p>
+    <p>
+      É apenas um <strong>experimento de confirmação — ou não — do fenômeno de recepção anômala de
+      informação</strong>. O médium, conhecendo só o primeiro nome, responde a um questionário fechado
+      sobre a pessoa, e o sistema confere se essas respostas coincidem com as do consulente mais do que
+      com as de outra pessoa de perfil parecido. O resultado diz respeito ao conjunto do estudo, não a
+      uma pessoa em particular.
+    </p>
+  </div>
+
+  <!--
     Como participar do P4 (SPEC, E13). Usado na página inicial e na página do protocolo, para que
     as duas digam a mesma coisa.
   -->
@@ -137,9 +156,11 @@
           <strong>Estado honesto.</strong> Já funcionam a criação de conta com perfil, a confirmação
           por e-mail, o painel de cada perfil, o <strong>pedido de consulta</strong> travado com
           compromisso publicado, o <strong>estudo P4</strong> congelado pelo administrador e o
-          <strong>caminho até a leitura</strong>: pareamento, sorteio do médium, envio com prazo e
-          reenvio, e a leitura travada. A conferência automática e a devolutiva são a próxima etapa,
-          e os painéis dizem isso em vez de fingir que estão prontas.
+          <strong>caminho até a leitura</strong> — pareamento, sorteio do médium, envio com prazo e
+          reenvio, leitura travada — e o <strong>fim do estudo</strong>: no número de pares declarado,
+          o próprio sistema desmascara, confere, analisa, escreve o relatório e libera a devolutiva.
+          Falta a sinalização de contas ligadas, e a plataforma ainda não foi usada com participantes
+          reais.
         </p>
       </div>
     </div>

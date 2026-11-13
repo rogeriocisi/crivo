@@ -346,6 +346,10 @@ interface StructuredPairRepository extends JpaRepository<StructuredPairEntity, L
     long countByStudyIdAndDissolvedAtIsNotNull(Long studyId);
 
     Optional<StructuredPairEntity> findByCode(String code);
+
+    @org.springframework.data.jpa.repository.Query("select p from StructuredPairEntity p where p.dissolvedAt is null "
+            + "and (p.requestA = :request or p.requestB = :request)")
+    List<StructuredPairEntity> findActiveByRequest(@org.springframework.data.repository.query.Param("request") String request);
 }
 
 interface ReadingAssignmentRepository extends JpaRepository<ReadingAssignmentEntity, Long> {

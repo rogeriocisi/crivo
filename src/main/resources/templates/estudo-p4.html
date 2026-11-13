@@ -23,13 +23,15 @@
         Pré-registro congelado. Os pedidos que já esperavam foram pareados e, havendo médium, enviados.
       </p>
       <p class="chamada">
-        Contagens, nunca notas — e nada que diga qual médium tem qual par: essa ligação fica cega até
-        o desmascaramento (SPEC, E13).
+        <th:block th:unless="${relatorio}">Contagens, nunca notas — e nada que diga qual médium tem qual
+        par: essa ligação fica cega até o desmascaramento (SPEC, E13).</th:block>
+        <th:block th:if="${relatorio}">Estudo concluído e desmascarado. As notas, o médium de cada par e a
+        semente agora são públicos.</th:block>
       </p>
     </div>
   </section>
 
-  <section>
+  <section th:unless="${relatorio}">
     <div class="faixa">
       <h2>Progresso</h2>
       <dl class="contagens">
@@ -45,9 +47,76 @@
         <div><dt>Pares desfeitos</dt><dd th:text="${progresso.dissolvedPairs}">0</dd></div>
       </dl>
       <p class="nota">
-        O ciclo automático do servidor pareia, sorteia, envia e controla os prazos a cada minuto. O
-        desmascaramento, a conferência e o relatório chegam com a fase D.
+        O ciclo automático do servidor pareia, sorteia, envia e controla os prazos a cada minuto. Quando
+        os N pares tiverem as duas leituras, o próprio ciclo desmascara, confere e escreve o relatório —
+        sem ninguém escolher o momento.
       </p>
+    </div>
+  </section>
+
+  <section th:if="${relatorio}">
+    <div class="faixa">
+      <h2>Relatório</h2>
+      <p class="nota">
+        Escrito pelo próprio sistema no desmascaramento, quando os N pares tiveram as duas leituras.
+        O hash do documento está na trilha de auditoria.
+      </p>
+      <dl class="contagens">
+        <div><dt>Pares analisados</dt><dd th:text="${relatorio.pairs}">2</dd></div>
+        <div><dt>Wilcoxon (primária)</dt><dd th:text="'p = ' + ${#numbers.formatDecimal(relatorio.primaryPValue, 1, 4, 'COMMA')}">p = 0,25</dd></div>
+        <div><dt>Sinal (secundária)</dt><dd th:text="'p = ' + ${#numbers.formatDecimal(relatorio.signPValue, 1, 4, 'COMMA')}">p = 0,25</dd></div>
+        <div><dt>Permutação (secundária)</dt><dd th:text="'p = ' + ${#numbers.formatDecimal(relatorio.permutationPValue, 1, 4, 'COMMA')}">p = 0,25</dd></div>
+        <div><dt>Compromissos conferidos</dt>
+          <dd th:text="(${relatorio.sitterCommitmentsVerified} + ${relatorio.readingCommitmentsVerified}) + ' / ' + (${relatorio.sitterCommitments} + ${relatorio.readingCommitments})">8 / 8</dd></div>
+      </dl>
+      <p th:text="${relatorio.primaryBelowAlpha()} ? 'O p da análise primária está abaixo de 0,05. É uma afirmação sobre o teste, não sobre a origem da informação.' : 'O p da análise primária não está abaixo de 0,05. Este estudo não detectou o efeito; isso não prova que ele não existe.'">Leitura</p>
+      <div class="ressalva" th:unless="${relatorio.integrityHolds()}">
+        <p><strong>Atenção:</strong> algum compromisso não conferiu. O relatório diz quantos; o estudo precisa de revisão antes de qualquer conclusão.</p>
+      </div>
+
+      <h3>Por par</h3>
+      <div class="tabela">
+        <table class="tentativas">
+          <thead>
+            <tr><th scope="col">Par</th><th scope="col">Médium</th><th scope="col">Campos</th>
+              <th scope="col">s(R<sub>A</sub>,A)</th><th scope="col">s(R<sub>A</sub>,B)</th>
+              <th scope="col">s(R<sub>B</sub>,B)</th><th scope="col">s(R<sub>B</sub>,A)</th><th scope="col">d</th></tr>
+          </thead>
+          <tbody>
+            <tr th:each="par : ${relatorio.pairResults}">
+              <td><code th:text="${par.pairCode}">PAR</code></td>
+              <td><code th:text="${par.mediumCode}">MED</code></td>
+              <td th:text="${par.comparableFields}">13</td>
+              <td th:text="${par.targetMatchesA}">0</td>
+              <td th:text="${par.decoyMatchesA}">0</td>
+              <td th:text="${par.targetMatchesB}">0</td>
+              <td th:text="${par.decoyMatchesB}">0</td>
+              <td th:text="${par.d}">0</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Por médium</h3>
+      <div class="tabela">
+        <table class="tentativas">
+          <thead><tr><th scope="col">Médium</th><th scope="col">Pares</th><th scope="col">Soma de d</th></tr></thead>
+          <tbody>
+            <tr th:each="medium : ${relatorio.mediumResults()}">
+              <td><code th:text="${medium.mediumCode}">MED</code></td>
+              <td th:text="${medium.pairs}">1</td>
+              <td th:text="${medium.sumOfD}">0</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <dl class="leituras">
+        <dt>Semente revelada</dt><dd><code class="hash" th:text="${relatorio.seedHex}">semente</code></dd>
+        <dt>Hash do relatório (SHA-256)</dt><dd><code class="hash" th:text="${relatorio.documentSha256}">hash</code></dd>
+      </dl>
+      <h3>Documento do relatório</h3>
+      <pre class="documento" th:text="${relatorio.document}">relatório</pre>
     </div>
   </section>
 

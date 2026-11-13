@@ -15,6 +15,7 @@ import io.github.rogeriocisi.airlab.participant.ConsultationService;
 import io.github.rogeriocisi.airlab.participant.ConsultationState;
 import io.github.rogeriocisi.airlab.participant.ConsultationStatus;
 import io.github.rogeriocisi.airlab.participant.OwnConsultation;
+import io.github.rogeriocisi.airlab.participant.RevealedAnswers;
 import io.github.rogeriocisi.airlab.support.Codes;
 import io.github.rogeriocisi.airlab.support.FieldCipher;
 import io.github.rogeriocisi.airlab.support.Seeds;
@@ -195,7 +196,7 @@ class DefaultConsultationService implements ConsultationService {
             ConsultationState.PAIRED, EnumSet.of(ConsultationState.SENT_TO_MEDIUM, ConsultationState.LOCKED),
             ConsultationState.SENT_TO_MEDIUM, EnumSet.of(ConsultationState.READING_RECEIVED,
                     ConsultationState.PAIRED, ConsultationState.LOCKED),
-            ConsultationState.READING_RECEIVED, EnumSet.of(ConsultationState.LOCKED));
+            ConsultationState.READING_RECEIVED, EnumSet.of(ConsultationState.LOCKED, ConsultationState.UNBLINDED));
 
     @Override
     @Transactional(readOnly = true)
@@ -276,6 +277,30 @@ class DefaultConsultationService implements ConsultationService {
                     .ifPresent(detail -> names.put(release.requestCode(), cipher.decrypt(detail.firstNameEnc())));
         }
         return names;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Map<String, RevealedAnswers> revealedAnswers(Collection<String> requestCodes) {
+        Map<String, RevealedAnswers> out = new TreeMap<>();
+        if (requestCodes.isEmpty()) {
+            return out;
+        }
+        for (ConsultationRequestEntity request : requests.findByCodeIn(requestCodes)) {
+            if (request.state() != ConsultationState.UNBLINDED) {
+                continue;
+            }
+            details.findByRequestCode(request.code())
+                    .filter(detail -> !detail.erased())
+                    .ifPresent(detail -> {
+                        Map<String, String> answers = decodeAnswers(cipher.decrypt(detail.answersEnc()));
+                        String recomputed = ConsultationCommitment.of(request.questionnaireVersion(),
+                                cipher.decrypt(detail.firstNameEnc()), answers, cipher.decrypt(detail.saltEnc()));
+                        out.put(request.code(), new RevealedAnswers(request.code(), request.questionnaireVersion(),
+                                answers, recomputed.equals(request.commitment())));
+                    });
+        }
+        return out;
     }
 
     private static ConsultationRef refOf(ConsultationRequestEntity request) {

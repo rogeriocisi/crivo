@@ -56,8 +56,8 @@ public interface ConsultationService {
      * Moves a request along the P4 flow. Refused unless the request is in {@code from} and the
      * step is one the flow has: pairing ({@code LOCKED → PAIRED}), sending
      * ({@code PAIRED → SENT_TO_MEDIUM}), both readings in ({@code SENT_TO_MEDIUM → READING_RECEIVED}),
-     * an expired or cancelled send ({@code SENT_TO_MEDIUM → PAIRED}) and a dissolved pair (back to
-     * {@code LOCKED}). The step itself is audited by the operation that causes it.
+     * an expired or cancelled send ({@code SENT_TO_MEDIUM → PAIRED}), a dissolved pair (back to
+     * {@code LOCKED}) and the unblinding ({@code READING_RECEIVED → UNBLINDED}). The step itself is audited by the operation that causes it.
      */
     void advance(String requestCode, ConsultationState from, ConsultationState to);
 
@@ -80,4 +80,13 @@ public interface ConsultationService {
      * that does not exist, was revoked or belongs to another medium returns nothing.
      */
     Map<String, String> releasedFirstNames(String mediumCode, String assignmentCode);
+
+    // --- Phase D: after the unblinding ---------------------------------------------------------
+
+    /**
+     * The answers of requests already unblinded ({@link ConsultationState#UNBLINDED}), each with
+     * its commitment checked against the stored request and salt (SPEC E13, phase D). A request
+     * in any other state is simply absent: before the unblinding, the answers stay here.
+     */
+    Map<String, RevealedAnswers> revealedAnswers(Collection<String> requestCodes);
 }

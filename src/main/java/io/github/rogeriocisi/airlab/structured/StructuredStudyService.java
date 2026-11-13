@@ -43,13 +43,26 @@ public interface StructuredStudyService {
     /** The open P4 study, if there is one. */
     Optional<StructuredStudyView> current();
 
+    /** P4 studies already unblinded, newest first (SPEC E13, phase D). */
+    java.util.List<StructuredStudyView> concluded();
+
+    /** A P4 study by its code, open or concluded. */
+    Optional<StructuredStudyView> byCode(String studyCode);
+
+    /**
+     * The report of a P4 study. Empty for a study still collecting: the report is written at the
+     * unblinding and the database refuses it before (E10, lock 1).
+     */
+    Optional<StructuredReport> report(String studyCode);
+
     /** Counts of the open study; {@link StructuredProgress#none()} when there is none. */
     StructuredProgress progress();
 
     /**
      * One run of the automatic cycle, in this order: dissolve pairs with a withdrawn request;
      * expire requests to a medium past their deadline; cancel requests whose medium closed the
-     * account; form pairs; send the pairs that have no medium. Running it twice in a row changes
+     * account; form pairs; send the pairs that have no medium; and, when the N pairs have both
+     * readings, unblind, score, analyse and report (phase D). Running it twice in a row changes
      * nothing the second time.
      *
      * @param now the moment the deadlines are checked against

@@ -78,6 +78,33 @@
         </ul>
       </th:block>
 
+      <th:block th:unless="${#lists.isEmpty(notas)}">
+        <h3>Notas das suas leituras</h3>
+        <p class="nota">
+          Estudos concluídos. Cada leitura foi comparada com as respostas da pessoa para quem foi feita
+          e com as da outra pessoa do par; o que conta é a diferença. As respostas dos consulentes ficam
+          com eles.
+        </p>
+        <div class="tabela">
+          <table class="tentativas">
+            <thead>
+              <tr><th scope="col">Estudo</th><th scope="col">Nome</th><th scope="col">Campos</th>
+                <th scope="col">Com o alvo</th><th scope="col">Com o chamariz</th><th scope="col">d do par</th></tr>
+            </thead>
+            <tbody>
+              <tr th:each="nota : ${notas}">
+                <td><code th:text="${nota.studyCode}">STD-0000</code></td>
+                <td th:text="${nota.firstName}">Nome</td>
+                <td th:text="${nota.comparableFields}">13</td>
+                <td th:text="${nota.targetMatches}">0</td>
+                <td th:text="${nota.decoyMatches}">0</td>
+                <td th:text="${nota.pairDifference}">0</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </th:block>
+
       <h3>Como funciona uma leitura</h3>
       <ol class="etapas">
         <li><div><h3>O pedido chega</h3><p>Dois primeiros nomes, em ordem sorteada, e o prazo declarado no estudo. Você não sabe quem pediu, e os dois nomes são de perfil parecido.</p></div></li>

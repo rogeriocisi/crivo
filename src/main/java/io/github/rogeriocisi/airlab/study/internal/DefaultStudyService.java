@@ -142,13 +142,19 @@ class DefaultStudyService implements StudyService {
     @Override
     @Transactional
     public void advanceStatus(long studyId, StudyStatus target, String actorCode) {
+        advanceStatus(studyId, target, ActorRole.RESEARCHER, actorCode);
+    }
+
+    @Override
+    @Transactional
+    public void advanceStatus(long studyId, StudyStatus target, ActorRole role, String actorCode) {
         StudyEntity study = study(studyId);
         study.status(target);
         studies.save(study);
 
         Map<String, Object> payload = new LinkedHashMap<>();
         payload.put("status", target.name());
-        auditTrail.append(AuditEventType.STUDY_STATUS_ADVANCED, ActorRole.RESEARCHER, actorCode,
+        auditTrail.append(AuditEventType.STUDY_STATUS_ADVANCED, role, actorCode,
                 "study:" + studyId, payload);
     }
 

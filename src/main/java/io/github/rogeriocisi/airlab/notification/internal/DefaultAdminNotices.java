@@ -9,6 +9,7 @@ import io.github.rogeriocisi.airlab.participant.ConsultationLocked;
 import io.github.rogeriocisi.airlab.structured.PairReadingsReceived;
 import io.github.rogeriocisi.airlab.structured.ReadingRequestExpired;
 import io.github.rogeriocisi.airlab.structured.ReadingRequestSent;
+import io.github.rogeriocisi.airlab.structured.StructuredStudyReported;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -101,6 +102,14 @@ class DefaultAdminNotices implements AdminNotices {
     @EventListener
     void on(ReadingRequestExpired event) {
         record(NoticeKind.READING_OVERDUE, event.pairCode());
+    }
+
+    // Phase D: two notices with the study code, never a number from the report.
+
+    @EventListener
+    void on(StructuredStudyReported event) {
+        record(NoticeKind.STUDY_UNBLINDED, event.studyCode());
+        record(NoticeKind.REPORT_READY, event.studyCode());
     }
 }
 

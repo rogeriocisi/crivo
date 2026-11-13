@@ -4,6 +4,10 @@ import io.zonky.test.db.postgres.embedded.EmbeddedPostgres;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,8 +81,32 @@ class LocalDatabaseConfiguration {
     }
 
     @Bean
-    DataSource dataSource(EmbeddedPostgres embeddedPostgres) {
-        return embeddedPostgres.getPostgresDatabase();
+    DataSource dataSource(EmbeddedPostgres embeddedPostgres, LocalDatabaseProperties properties) throws SQLException {
+        String database = properties.databaseName();
+        if (database == null || database.isBlank() || "postgres".equals(database)) {
+            return embeddedPostgres.getPostgresDatabase();
+        }
+        // A name, not an expression: it goes into DDL, which takes no bind parameters.
+        if (!database.matches("[a-z][a-z0-9_]{0,62}")) {
+            throw new IllegalArgumentException("nome de banco invalido: " + database);
+        }
+        try (Connection connection = embeddedPostgres.getPostgresDatabase().getConnection();
+             Statement statement = connection.createStatement()) {
+            if (properties.recreateDatabase()) {
+                statement.execute("DROP DATABASE IF EXISTS " + database);
+            }
+            boolean exists;
+            try (ResultSet rows = statement.executeQuery(
+                    "SELECT 1 FROM pg_database WHERE datname = '" + database + "'")) {
+                exists = rows.next();
+            }
+            if (!exists) {
+                statement.execute("CREATE DATABASE " + database);
+            }
+        }
+        log.info("Banco {} no PostgreSQL embarcado{}", database,
+                properties.recreateDatabase() ? " (recriado)" : "");
+        return embeddedPostgres.getDatabase("postgres", database);
     }
 
     private static void close(EmbeddedPostgres instance) {

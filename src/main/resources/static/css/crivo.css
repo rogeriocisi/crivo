@@ -1491,6 +1491,35 @@ form.enviando button {
     font-size: 0.95rem;
 }
 
+/* ---------- P4, fase D: devolutiva e relatório ---------- */
+
+.tabela {
+    overflow-x: auto;
+}
+
+.comparacao tbody th {
+    text-transform: none;
+    letter-spacing: normal;
+    font-size: 0.95rem;
+    color: var(--tinta);
+    font-weight: 500;
+}
+
+.comparacao tr.coincide td:last-child {
+    color: var(--verdete);
+    font-weight: 600;
+}
+
+/* ---------- P4: o que o experimento não é ---------- */
+
+.esclarecimento {
+    margin: 1.75rem 0;
+}
+
+.esclarecimento p + p {
+    margin-top: 0.75rem;
+}
+
 /* ---------- P4, fase C: pedidos ao médium e estudo ---------- */
 
 .pedidos {

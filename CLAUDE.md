@@ -22,7 +22,7 @@ Instruções para o Claude Code neste repositório.
 - **Escopo da plataforma**: o Crivo cobre **cognição anômala**, com a mediunidade (AIR) como um ramo e os testes de ESP como outro. O ramo AIR tem dois protocolos: o **P4, leitura estruturada automatizada** (E13), em destaque no site, e o **P1, leitura pareada**, conduzido por equipe. Os testes de ESP aparecem como **experimentos extras**. Não chame um teste de precognição de AIR: na literatura, AIR é informação sobre pessoa falecida. O codinome técnico **AIR Lab** permanece em pacotes, CLI e artefatos Maven, por herança do primeiro protocolo.
 - **Todo protocolo novo entra pelo catálogo** (`catalog.ProtocolCatalog`, SPEC 1.1) e **declara o que o resultado dele não sustenta**. O construtor de `Protocol` recusa lista de limites vazia, e há teste que exige isso de cada protocolo.
 - **Um papel por pessoa em cada estudo (E10, trava 2)**: recusado na camada de domínio e registrado na trilha.
-- **Contas do P4 (E13)**: perfil fixo (consulente ou médium), imposto por *trigger*; nenhum caminho do site cria administrador, que vem da configuração do servidor. O principal da sessão é o código pseudônimo, nunca o e-mail. Avisos ao administrador carregam só tipo, código e hora. No P4, nenhuma nota existe antes do desmascaramento: a conferência só roda depois dele. **Nenhum código de médium vai à trilha** em envio, liberação de nome ou leitura antes do desmascaramento, e o primeiro nome só sai de `participant` para o médium com liberação registrada. Os testes do P4 dividem um banco persistente: use um estrato próprio por teste e o `structured.P4Fixture`.
+- **Contas do P4 (E13)**: perfil fixo (consulente ou médium), imposto por *trigger*; nenhum caminho do site cria administrador, que vem da configuração do servidor. O principal da sessão é o código pseudônimo, nunca o e-mail. Avisos ao administrador carregam só tipo, código e hora. No P4, nenhuma nota existe antes do desmascaramento: a conferência só roda depois dele. **Nenhum código de médium vai à trilha** em envio, liberação de nome ou leitura antes do desmascaramento, e o primeiro nome só sai de `participant` para o médium com liberação registrada. Os testes do P4 dividem um banco persistente: use um estrato próprio por teste e o `structured.P4Fixture`. O que precisa de um estudo que complete (desmascaramento) roda em banco próprio, recriado a cada execução — ver `web.P4UnblindingTest`.
 - **Análise vedada**: nunca multiplicar as probabilidades individuais dos itens como se fossem independentes (Hyslop, 1919). Para dados de acurácia de leitura, a análise do campo é o teste de permutação de Pratt e Birge (`analysis.PermutationTest`).
 - **Reprodutibilidade do sorteio (P5)**: tudo que o sorteio decide tem de ser independente da ordem em que as entradas chegam. Ordene em forma canônica antes de usar a semente; há teste que tenta violar isso.
 - **Simplicidade (P8)**: monólito modular; justifique por escrito qualquer dependência nova.
@@ -44,7 +44,7 @@ Instruções para o Claude Code neste repositório.
 
 Já implementado (ver `docs/PLAN.md`, seção 2, para a tabela completa):
 
-1. Plano técnico, migrações `V1`–`V19` dos esquemas `research`/`identity`/`audit` e papel `airlab_app`
+1. Plano técnico, migrações `V1`–`V20` dos esquemas `research`/`identity`/`audit` e papel `airlab_app`
 2. `audit`: trilha append-only encadeada por hash + CLI `airlab verify`
 3. `allocation`: sorteio reproduzível (`SecureRandom` para a semente, SHA-256 em modo contador para a expansão), compromisso → revelação, custódia cifrada da semente
 4. `study` (E1) e `participant` (E2), com pareamento
@@ -54,7 +54,8 @@ Já implementado (ver `docs/PLAN.md`, seção 2, para a tabela completa):
 8. E13, fase A: catálogo em duas seções (protocolos AIR e experimentos extras), páginas do P4, contas com perfil fixo, confirmação por e-mail, painéis por perfil e avisos ao administrador
 9. E13, fase B: questionário versionado (`catalog.Questionnaires`, `v1-rascunho`) e pedido de consulta travado na criação, com compromisso salgado (`participant.ConsultationCommitment`); rascunho só na sessão
 10. E13, fase C (módulo `structured`): estudo P4 congelado com o questionário no anexo e compromisso sobre a semente; ciclo agendado que pareia, sorteia o médium, libera os nomes (`identity.first_name_release`), vence prazos e reenvia; leitura do médium travada com compromisso salgado (`structured.ReadingCommitment`)
+11. E13, fase D: desmascaramento automático no N (`structured.internal.StructuredUnblinding`), compromissos conferidos, conferência (`structured.StructuredScoring`), Wilcoxon, sinal e permutação dentro dos estratos (`analysis.StratifiedPermutationTest`), relatório com hash e devolutiva (`structured.FeedbackService`); notas e relatório recusados pelo banco antes do desmascaramento
 
-A fazer, nesta ordem: E13 fase D (desmascaramento no N, conferência, análise, relatório e devolutiva), E4 (sessões), E5 (persistência da redação), E6 (avaliação cega), E7 (desmascaramento e relatório), E8/E9 (carimbo de tempo e pacote de verificação).
+A fazer, nesta ordem: pendências do E13 (sinalização de contas ligadas, teto por médium, página pública do relatório), E4 (sessões), E5 (persistência da redação), E6 (avaliação cega), E7 (desmascaramento e relatório), E8/E9 (carimbo de tempo e pacote de verificação).
 
 A suíte da matriz de cegamento cresce junto: cada linha nova da matriz da SPEC, seção 4, entra como teste antes da tela correspondente.

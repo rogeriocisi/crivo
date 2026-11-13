@@ -42,6 +42,13 @@ public interface StudyService {
 
     void advanceStatus(long studyId, StudyStatus target, String actorCode);
 
+    /**
+     * Same, recording who acted: the P4 unblinding is the system's, not the researcher's, and the
+     * trail says so (SPEC E13, phase D).
+     */
+    void advanceStatus(long studyId, StudyStatus target, io.github.rogeriocisi.airlab.audit.ActorRole role,
+                       String actorCode);
+
     Optional<StudySummary> byId(long studyId);
 
     Optional<StudySummary> byCode(String code);

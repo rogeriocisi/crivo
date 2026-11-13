@@ -74,6 +74,11 @@
   </section>
 
   <th:block th:if="${protocolo.code == 'P4'}">
+    <section>
+      <div class="faixa">
+        <div th:replace="~{fragments/p4 :: o-que-nao-e}"></div>
+      </div>
+    </section>
     <section th:replace="~{fragments/p4 :: como-participar}"></section>
     <section th:replace="~{fragments/p4 :: telas}"></section>
   </th:block>

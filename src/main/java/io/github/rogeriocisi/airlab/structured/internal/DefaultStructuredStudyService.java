@@ -14,6 +14,7 @@ import io.github.rogeriocisi.airlab.structured.AssignmentState;
 import io.github.rogeriocisi.airlab.structured.CycleReport;
 import io.github.rogeriocisi.airlab.structured.ReadingRequestExpired;
 import io.github.rogeriocisi.airlab.structured.ReadingRequestSent;
+import io.github.rogeriocisi.airlab.structured.StructuredReport;
 import io.github.rogeriocisi.airlab.structured.StructuredProgress;
 import io.github.rogeriocisi.airlab.structured.StructuredStudyService;
 import io.github.rogeriocisi.airlab.structured.StructuredStudyTerms;
@@ -28,8 +29,10 @@ import io.github.rogeriocisi.airlab.support.Hashes;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
+import java.math.BigDecimal;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -63,6 +66,9 @@ class DefaultStructuredStudyService implements StructuredStudyService {
     private final StructuredPairRepository pairs;
     private final ReadingAssignmentRepository assignments;
     private final StructuredReadingRepository readings;
+    private final StructuredScoreRepository scores;
+    private final StructuredReportRepository reports;
+    private final StructuredUnblinding unblinding;
     private final AuditTrail auditTrail;
     private final ApplicationEventPublisher events;
     private final Clock clock;
@@ -76,6 +82,9 @@ class DefaultStructuredStudyService implements StructuredStudyService {
                                   StructuredPairRepository pairs,
                                   ReadingAssignmentRepository assignments,
                                   StructuredReadingRepository readings,
+                                  StructuredScoreRepository scores,
+                                  StructuredReportRepository reports,
+                                  StructuredUnblinding unblinding,
                                   AuditTrail auditTrail,
                                   ApplicationEventPublisher events,
                                   Clock clock,
@@ -88,6 +97,9 @@ class DefaultStructuredStudyService implements StructuredStudyService {
         this.pairs = pairs;
         this.assignments = assignments;
         this.readings = readings;
+        this.scores = scores;
+        this.reports = reports;
+        this.unblinding = unblinding;
         this.auditTrail = auditTrail;
         this.events = events;
         this.clock = clock;
@@ -158,6 +170,43 @@ class DefaultStructuredStudyService implements StructuredStudyService {
     @Transactional(readOnly = true)
     public Optional<StructuredStudyView> current() {
         return openStudy().map(open -> view(open.structured(), open.study()));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<StructuredStudyView> concluded() {
+        List<StructuredStudyView> out = new ArrayList<>();
+        for (StructuredStudyEntity structured : structuredStudies.findAll()) {
+            studies.byId(structured.studyId())
+                    .filter(summary -> summary.status() == StudyStatus.UNBLINDED || summary.status() == StudyStatus.REPORTED)
+                    .ifPresent(summary -> out.add(view(structured, summary)));
+        }
+        out.sort(Comparator.comparing(StructuredStudyView::frozenAt,
+                Comparator.nullsLast(Comparator.<Instant>naturalOrder())).reversed());
+        return out;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<StructuredStudyView> byCode(String studyCode) {
+        return studies.byCode(studyCode)
+                .flatMap(summary -> structuredStudies.findById(summary.id()).map(structured -> view(structured, summary)));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<StructuredReport> report(String studyCode) {
+        return studies.byCode(studyCode).flatMap(summary -> reports.findById(summary.id()).map(report -> {
+            List<StructuredReport.PairResult> results = new ArrayList<>();
+            for (StructuredScoreEntity score : scores.findByStudyIdOrderByPairCodeAsc(summary.id())) {
+                results.add(new StructuredReport.PairResult(score.pairCode(), score.mediumCode(),
+                        score.comparableCount(), score.sAA(), score.sAB(), score.sBB(), score.sBA(), score.d()));
+            }
+            return new StructuredReport(summary.code(), report.pairs(), new BigDecimal(report.primaryP()),
+                    report.primaryMethod(), new BigDecimal(report.signP()), new BigDecimal(report.permutationP()),
+                    report.sitterVerified(), report.sitterTotal(), report.readingVerified(), report.readingTotal(),
+                    report.seedHex(), report.document(), report.documentSha256(), report.createdAt(), results);
+        }));
     }
 
     private StructuredStudyView view(StructuredStudyEntity structured, StudySummary study) {
@@ -241,7 +290,7 @@ class DefaultStructuredStudyService implements StructuredStudyService {
     public CycleReport runCycle(Instant at) {
         Optional<OpenStudy> open = openStudy();
         if (open.isEmpty()) {
-            return new CycleReport(0, 0, 0, 0, 0);
+            return CycleReport.none();
         }
         // PostgreSQL keeps microseconds; truncating here keeps what is stored equal to what is used.
         Instant now = at.truncatedTo(ChronoUnit.MICROS);
@@ -251,7 +300,9 @@ class DefaultStructuredStudyService implements StructuredStudyService {
         int cancelled = cancelUnavailable(study, now);
         int formed = formPairs(study, now);
         int sent = sendPairs(study, now);
-        return new CycleReport(dissolved, expired, cancelled, formed, sent);
+        // Phase D: at N, with both readings of every pair locked, the study unblinds itself.
+        int unblinded = unblinding.unblindIfComplete(study, open.get().study(), now) ? 1 : 0;
+        return new CycleReport(dissolved, expired, cancelled, formed, sent, unblinded);
     }
 
     /** Pairs with a withdrawn request are undone; the other request waits for a new pair. */

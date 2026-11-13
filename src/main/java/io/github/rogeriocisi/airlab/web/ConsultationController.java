@@ -5,6 +5,11 @@ import io.github.rogeriocisi.airlab.catalog.Questionnaires;
 import io.github.rogeriocisi.airlab.participant.ConsultationDraft;
 import io.github.rogeriocisi.airlab.participant.ConsultationService;
 import io.github.rogeriocisi.airlab.participant.OwnConsultation;
+import io.github.rogeriocisi.airlab.structured.FeedbackService;
+import io.github.rogeriocisi.airlab.structured.StructuredStudyService;
+import io.github.rogeriocisi.airlab.structured.TargetFeedback;
+import java.util.ArrayList;
+import java.util.List;
 import jakarta.servlet.http.HttpSession;
 import java.security.Principal;
 import java.util.LinkedHashMap;
@@ -31,10 +36,15 @@ class ConsultationController {
     private static final String ANSWER_PREFIX = "r.";
 
     private final ConsultationService consultations;
+    private final FeedbackService feedback;
+    private final StructuredStudyService studies;
     private final SignUpGate gate;
 
-    ConsultationController(ConsultationService consultations, SignUpGate gate) {
+    ConsultationController(ConsultationService consultations, FeedbackService feedback,
+                           StructuredStudyService studies, SignUpGate gate) {
         this.consultations = consultations;
+        this.feedback = feedback;
+        this.studies = studies;
         this.gate = gate;
     }
 
@@ -105,6 +115,40 @@ class ConsultationController {
         model.addAttribute("situacao", consultations.status(principal.getName()).orElseThrow());
         model.addAttribute("respostas", labelled(questionnaire, own.get().answers()));
         return "pedido";
+    }
+
+    /**
+     * The sitter's feedback (SPEC E13, phase D): their answers beside the medium's reading of their
+     * own target, after the unblinding. The request is the principal's own; before the unblinding
+     * there is no score to build from, and the page sends the sitter back to the panel.
+     */
+    @GetMapping("/painel/consulente/devolutiva")
+    String feedback(Principal principal, Model model) {
+        Optional<OwnConsultation> own = consultations.own(principal.getName());
+        Optional<TargetFeedback> result = own.flatMap(request -> feedback.forRequest(request.code()));
+        if (result.isEmpty()) {
+            return "redirect:/painel/consulente";
+        }
+        Questionnaire questionnaire = Questionnaires.byVersion(result.get().questionnaireVersion())
+                .orElse(Questionnaires.current());
+        List<FeedbackRow> rows = new ArrayList<>();
+        for (Questionnaire.Field field : questionnaire.scoredFields()) {
+            String mine = own.get().answers().get(field.key());
+            String read = result.get().readingAnswers().get(field.key());
+            boolean comparable = result.get().comparableFields().contains(field.key());
+            rows.add(new FeedbackRow(field.label(), questionnaire.labelOf(field.key(), mine),
+                    read == null ? "—" : questionnaire.labelOf(field.key(), read), comparable,
+                    comparable && read != null && read.equals(mine)));
+        }
+        model.addAttribute("pedido", own.get());
+        model.addAttribute("devolutiva", result.get());
+        model.addAttribute("linhas", rows);
+        model.addAttribute("relatorio", studies.report(result.get().studyCode()).orElse(null));
+        return "devolutiva";
+    }
+
+    /** One field of the feedback: the question, the two answers, and whether it counted and matched. */
+    record FeedbackRow(String question, String mine, String reading, boolean comparable, boolean match) {
     }
 
     private String formPage(Model model, ConsultationDraft draft) {
