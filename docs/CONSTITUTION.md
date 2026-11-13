@@ -2,7 +2,7 @@
 
 > Este documento define os **princípios inegociáveis** do projeto e a **arquitetura tecnológica de referência**. Toda spec, plano e tarefa deve estar em conformidade com ele. Quando houver conflito entre este documento e qualquer outro, **este prevalece**.
 >
-> Versão 1.2.0 · Ratificada em: novembro/2026 · 1.1.0: adicionada a seção "Implantação por fase" · 1.1.1: nome público "Crivo", codinome técnico "AIR Lab" · 1.2.0: arquitetura sem Docker — aplicação executada por linha de comando (JAR/Spring Boot) em Windows e Linux, com PostgreSQL nativo ou embarcado
+> Versão 1.3.0 · Ratificada em: novembro/2026 · 1.3.0: contas com perfil fixo para o protocolo P4 e envio de e-mail por SMTP, por decisão do pesquisador principal; nenhum princípio alterado · 1.1.0: adicionada a seção "Implantação por fase" · 1.1.1: nome público "Crivo", codinome técnico "AIR Lab" · 1.2.0: arquitetura sem Docker — aplicação executada por linha de comando (JAR/Spring Boot) em Windows e Linux, com PostgreSQL nativo ou embarcado
 
 ---
 
@@ -106,7 +106,8 @@ O projeto é mantido por um desenvolvedor solo.
 | Migrações | **Flyway** | Versionamento do esquema auditável |
 | Acesso a dados | Spring Data JPA nos agregados + **jOOQ ou JDBC** para consultas estatísticas | JPA no CRUD; SQL explícito onde a precisão importa |
 | Interface | **Thymeleaf + HTMX** | Sem SPA para manter; renderizado no servidor; acessível |
-| Segurança | **Spring Security** | Login com 2FA para pesquisadores; links de uso único e expiráveis para consulentes e avaliadores |
+| Segurança | **Spring Security** | Login com 2FA para pesquisadores; links de uso único e expiráveis para consulentes e avaliadores do P1; no P4, conta com **perfil fixo** (consulente ou médium) e e-mail confirmado, sem que nenhum caminho do site crie administrador |
+| E-mail | **Spring Boot Mail** (Jakarta Mail) para um servidor SMTP externo | Confirmação de conta e avisos do P4; sem SMTP configurado em produção, a inscrição fica fechada |
 | Estatística | **Apache Commons Statistics / Commons Math** + script de referência em **R** no pacote de verificação | Cálculo no app e validação cruzada independente |
 | Criptografia | JCA (`SecureRandom`, SHA-256) + criptografia de campo para dados identificáveis | Sem dependência exótica |
 | Carimbo de tempo | **RFC 3161 (TSA)** e/ou **OpenTimestamps**; pré-registro também espelhado no **OSF Registries** | Prova de anterioridade verificável por terceiros |

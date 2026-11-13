@@ -3,7 +3,7 @@
 > Spec de alto nível. Cada épico abaixo vira uma spec detalhada própria antes da implementação.
 > Conformidade obrigatória com `CONSTITUTION.md`. Contexto e motivação em `VISION.md`. Fundamentação científica em `REFERENCES.md`.
 >
-> Versão 0.6 · novembro/2026 · 0.2: seção 2.1 "O que é uma leitura", regra "um item = uma afirmação" e referências · 0.3: critérios de inclusão de médiuns no pré-registro, regra de parada vinculante e unidade de análise por par (seções 5 e 9) · 0.4: medida primária pareada com Wilcoxon exato, teste de permutação de Pratt e Birge, controles de comprimento e de pistas temporais, escala de itens de cinco categorias e desvios de protocolo — derivados dos artigos em `references/` · 0.5: *sitter* passa a ser **consulente** em todo o texto em português, com a forma inglesa registrada no glossário e mantida nos identificadores do código · 0.6: épico E10, autoatendimento e automação, com as travas obrigatórias · 0.7: o Crivo passa a ser uma plataforma de protocolos de cognição anômala, com catálogo de protocolos (seção 1.1) e os épicos E11 e E12 — dois testes integralmente automatizáveis · 0.8: a semente dos testes de autoatendimento passa a ter duas metades, uma do servidor e uma do participante, o que remove a necessidade de confiar na plataforma quanto à ordem dos fatos
+> Versão 0.9 · novembro/2026 · 0.2: seção 2.1 "O que é uma leitura", regra "um item = uma afirmação" e referências · 0.3: critérios de inclusão de médiuns no pré-registro, regra de parada vinculante e unidade de análise por par (seções 5 e 9) · 0.4: medida primária pareada com Wilcoxon exato, teste de permutação de Pratt e Birge, controles de comprimento e de pistas temporais, escala de itens de cinco categorias e desvios de protocolo — derivados dos artigos em `references/` · 0.5: *sitter* passa a ser **consulente** em todo o texto em português, com a forma inglesa registrada no glossário e mantida nos identificadores do código · 0.6: épico E10, autoatendimento e automação, com as travas obrigatórias · 0.7: o Crivo passa a ser uma plataforma de protocolos de cognição anômala, com catálogo de protocolos (seção 1.1) e os épicos E11 e E12 — dois testes integralmente automatizáveis · 0.8: a semente dos testes de autoatendimento passa a ter duas metades, uma do servidor e uma do participante, o que remove a necessidade de confiar na plataforma quanto à ordem dos fatos · 0.9: protocolo **P4, leitura estruturada automatizada** (épico E13), o ramo AIR integralmente automatizado: contas com perfil fixo (consulente ou médium), questionário fechado preenchido pelo consulente e pelo médium e conferência automática contra o alvo e o chamariz; o catálogo passa a se dividir em **protocolos AIR** e **experimentos extras**
 
 ---
 
@@ -13,16 +13,23 @@ O Crivo é uma plataforma de **protocolos cegos para pesquisa de cognição anô
 
 A distinção entre os dois ramos não é cosmética. Na literatura, *anomalous information reception* designa especificamente a obtenção de informação sobre um falecido sem via sensorial; um teste de precognição com alvo gerado depois da resposta não é AIR, e chamá-lo assim seria impreciso. O termo que cobre os dois é **cognição anômala**, e é o que a plataforma usa. O codinome técnico **AIR Lab** permanece nos pacotes Java, na CLI e nos artefatos Maven, como herança do primeiro protocolo.
 
-**Dentro do escopo**: um estudo por vez e por protocolo, um pesquisador, exportação de dados e verificação; os dois testes de ESP em autoatendimento público.
+O ramo AIR tem dois protocolos. O **P1** é conduzido por uma equipe (experimentador *proxy* e redator) e é o mais próximo da literatura. O **P4** roda inteiro pelo site, sem ninguém da equipe no circuito: o consulente responde a um questionário fechado sobre o falecido, o médium responde ao mesmo questionário conhecendo só o primeiro nome, e o sistema confere as respostas. Os dois convivem porque cada um paga um preço diferente, e cada um declara o seu (seção 1.1, regra 2).
+
+**Dentro do escopo**: um estudo por vez e por protocolo, um pesquisador (o **administrador** da instalação), exportação de dados e verificação; o P4 com inscrição aberta por conta; os dois testes de ESP em autoatendimento público.
 **Fora do escopo**: multi-tenant, ganzfeld (exige emissor e cabine), presentimento e DMILS (exigem sensores), ESP em sonho (exige pernoite), juízes externos remunerados, aplicativo mobile, integração com IA na avaliação.
 
 ### 1.1 Catálogo de protocolos
 
-| Código | Nome público | Ramo | Acaso | Automação | Épico |
-|---|---|---|---|---|---|
-| **P1** | Leitura pareada cega | AIR (mediunidade) | 50% | Parcial: a sessão é síncrona, com experimentador *proxy* | E1–E9 |
-| **P2** | Escolha forçada precognitiva | ESP (precognição) | 25% | **Integral** | E11 |
-| **P3** | Visão remota com quatro alvos | ESP (resposta livre) | 25% | **Integral** | E12 |
+O catálogo se apresenta em duas seções: **protocolos AIR**, com o P4 em destaque, e **experimentos extras**, com os testes de ESP.
+
+| Seção | Código | Nome público | Ramo | Acaso | Automação | Épico |
+|---|---|---|---|---|---|---|
+| Protocolos AIR | **P4** | Leitura estruturada automatizada | AIR (mediunidade) | 50% | **Integral**: conta, pedido, leitura, conferência e avisos sem ninguém da equipe | E13 |
+| Protocolos AIR | **P1** | Leitura pareada cega | AIR (mediunidade) | 50% | Parcial: exige equipe — sessão síncrona com experimentador *proxy* e redator | E1–E9 |
+| Experimentos extras | **P2** | Escolha forçada precognitiva | ESP (precognição) | 25% | **Integral** | E11 |
+| Experimentos extras | **P3** | Visão remota com quatro alvos | ESP (resposta livre) | 25% | **Integral** | E12 |
+
+Os códigos não são renumerados: eles já aparecem em trilhas, sessões e no repositório, e a ordem de apresentação é decisão de página, não de identidade do protocolo.
 
 Regras do catálogo:
 
@@ -30,6 +37,7 @@ Regras do catálogo:
 2. **Cada protocolo declara o que o seu resultado não sustenta.** O P1 não distingue entre sobrevivência e telepatia com os vivos; o P2 e o P3 não dizem nada sobre falecidos. Isso é texto obrigatório na página do protocolo, não nota de rodapé.
 3. **O acaso é declarado e verificável**, não estimado a partir dos dados.
 4. **P2 e P3 não substituem o P1.** Eles existem porque são integralmente automatizáveis e porque qualquer pessoa pode conferir a lisura do próprio teste depois; servem de porta de entrada e de vitrine do método, não de prova sobre mediunidade.
+5. **P4 e P1 não se substituem.** O P4 ganha pontuação objetiva — ninguém julga se um item "encaixa" — e automação integral; perde o experimentador *proxy* e a resposta livre. O P1 faz o caminho inverso. Um resultado de um não vale como replicação do outro.
 
 ## 2. Glossário
 
@@ -46,6 +54,10 @@ Regras do catálogo:
 | **Chamariz** | A leitura do outro falecido do par, apresentada ao consulente como alternativa |
 | **Desmascaramento** | Revelação controlada de qual leitura era de qual alvo, depois que todas as avaliações forem fechadas |
 | **Pacote de verificação** | Conjunto exportado que permite a um terceiro auditar e reexecutar a análise |
+| **Administrador** | Quem opera a instalação e conduz o estudo: o pesquisador. Não é perfil que alguém escolha ao se inscrever; a conta vem da configuração do servidor |
+| **Pedido de consulta** (P4) | O que o consulente envia: o primeiro nome do falecido e as respostas dele ao questionário, travadas com hash antes de qualquer médium receber o pedido |
+| **Questionário** (P4) | Lista versionada de campos fechados sobre o falecido, a mesma para o consulente e para o médium, congelada no pré-registro |
+| **Leitura estruturada** (P4) | As respostas do médium ao questionário, conhecendo só o primeiro nome do alvo |
 
 ### 2.1 O que é uma leitura
 
@@ -163,7 +175,7 @@ Esta matriz é a **especificação de segurança central**. Cada célula "✗" v
 
 ### E6. Avaliação cega
 **Objetivo**: o consulente avalia as duas leituras do par sem saber qual é a dele.
-- Acesso por link de uso único e expirável (sem conta permanente).
+- Acesso por link de uso único e expirável (sem conta permanente). Vale para o P1; no P4 o consulente tem conta, mas não avalia leitura nenhuma (E13).
 - Para cada item: escala pré-registrada de cinco categorias — *encaixe óbvio / encaixe parcial ou interpretado / sem encaixe / **encaixa em outra pessoa próxima** / não sei avaliar*. As duas categorias intermediárias exigem que o avaliador **escreva a interpretação**, e só o encaixe óbvio conta para a acurácia da medida primária. A categoria "encaixa em outra pessoa" existe porque, sem ela, o item que descreve um parente vivo é forçado a virar acerto ou erro, e em qualquer dos dois casos a explicação alternativa desaparece da conta.
 - Os itens são apresentados em **ordem sorteada**, derivada da semente, para que uma pista num item não contamine a leitura da lista inteira.
 - As duas leituras de um par chegam com **comprimento comparável**: se a diferença de itens passar da tolerância pré-registrada, a mais longa é cortada por subamostra sorteada da semente. Nos dados de O'Keeffe e Wiseman as leituras iam de 6 a 92 afirmações, e a mais longa e mais genérica recebeu as notas mais altas de todos os consulentes — comprimento, por si só, é pista e é confundidor.
@@ -231,7 +243,9 @@ vazamento ou remove um grau de liberdade do pesquisador; não automatizar o que 
   Moreira-Almeida (2022): dos dois estudos em que o médium não interagiu com ninguém, ambos
   deram nulo. O agendamento, a liberação do nome, o upload do áudio e a transcrição são
   automatizados; a sessão permanece síncrona, com *proxy*. Um braço assíncrono só é admissível
-  como variante **declarada no pré-registro**, nunca como padrão.
+  como variante **declarada no pré-registro**, nunca como padrão. **O P4 (E13) é essa variante**,
+  declarada como protocolo próprio, com a ausência do *proxy* escrita entre os limites dele; o
+  P1 continua síncrono.
 - **Nenhuma avaliação automática de conteúdo**, em nenhuma etapa (P10).
 
 #### Travas obrigatórias
@@ -308,6 +322,156 @@ dos escores; e a tentativa de acumular papéis conflitantes é recusada e audita
 
 **Aceite**: a impressão não pode ser alterada depois de as candidatas aparecerem; a semente revelada reproduz alvo e chamarizes; e a versão do banco de imagens usada na sessão é a que o pacote de verificação exporta.
 
+### E13. Leitura estruturada automatizada (P4)
+
+**Objetivo**: um protocolo AIR que roda inteiro pelo site, do cadastro ao relatório, sem ninguém da equipe no circuito — e sem que ninguém, nem o consulente, julgue se uma afirmação "encaixa".
+
+**Ideia central**: o consulente e o médium respondem ao **mesmo questionário fechado** sobre o falecido. O consulente responde porque conheceu a pessoa; o médium responde conhecendo só o primeiro nome. O sistema confere campo a campo. Não há redator, porque não há texto livre para dividir em itens, e não há avaliação subjetiva, porque a comparação é de igualdade entre opções. Isso elimina a principal fonte de viés da avaliação pelo consulente — a tendência de encontrar sentido em afirmações genéricas — e dispensa a IA, que o P10 proíbe na pontuação.
+
+#### Perfis e contas
+
+| Perfil | Como se obtém | O que faz |
+|---|---|---|
+| **Consulente** | Escolhido ao criar a conta | Faz o pedido de consulta: primeiro nome do falecido e respostas ao questionário |
+| **Médium** | Escolhido ao criar a conta | Recebe pedidos com o primeiro nome e responde ao questionário |
+| **Administrador** | Configuração do servidor (`AIRLAB_RESEARCHER_USER`, `AIRLAB_RESEARCHER_PASSWORD_HASH`) | Conduz o estudo, recebe os avisos, revisa sinalizações; nunca vê respostas, nomes nem notas antes do desmascaramento |
+
+- **Criar conta**: nome, e-mail, senha (mínimo de 10 caracteres), perfil e aceite do termo na versão corrente (E10, trava 6). A conta só vale depois da **confirmação do e-mail** por link de uso único, expirável em 48 horas e guardado apenas como hash (E10, trava 3).
+- **Perfil fixo**: escolhido uma vez, nunca muda — imposto por *trigger* no banco, não só no código. É a forma mais simples da trava 2 do E10: com um mesmo e-mail ninguém é médium e consulente, em estudo nenhum.
+- **Uma conta por e-mail**, comparada pelo índice cego (HMAC) do endereço, sem guardar o e-mail em claro. Contas ligadas por outros sinais são **sinalizadas** ao administrador, não bloqueadas em silêncio.
+- **Nenhum caminho do site cria administrador.** O formulário aceita só consulente ou médium.
+- **Dados da conta no esquema `identity`**, cifrados; a pesquisa trabalha com o código pseudônimo (`CON-…`, `MED-…`). Só o módulo `participant` lê a conta.
+- **Desistência a qualquer momento**, sem justificativa: os dados identificáveis são apagados e o código pseudônimo permanece, marcado como inativo (P6).
+- **Contato humano**: a página de inscrição mostra o canal da pessoa responsável (E10, trava 5). Sem esse canal e sem envio de e-mail configurado, a inscrição fica fechada no perfil de produção.
+
+#### Fluxo
+
+```
+[1] Consulente cria a conta e confirma o e-mail
+        │
+[2] Consulente faz o pedido: primeiro nome do falecido + questionário
+    → respostas travadas; a trilha recebe SHA-256(respostas canônicas || sal)   ◄── COMPROMISSO
+        │
+[3] Sistema pareia pedidos travados (mesmo gênero, faixa etária e período) e sorteia o médium do par
+        │
+[4] Médium recebe o pedido: os dois primeiros nomes do par, em ordem sorteada, e o questionário em branco
+        │
+[5] Médium responde a cada campo, ou marca "não recebi"; ao enviar, a leitura trava com hash na trilha
+        │
+[6] Atingido o N pré-registrado: desmascaramento automático, revelação dos sais e da semente
+        │
+[7] Conferência automática, análise pré-registrada e relatório
+        │
+[8] Devolutiva: cada consulente vê a leitura do seu alvo e a nota; o médium vê as notas das próprias leituras
+```
+
+- **O compromisso leva sal.** Respostas fechadas têm pouca entropia: o hash puro de meia dúzia de opções se quebra por força bruta, e a trilha é pública. O sal (32 bytes de `SecureRandom`) fica em custódia cifrada e é revelado no desmascaramento, junto com as respostas.
+- **Sem pedido travado, nada é liberado ao médium.** Imposto no banco: não existe linha de pedido ao médium cujo pedido de consulta não esteja travado.
+- **Prazo do médium** pré-registrado (padrão: 14 dias). Pedido vencido é registrado como vencido e reenviado a outro médium sorteado da mesma semente; o vencimento fica na trilha.
+
+#### Conferência automática
+
+Para cada par (A, B), com a leitura `R_A` (feita com o nome de A) e `R_B`:
+
+- **Campos comparáveis** do par: os campos pontuáveis que **os dois** consulentes responderam (nenhum dos dois marcou "não sei"). O conjunto é o mesmo para alvo e chamariz, para que nenhum dos dois tenha mais chances de acerto.
+- `s(R, X)` = número de campos comparáveis em que a resposta da leitura `R` é igual à do consulente `X`. "Não recebi" nunca acerta.
+- **Diferença do par**: `d = [s(R_A, A) − s(R_A, B)] + [s(R_B, B) − s(R_B, A)]`.
+- **Análise primária**: Wilcoxon exato unilateral sobre os `d` dos pares (a implementação de `analysis` já existe). **Secundárias**: binomial exato do sinal de `d` contra 0,5 e permutação das leituras entre todos os alvos do estudo, dentro dos estratos do pareamento.
+- **Campos fora da nota**: gênero (o primeiro nome o entrega) e os critérios de pareamento — faixa etária e período do falecimento —, que são iguais dentro do par por construção e não discriminam nada. Eles são coletados, servem ao pareamento e aparecem na devolutiva.
+- **Por que o chamariz é indispensável**: o número de acertos, sozinho, não diz nada. "Morreu do coração" ou "era idoso" acertam com qualquer pessoa porque são frequentes. Comparando a mesma leitura com o alvo e com o chamariz de perfil semelhante, a frequência de cada resposta se cancela, e o que sobra é o que se ajusta ao alvo **mais** do que ao chamariz.
+- **Acaso declarado**: sob a hipótese nula, `d` é simétrico em torno de zero; entre os pares com `d ≠ 0`, a chance de `d > 0` é 50%.
+- A regra é determinística, pública e reproduzível pelo pacote de verificação. **Nenhum texto livre entra na nota** (P10).
+
+#### Telas por perfil
+
+| Perfil | Tela | Conteúdo |
+|---|---|---|
+| Público | Página do protocolo | O que é o P4, como participar, o que o resultado não sustenta |
+| Público | Criar conta | Nome, e-mail, senha, perfil (consulente ou médium), termo, contato humano |
+| Público | Confirmar e-mail | Resultado do link de confirmação |
+| Consulente | Painel | Situação do pedido: rascunho, travado, aguardando par, enviado ao médium, leitura recebida, aguardando o fechamento do estudo, devolutiva |
+| Consulente | Novo pedido | Primeiro nome do falecido e questionário; revisão e confirmação antes de travar |
+| Consulente | Devolutiva | Depois do desmascaramento: as respostas do médium ao lado das suas e a nota, com linguagem cuidadosa |
+| Médium | Painel | Pedidos recebidos e prazos; leituras enviadas, sem nota até o desmascaramento |
+| Médium | Leitura | Os dois primeiros nomes do par e o questionário; revisão antes de travar |
+| Consulente e médium | Minha conta | Dados, termo aceito, excluir conta |
+| Administrador | Painel | Contas por perfil e situação; pedidos e leituras por etapa; progresso até o N — **contagens, nunca escores** |
+| Administrador | Avisos | Conclusão de cada etapa (abaixo) |
+| Administrador | Sinalizações | Contas ligadas para revisão humana |
+| Administrador | Estudo | Pré-registro, questionário e congelamento; relatório depois do desmascaramento |
+
+#### Avisos ao administrador
+
+Um aviso por etapa concluída: conta confirmada, pedido travado, par formado e enviado ao médium, leitura recebida, prazo vencido e reenvio, sinalização de contas ligadas, N atingido e estudo desmascarado, relatório pronto. Aparecem no painel e, quando há envio de e-mail configurado (`AIRLAB_ADMIN_EMAIL`), também por e-mail. **Um aviso contém só tipo, código pseudônimo e hora** — nunca nome, resposta ou nota, porque e-mail e painel não são canais cegos.
+
+O médium recebe e-mail quando chega um pedido; o consulente, quando a devolutiva está disponível.
+
+#### Matriz de visibilidade do P4
+
+| Informação ↓ / Papel → | Administrador | Médium | Consulente |
+|---|---|---|---|
+| Identidade das contas | ✓ | só a própria | só a própria |
+| Respostas do consulente ao questionário | ✗ até o desmascaramento | ✗ | só as próprias |
+| Primeiro nome do falecido | ✗ | ✓ (só dos pedidos recebidos) | só o próprio |
+| Ligação pedido → médium | ✗ até o desmascaramento | só os próprios pedidos | ✗ até o desmascaramento |
+| Leitura do médium | ✗ até o desmascaramento | só as próprias | ✗ até o desmascaramento |
+| Notas e diferenças | ✗ até o desmascaramento | ✗ até o desmascaramento | ✗ até o desmascaramento |
+| Sais e semente | ✗ até a revelação | ✗ | ✗ |
+
+**As notas não existem antes do desmascaramento**: a conferência só roda depois dele. Isso é mais forte do que escondê-las (E10, trava 1).
+
+#### Travas próprias do P4
+
+Além das seis travas do E10:
+
+1. Questionário versionado, com a lista de campos fora da nota, congelado no pré-registro.
+2. Respostas do consulente travadas, com compromisso salgado na trilha, **antes** da liberação do nome ao médium — imposto no banco.
+3. Leitura do médium travada, com hash na trilha, antes do desmascaramento.
+4. Perfil fixo imposto no banco; nenhum caminho do site cria administrador.
+5. Conferência só depois do desmascaramento, por regra determinística e publicada.
+
+#### O que o resultado do P4 não sustenta
+
+- Não distingue sobrevivência de telepatia com os vivos: as respostas existem na memória do consulente e no banco.
+- Não tem experimentador *proxy*. Nos dois estudos da comparação de Silva e Moreira-Almeida (2022) em que o médium não interagiu com ninguém, o resultado foi nulo; um nulo no P4 não refuta o P1.
+- O questionário fechado só captura o que cabe nos campos. As afirmações livres e específicas, que costumam ser as mais marcantes de uma leitura, ficam fora da nota.
+- O primeiro nome carrega informação (gênero, às vezes geração e região). O pareamento e os campos fora da nota reduzem esse vazamento, mas não o eliminam.
+- Com inscrição aberta, o conluio entre um médium e um consulente que se conhecem e usam e-mails diferentes não é detectável com certeza. O sorteio do médium e a sinalização de contas ligadas reduzem o risco.
+
+#### Entrega em fases
+
+| Fase | Conteúdo | Estado |
+|---|---|---|
+| A | Catálogo em duas seções, páginas do P4, contas com perfil fixo, confirmação por e-mail, painéis por perfil, avisos de conta ao administrador | Implementada na SPEC 0.9 |
+| B | Questionário versionado no pré-registro e pedido de consulta com compromisso salgado | Pendente |
+| C | Pareamento, sorteio do médium, pedido ao médium, leitura, prazos e reenvio | Pendente |
+| D | Desmascaramento automático no N, conferência, análise, relatório e devolutiva | Pendente |
+
+**Aceite**: nenhuma conta muda de perfil, nem por SQL direto; nenhum caminho do site cria administrador; nenhum nome é liberado a médium sem pedido travado com compromisso na trilha; nenhuma nota existe antes do desmascaramento; e a conferência refeita a partir do pacote de verificação dá os mesmos `d` de cada par.
+
+#### Anexo — rascunho do questionário, versão 1
+
+Rascunho para revisão do pesquisador; o que vale é a versão congelada no pré-registro. Todo campo tem também "não sei" (consulente) e "não recebi" (médium).
+
+| Campo | Opções | Na nota? |
+|---|---|---|
+| Gênero | feminino, masculino | não (o nome entrega) |
+| Faixa etária no óbito | até 17, 18–39, 40–59, 60–79, 80 ou mais | não (pareamento) |
+| Período do falecimento | até 2 anos, 2–10 anos, mais de 10 anos | não (pareamento) |
+| Como foi a morte | súbita, após doença prolongada | sim |
+| Causa principal | coração ou circulação, câncer, doença respiratória, acidente, violência, outra doença | sim |
+| Onde faleceu | hospital, em casa, na rua ou no trânsito, outro lugar | sim |
+| Estado civil | solteiro, casado ou em união, viúvo, separado | sim |
+| Tinha filhos | sim, não | sim |
+| Ocupação principal | campo, ofício manual ou indústria, comércio, escritório ou serviços, saúde, educação, cuidou da casa, outra | sim |
+| Onde viveu a maior parte da vida | cidade grande, cidade média ou pequena, zona rural | sim |
+| Temperamento | mais expansivo, mais reservado | sim |
+| Estatura | abaixo da média, na média, acima da média | sim |
+| Religiosidade | praticante, não praticante, sem religião | sim |
+| Passatempo mais marcante | música, trabalhos manuais, esporte, leitura, cozinha, plantas, outro | sim |
+| Usava óculos | sim, não | sim |
+| Fumava | sim, não | sim |
+
 ## 6. Modelo de domínio (macro)
 
 ```
@@ -327,6 +491,13 @@ TestSession (protocol, declared_trials, seed_commitment, server_seed_hex,
              participant_nonce, seed_hex, seed_revealed_at, pool_version)
 TestSession 1──* Trial (index, response, impression_sha256, locked_at, target_index, hit)
 TargetImage (pool_version, index, slug)
+
+Account(identity schema: code, profile fixo, nome e e-mail cifrados, índice cego do e-mail,
+        hash da senha, termo aceito, email_confirmed_at)
+Account 1──* EmailConfirmation (token_sha256, expires_at, used_at)
+AdminNotice (kind, subject_code, at)                      — sem dado pessoal, sem escore
+ConsultationRequest(P4) ──1 Account(consulente), answers_commitment, locked_at     [fase B]
+ReadingRequest(P4) ──1 ConsultationRequest, ──1 Account(médium), due_at            [fase C]
 ```
 
 ## 7. Requisitos não funcionais
@@ -371,6 +542,15 @@ TargetImage (pool_version, index, slug)
    retroativa detectável por terceiros. Vale considerar também aplicar entropia de terceiros ao
    sorteio do P1 — por exemplo, do próprio consulente no momento do cadastro do alvo —, mas isso
    muda o fluxo do E3 e precisa de spec própria.
+
+9. **P4 — questionário**: o rascunho do anexo do E13 precisa de revisão do pesquisador. Os
+   critérios são: opções mutuamente exclusivas, poucas opções dominantes, nenhum campo dedutível
+   do primeiro nome na nota, e linguagem cuidadosa com quem está de luto.
+10. **P4 — primeiro nome ou nenhum nome**: dar ao médium só um código, sem o nome, eliminaria o
+    vazamento pelo nome, mas afasta o protocolo da prática da literatura. Fica o nome, por ora,
+    com o vazamento declarado.
+11. **P4 — qualificação de médiuns**: uma rodada prévia com o próprio P4 (E10) antes da entrada
+    no estudo confirmatório.
 
 ## 10. Próximos passos sugeridos (no Claude Code)
 
