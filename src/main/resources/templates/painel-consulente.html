@@ -29,19 +29,34 @@
   <section>
     <div class="faixa">
       <h2>Seu pedido</h2>
-      <dl class="contagens">
-        <div><dt>Pedidos</dt><dd>0</dd></div>
-        <div><dt>Situação</dt><dd>—</dd></div>
-      </dl>
 
-      <div class="ressalva">
-        <p>
-          <strong>O pedido de consulta ainda está em construção.</strong> O questionário sobre a
-          pessoa falecida entra na próxima etapa da plataforma. Quando ele estiver no ar, este painel
-          ganha o botão <em>Novo pedido</em>, e você será avisado por e-mail. Sua conta já está
-          pronta para isso.
+      <th:block th:if="${situacao}">
+        <dl class="contagens">
+          <div><dt>Pedido</dt><dd><code th:text="${situacao.code}">PED-0000</code></dd></div>
+          <div><dt>Situação</dt><dd th:text="${situacao.state.label()}">Travado</dd></div>
+        </dl>
+        <p class="acoes"><a class="botao botao-cheio" href="/painel/consulente/pedido">Ver meu pedido</a></p>
+        <div class="ressalva">
+          <p>
+            <strong>Próxima etapa em construção.</strong> O pareamento e o envio dos pedidos aos
+            médiuns entram na fase seguinte da plataforma. Seu pedido está travado e guardado até lá.
+          </p>
+        </div>
+      </th:block>
+
+      <th:block th:unless="${situacao}">
+        <p>Você ainda não fez um pedido.</p>
+        <p class="acoes" th:if="${pedidosAbertos}">
+          <a class="botao botao-cheio" href="/painel/consulente/pedido/novo">Fazer o pedido</a>
         </p>
-      </div>
+        <div class="ressalva" th:unless="${pedidosAbertos}">
+          <p>
+            <strong>Os pedidos ainda não estão abertos nesta instalação.</strong> Eles coletam dados
+            sensíveis sobre a pessoa falecida e só abrem depois da aprovação do comitê de ética.
+            Você será avisado por e-mail.
+          </p>
+        </div>
+      </th:block>
 
       <h3>O que vai acontecer com o seu pedido</h3>
       <ol class="etapas">

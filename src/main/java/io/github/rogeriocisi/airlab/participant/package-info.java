@@ -6,5 +6,5 @@
  */
 @org.springframework.modulith.ApplicationModule(
         displayName = "participant",
-        allowedDependencies = {"audit", "support"})
+        allowedDependencies = {"audit", "catalog", "support"})
 package io.github.rogeriocisi.airlab.participant;

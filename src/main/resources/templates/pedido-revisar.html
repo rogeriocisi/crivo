@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rever o pedido — Crivo</title>
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="/css/crivo.css">
+</head>
+<body>
+<a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+<div class="faixa">
+  <header th:replace="~{fragments/site :: topo}"></header>
+</div>
+
+<main id="conteudo">
+  <section class="abertura">
+    <div class="faixa">
+      <p class="rotulo">Consulente · rever antes de travar</p>
+      <h1>Confira o seu pedido</h1>
+      <p class="chamada">
+        Se estiver tudo certo, confirme. <strong>Depois de travado, o pedido não muda mais</strong> —
+        nem por você, nem pela equipe, nem pela plataforma.
+      </p>
+
+      <dl class="leituras">
+        <dt>Primeiro nome</dt>
+        <dd th:text="${rascunho.firstName}">Nome</dd>
+        <th:block th:each="item : ${respostas}">
+          <dt th:text="${item.key}">Pergunta</dt>
+          <dd th:text="${item.value}">Resposta</dd>
+        </th:block>
+      </dl>
+
+      <div class="ressalva">
+        <p>
+          Ao confirmar, a trilha pública de auditoria recebe um <strong>compromisso
+          criptográfico</strong> do pedido: um código que prova, no fim do estudo, que estas
+          respostas são as mesmas de agora. O código não revela as respostas.
+        </p>
+      </div>
+
+      <form class="formulario" method="post" th:action="@{/painel/consulente/pedido/confirmar}">
+        <button class="botao botao-cheio" type="submit">Confirmar e travar</button>
+      </form>
+      <p class="nota nota-espacada"><a href="/painel/consulente/pedido/novo">Voltar e corrigir</a></p>
+    </div>
+  </section>
+</main>
+
+<footer th:replace="~{fragments/site :: rodape}"></footer>
+</body>
+</html>

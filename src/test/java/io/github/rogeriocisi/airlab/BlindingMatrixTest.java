@@ -99,6 +99,53 @@ class BlindingMatrixTest {
                 "hit", "score", "target", "correct", "acerto", "seedhex", "result");
     }
 
+    // --- P4, leitura estruturada automatizada (SPEC E13, matriz de visibilidade do P4) ---------
+
+    private static final String[] P4_CONTENT_AND_OUTCOME = {
+            "name", "firstname", "answer", "resposta", "salt", "score", "nota", "hit", "acerto",
+            "difference", "diferenca", "result", "email"};
+
+    @Test
+    @DisplayName("P4: o que o administrador ve tem contagens, codigos e horas, nunca conteudo ou nota")
+    void p4_administrator_projections_carry_no_content_or_outcome() {
+        assertNoFieldsNamedLike(io.github.rogeriocisi.airlab.participant.AccountCounts.class, P4_CONTENT_AND_OUTCOME);
+        assertNoFieldsNamedLike(io.github.rogeriocisi.airlab.participant.ConsultationCounts.class, P4_CONTENT_AND_OUTCOME);
+        assertNoFieldsNamedLike(io.github.rogeriocisi.airlab.notification.AdminNotice.class, P4_CONTENT_AND_OUTCOME);
+    }
+
+    @Test
+    @DisplayName("P4: a situacao do pedido diz onde ele esta, sem primeiro nome, respostas ou nota")
+    void p4_request_status_carries_no_content_or_outcome() {
+        assertNoFieldsNamedLike(io.github.rogeriocisi.airlab.participant.ConsultationStatus.class, P4_CONTENT_AND_OUTCOME);
+        assertNoFieldsNamedLike(io.github.rogeriocisi.airlab.participant.ConsultationLocked.class, P4_CONTENT_AND_OUTCOME);
+        assertNoFieldsNamedLike(io.github.rogeriocisi.airlab.participant.AccountConfirmed.class, P4_CONTENT_AND_OUTCOME);
+    }
+
+    @Test
+    @DisplayName("P4: nenhum estado do pedido carrega desempenho")
+    void p4_request_states_carry_no_outcome() {
+        for (io.github.rogeriocisi.airlab.participant.ConsultationState state
+                : io.github.rogeriocisi.airlab.participant.ConsultationState.values()) {
+            assertThat(state.label().toLowerCase(Locale.ROOT))
+                    .doesNotContain("acert").doesNotContain("nota").doesNotContain("encaix");
+        }
+    }
+
+    @Test
+    @DisplayName("P4: o pedido, a conta e o rascunho nao vazam por toString")
+    void p4_content_does_not_leak_through_to_string() {
+        java.util.Map<String, String> answers = java.util.Map.of("causa", "cancer");
+        assertThat(new io.github.rogeriocisi.airlab.participant.ConsultationDraft("Sebastiao", answers).toString())
+                .doesNotContain("Sebastiao").doesNotContain("cancer");
+        assertThat(new io.github.rogeriocisi.airlab.participant.OwnConsultation("PED-1", "v1", "Sebastiao",
+                answers, "0".repeat(64), java.time.Instant.EPOCH).toString())
+                .doesNotContain("Sebastiao").doesNotContain("cancer");
+        assertThat(new io.github.rogeriocisi.airlab.participant.AccountSignUp("Maria", "maria@exemplo",
+                "segredo-123456", io.github.rogeriocisi.airlab.participant.AccountProfile.SITTER, "conta-v1", true)
+                .toString())
+                .doesNotContain("Maria").doesNotContain("maria@exemplo").doesNotContain("segredo");
+    }
+
     private static void assertNoFieldsNamedLike(Class<?> type, String... forbidden) {
         Arrays.stream(type.getRecordComponents()).forEach(component -> {
             String name = component.getName().toLowerCase(Locale.ROOT);

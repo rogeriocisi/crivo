@@ -1,6 +1,6 @@
 # Plano técnico do MVP — Crivo (AIR Lab)
 
-> Derivado de `CONSTITUTION.md` (prevalece) e de `SPEC.md`. Versão 1.3 · novembro/2026 · 1.3: protocolo P4 (SPEC E13), fase A — contas com perfil fixo, e-mail e avisos ao administrador.
+> Derivado de `CONSTITUTION.md` (prevalece) e de `SPEC.md`. Versão 1.4 · novembro/2026 · 1.3: protocolo P4 (SPEC E13), fase A — contas com perfil fixo, e-mail e avisos ao administrador · 1.4: fase B — questionário versionado e pedido de consulta travado com compromisso salgado.
 > Este documento registra as decisões de implementação do MVP: estrutura de módulos,
 > esquemas e migrações, execução por linha de comando e justificativa de cada dependência.
 
@@ -40,7 +40,7 @@ quem pode depender; `ModularityTest` verifica isso no build.
 | `audit` | E8 | **Implementado**: trilha append-only encadeada por hash, verificação da cadeia |
 | `allocation` | E3 | **Implementado**: sorteio reproduzível, compromisso → revelação, custódia da semente |
 | `study` | E1 | **Implementado**: estudo, documento canônico do pré-registro, congelamento, emendas |
-| `participant` | E2, E13 | **Implementado**: participantes, consentimento, alvos, pareamento, desistência; **contas do P4** (`AccountService`) com perfil fixo, confirmação de e-mail por link de uso único e exclusão que mantém o código |
+| `participant` | E2, E13 | **Implementado**: participantes, consentimento, alvos, pareamento, desistência; **contas do P4** (`AccountService`) com perfil fixo, confirmação de e-mail por link de uso único e exclusão que mantém o código; **pedidos de consulta do P4** (`ConsultationService`), travados na criação, com compromisso salgado (`ConsultationCommitment`) |
 | `notification` | E13 | **Implementado (fase A)**: `Mailer` — caixa de saída em memória nos perfis `local`/`test`, SMTP em produção, desativado sem SMTP — e `AdminNotices`, avisos ao administrador só com tipo, código e hora |
 | `redaction` | E5 | Parcial: `ClueScrubber` (guarda de pistas). Persistência e telas pendentes |
 | `analysis` | E7 | Parcial: Wilcoxon pareado exato (medida primária), binomial exato, permutação de Pratt e Birge, `PowerCheck`, política de rótulo e redução às unidades independentes. Persistência e relatório pendentes |
@@ -48,7 +48,7 @@ quem pode depender; `ModularityTest` verifica isso no build.
 | `scoring` | E6 | Parcial: escala de cinco categorias com justificativa obrigatória e a lógica do link de uso único (`AccessLink`). Pacotes e telas pendentes |
 | `unblinding` | E7 | Pendente (tabelas prontas) |
 | `cli` | E8 | **Implementado**: `airlab verify` |
-| `catalog` | — | **Implementado**: catálogo de protocolos (SPEC 1.1), sem estado e sem dependência de outro módulo |
+| `catalog` | — | **Implementado**: catálogo de protocolos (SPEC 1.1) e questionários versionados do P4 (`Questionnaires`), sem estado e sem dependência de outro módulo |
 | `trials` | E11, E12 | **Implementado**: sessões de autoatendimento dos dois testes de ESP — semente comprometida, alvo derivado só no travamento, impressão travada antes das candidatas, sessão abandonada registrada |
 | `support`, `platform`, `web` | — | Infraestrutura, páginas públicas, criação de conta, entrada e painéis por perfil (consulente, médium, administrador) |
 
@@ -80,6 +80,7 @@ Flyway, em `src/main/resources/db/migration`. Histórico no esquema `research`.
 | `V15` | `research.test_session` e `research.test_trial` dos testes de autoatendimento, com `CHECK` que impede alvo antes do travamento e *trigger* que torna a tentativa travada imutável (E11/E12) |
 | `V16` | Entropia do participante: `participant_nonce` e `server_seed_hex`, *trigger* que recusa tentativa de sessão sem a metade do participante, e preenchimento das sessões anteriores (`server_seed_hex = seed_hex`, porque antes a semente era toda do servidor) |
 | `V17` | Contas do P4 (`identity.account`, `identity.email_confirmation`) e avisos (`research.admin_notice`). *Trigger* recusa troca de perfil, de código, reabertura de conta encerrada, reescrita da data de confirmação e qualquer `DELETE`; `CHECK` impede perfil fora de consulente e médium e exige dados apagados na conta encerrada; índice único parcial: uma conta ativa por e-mail (E13) |
+| `V18` | Pedido de consulta do P4: `research.consultation_request` (código, consulente, versão do questionário, atributos de pareamento, compromisso, estado) e `identity.consultation_detail` (primeiro nome, respostas e sal, cifrados). *Triggers*: pedido travado só muda de estado, retirado é final, nada se apaga, e o detalhe só admite o apagamento na desistência; índice único parcial: um pedido ativo por consulente (E13, fase B) |
 
 **Migração aplicada não se edita**: corrigir o vocabulário dos comentários mudaria o checksum
 do Flyway e quebraria a validação em qualquer banco já migrado — inclusive o do próprio autor.
@@ -130,6 +131,13 @@ congelado, participantes identificados e N declarado antes da coleta.
 | Inscrição fechada sem e-mail ou sem contato humano | Travas 3 e 5 do E10. No perfil local, nada sai da máquina: o link vai para a caixa de saída (só o administrador abre) e para o log, com código e sem endereço |
 | Aviso ao administrador só com tipo, código e hora | Painel e e-mail não são canais cegos. O registro não tem coluna para mais nada |
 | Notas não existem antes do desmascaramento (fases B a D) | A conferência só roda depois dele; não é questão de esconder, é de não calcular |
+| **Fase B**: rascunho só na sessão HTTP | O banco recebe o pedido uma vez, já travado; não existe janela em que um pedido gravado pudesse mudar antes de o compromisso sair |
+| Compromisso `SHA-256(JSON canônico \|\| "\|" \|\| sal)` | O sal de 32 bytes, em custódia cifrada, impede o ataque de dicionário sobre respostas de pouca entropia numa trilha pública. A regra é pública (`ConsultationCommitment`) |
+| Trilha com código, consulente, versão e compromisso | Nem os atributos de pareamento: só o compromisso precisa ser público antes da leitura |
+| Questionário no `catalog`, como constante versionada | Mesma razão do catálogo e do banco de figuras: a versão usada fica no pedido e no compromisso, e a aplicação e o pacote não podem discordar sobre o que era a pergunta 7 |
+| Faixas de pareamento iguais às do P1 | O pareamento da fase C é o mesmo código para os dois protocolos |
+| Respostas guardadas como linhas `chave=opção` cifradas | Chaves e opções são *slugs*; o formato dispensa parser de JSON e não entra em hash nenhum |
+| Formulário fechado em produção sem `AIRLAB_CEP_REFERENCE` | E10, trava 4: o pedido coleta dado sensível sobre a pessoa falecida |
 
 ## 5. Decisões metodológicas impostas pelo código
 
@@ -231,6 +239,9 @@ sorteio na CLI, nunca para calcular hash.
 | `ItemScoreEntryTest` | P1, E6 | Justificativa obrigatória nos valores interpretativos; só o encaixe óbvio conta |
 | `ModularityTest` | Regra 1 e 2 | Fronteiras de módulo |
 | `AccountIntegrationTest` | P6, E13 | PostgreSQL real: confirmação de uso único e com prazo, perfil fixo e `DELETE` recusados pelo banco, um e-mail por conta, nada pessoal na trilha, exclusão que mantém o código |
+| `QuestionnaireTest` | E13 | Unitário: campos de pareamento iguais aos do P1 e fora da nota, "não sei" só onde o pareamento não precisa, resposta incompleta ou desconhecida recusada |
+| `ConsultationIntegrationTest` | P1, P4, P6, E13 | PostgreSQL real: pedido nasce travado, compromisso recalculável e sensível a qualquer resposta, trilha só com o compromisso, detalhe cifrado, banco recusa alterar e apagar, um pedido ativo por consulente, desistência apaga o detalhe |
+| `ConsultationPagesTest` | P1, E13 | Segurança real: preencher, rever, travar e ver; o pedido não aparece para outro consulente nem para o administrador; o médium não alcança as telas |
 | `AccountPagesTest` | P1, E13 | Segurança real: do cadastro ao painel, cada perfil só alcança o próprio painel, senha errada não revela conta não confirmada, cadastro repetido não revela nada |
 | `TargetDerivationTest` | P5 | Unitário: alvo reproduzível pela semente, dentro do intervalo, candidatas distintas e banco pequeno recusado |
 | `ProtocolCatalogTest` | SPEC 1.1 | Unitário: todo protocolo declara o que não sustenta, e protocolo sem limites não compila em tempo de execução |

@@ -4,6 +4,7 @@ import io.github.rogeriocisi.airlab.notification.AdminNotices;
 import io.github.rogeriocisi.airlab.notification.Mailer;
 import io.github.rogeriocisi.airlab.participant.AccountService;
 import io.github.rogeriocisi.airlab.participant.AccountView;
+import io.github.rogeriocisi.airlab.participant.ConsultationService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import java.security.Principal;
@@ -26,14 +27,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 class PanelController {
 
     private final AccountService accounts;
+    private final ConsultationService consultations;
     private final AdminNotices notices;
     private final Mailer mailer;
     private final SignUpGate gate;
     private final Environment environment;
 
-    PanelController(AccountService accounts, AdminNotices notices, Mailer mailer,
+    PanelController(AccountService accounts, ConsultationService consultations, AdminNotices notices, Mailer mailer,
                     SignUpGate gate, Environment environment) {
         this.accounts = accounts;
+        this.consultations = consultations;
         this.notices = notices;
         this.mailer = mailer;
         this.gate = gate;
@@ -63,6 +66,8 @@ class PanelController {
 
     @GetMapping("/painel/consulente")
     String sitter(Principal principal, Model model, HttpServletRequest request) throws ServletException {
+        model.addAttribute("situacao", consultations.status(principal.getName()).orElse(null));
+        model.addAttribute("pedidosAbertos", gate.requestsOpen());
         return ownPanel(principal, model, request, "painel-consulente");
     }
 
@@ -86,6 +91,8 @@ class PanelController {
     @GetMapping("/painel/adm")
     String admin(Model model) {
         model.addAttribute("contas", accounts.counts());
+        model.addAttribute("pedidos", consultations.counts());
+        model.addAttribute("pedidosAbertos", gate.requestsOpen());
         model.addAttribute("avisos", notices.recent(50));
         model.addAttribute("caixaLocal", mailer.localOutbox());
         model.addAttribute("emailAtivo", mailer.enabled());

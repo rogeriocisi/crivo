@@ -40,6 +40,9 @@
       <ul>
         <li>Inscrição:
           <strong th:text="${inscricaoAberta} ? 'aberta' : 'fechada'">aberta</strong></li>
+        <li>Pedidos de consulta:
+          <strong th:text="${pedidosAbertos} ? 'abertos' : 'fechados'">abertos</strong>
+          <span class="nota" th:unless="${pedidosAbertos}">(em produção, exigem <code>AIRLAB_CEP_REFERENCE</code>)</span></li>
         <li>E-mail:
           <strong th:text="${caixaLocal} ? 'caixa de saída local (nada sai da máquina)'
                            : (${emailAtivo} ? 'SMTP configurado' : 'desativado')">local</strong>
@@ -55,14 +58,15 @@
     <div class="faixa">
       <h2>Pedidos, leituras e progresso</h2>
       <dl class="contagens">
-        <div><dt>Pedidos travados</dt><dd>—</dd></div>
+        <div><dt>Pedidos travados</dt><dd th:text="${pedidos.locked}">0</dd></div>
+        <div><dt>Pedidos retirados</dt><dd th:text="${pedidos.withdrawn}">0</dd></div>
         <div><dt>Pares enviados</dt><dd>—</dd></div>
         <div><dt>Leituras recebidas</dt><dd>—</dd></div>
         <div><dt>Progresso até o N</dt><dd>—</dd></div>
       </dl>
       <p class="nota">
-        Entram com as fases B a D do E13: questionário e pedido, envio ao médium e leitura,
-        conferência e relatório. Sempre como contagem de unidades, nunca como desempenho.
+        Pares, leituras e progresso entram com as fases C e D do E13. Sempre como contagem de
+        unidades, nunca como desempenho. Você não vê o conteúdo de nenhum pedido.
       </p>
     </div>
   </section>

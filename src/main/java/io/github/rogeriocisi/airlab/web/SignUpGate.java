@@ -31,6 +31,20 @@ class SignUpGate {
         return environment.matchesProfiles("local", "test");
     }
 
+    /**
+     * Whether sitters may file P4 requests: the request collects sensitive data about a deceased
+     * person, so outside the local profile it needs the ethics committee approval reference
+     * (E10, lock 4) on top of an open sign-up.
+     */
+    boolean requestsOpen() {
+        return open() && (localProfile() || cepReference().isPresent());
+    }
+
+    Optional<String> cepReference() {
+        String reference = environment.getProperty("airlab.p4.cep-reference", "").strip();
+        return reference.isEmpty() ? Optional.empty() : Optional.of(reference);
+    }
+
     Optional<String> contactEmail() {
         String contact = environment.getProperty("airlab.contact-email", "").strip();
         return contact.isEmpty() ? Optional.empty() : Optional.of(contact);

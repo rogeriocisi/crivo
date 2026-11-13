@@ -48,6 +48,7 @@ class DefaultAccountService implements AccountService {
 
     private final AccountRepository accounts;
     private final EmailConfirmationRepository confirmations;
+    private final DefaultConsultationService consultations;
     private final FieldCipher cipher;
     private final BlindIndex blindIndex;
     private final PasswordEncoder passwordEncoder;
@@ -57,6 +58,7 @@ class DefaultAccountService implements AccountService {
 
     DefaultAccountService(AccountRepository accounts,
                           EmailConfirmationRepository confirmations,
+                          DefaultConsultationService consultations,
                           FieldCipher cipher,
                           BlindIndex blindIndex,
                           PasswordEncoder passwordEncoder,
@@ -65,6 +67,7 @@ class DefaultAccountService implements AccountService {
                           Clock clock) {
         this.accounts = accounts;
         this.confirmations = confirmations;
+        this.consultations = consultations;
         this.cipher = cipher;
         this.blindIndex = blindIndex;
         this.passwordEncoder = passwordEncoder;
@@ -231,6 +234,8 @@ class DefaultAccountService implements AccountService {
         AccountEntity account = accounts.findByCode(code)
                 .filter(candidate -> !candidate.closed())
                 .orElseThrow(() -> new IllegalArgumentException("unknown or closed account"));
+        // Withdrawal reaches the request too: its encrypted detail is erased with the account.
+        consultations.withdrawActive(account.code());
         account.close(clock.instant());
         audit(AuditEventType.ACCOUNT_CLOSED, account, Map.of());
     }

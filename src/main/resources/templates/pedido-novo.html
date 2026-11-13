@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Novo pedido — Crivo</title>
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="/css/crivo.css">
+</head>
+<body>
+<a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+<div class="faixa">
+  <header th:replace="~{fragments/site :: topo}"></header>
+</div>
+
+<main id="conteudo">
+  <section class="abertura">
+    <div class="faixa">
+      <p class="rotulo">Consulente · pedido de consulta</p>
+      <h1>Sobre quem você quer perguntar</h1>
+      <p class="chamada">
+        Responda com calma, do jeito que você se lembra. Não há resposta certa, e você pode marcar
+        "não sei" sempre que não tiver certeza. Antes de travar, você revê tudo.
+      </p>
+      <p class="nota">
+        Nada é gravado enquanto você preenche. Depois de confirmado, o pedido trava e não muda mais —
+        é isso que garante que ninguém, nem a plataforma, ajustou as respostas depois da leitura do
+        médium. O médium recebe só o primeiro nome; as respostas ninguém vê antes do fim do estudo.
+      </p>
+      <p class="nota" th:text="'Questionário, versão ' + ${questionario.version}">Questionário, versão v1</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="faixa">
+      <form class="formulario formulario-largo" method="post" th:action="@{/painel/consulente/pedido/revisar}">
+        <p class="erro" th:if="${erro}" th:text="${erro}" role="alert">Erro</p>
+
+        <label for="primeiroNome">Primeiro nome da pessoa que faleceu</label>
+        <input id="primeiroNome" name="primeiroNome" type="text" required autocomplete="off"
+               th:value="${rascunho.firstName}" th:attr="maxlength=${nomeMaximo}">
+        <p class="nota">Só o primeiro nome, como a pessoa era chamada. É a única coisa que o médium recebe.</p>
+
+        <fieldset th:each="campo : ${questionario.fields}">
+          <legend th:text="${campo.label}">Pergunta</legend>
+          <p class="nota" th:if="${campo.outOfScoreReason}" th:text="${campo.outOfScoreReason}">Fora da nota</p>
+          <label class="opcao" th:each="opcao : ${campo.options}">
+            <input type="radio" th:name="'r.' + ${campo.key}" th:value="${opcao.key}" required
+                   th:checked="${rascunho.answers.get(campo.key) == opcao.key}">
+            <span th:text="${opcao.label}">Opção</span>
+          </label>
+          <label class="opcao" th:if="${campo.unknownAllowed()}">
+            <input type="radio" th:name="'r.' + ${campo.key}" th:value="${naoSei}"
+                   th:checked="${rascunho.answers.get(campo.key) == naoSei}">
+            <span>Não sei</span>
+          </label>
+        </fieldset>
+
+        <button class="botao botao-cheio" type="submit">Rever antes de travar</button>
+      </form>
+
+      <p class="nota nota-espacada"><a href="/painel/consulente">Voltar ao painel sem enviar</a></p>
+    </div>
+  </section>
+</main>
+
+<footer th:replace="~{fragments/site :: rodape}"></footer>
+</body>
+</html>

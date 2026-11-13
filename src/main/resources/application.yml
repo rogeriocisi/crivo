@@ -49,6 +49,10 @@ airlab:
   admin-email: ${AIRLAB_ADMIN_EMAIL:}
   contact-email: ${AIRLAB_CONTACT_EMAIL:}
   mail-from: ${AIRLAB_MAIL_FROM:crivo@localhost}
+  p4:
+    # Referencia da aprovacao do comite de etica (CEP/Plataforma Brasil). Sem ela, em producao,
+    # o formulario de pedido do P4 fica fechado (SPEC E10, trava 4; E13, fase B).
+    cep-reference: ${AIRLAB_CEP_REFERENCE:}
   storage:
     path: ${AIRLAB_STORAGE_PATH:./data/media}
   identity:

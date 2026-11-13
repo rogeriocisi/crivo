@@ -5,6 +5,7 @@ import io.github.rogeriocisi.airlab.notification.AdminNotices;
 import io.github.rogeriocisi.airlab.notification.Mailer;
 import io.github.rogeriocisi.airlab.notification.NoticeKind;
 import io.github.rogeriocisi.airlab.participant.AccountConfirmed;
+import io.github.rogeriocisi.airlab.participant.ConsultationLocked;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -75,6 +76,11 @@ class DefaultAdminNotices implements AdminNotices {
     @EventListener
     void on(AccountConfirmed event) {
         record(NoticeKind.ACCOUNT_CONFIRMED, event.code());
+    }
+
+    @EventListener
+    void on(ConsultationLocked event) {
+        record(NoticeKind.REQUEST_LOCKED, event.code());
     }
 }
 

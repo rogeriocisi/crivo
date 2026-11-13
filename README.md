@@ -38,7 +38,7 @@ O consulente informa o primeiro nome da pessoa falecida e responde a um question
 
 O administrador **não é um perfil escolhível**: é a conta do pesquisador, definida na configuração do servidor (ver *Entrar na aplicação*).
 
-**Estado:** a fase A do E13 está implementada — contas com perfil fixo, confirmação por e-mail, entrada, painéis por perfil e avisos de conta ao administrador. O questionário (fase B), o envio dos pedidos aos médiuns (fase C) e a conferência automática com relatório (fase D) vêm a seguir, e os painéis dizem isso.
+**Estado:** as fases A e B do E13 estão implementadas — contas com perfil fixo, confirmação por e-mail, entrada, painéis por perfil, avisos ao administrador e o **pedido de consulta**: o consulente preenche o questionário (versão `v1-rascunho`, ainda em revisão), revê e trava; a trilha recebe só o compromisso salgado. O envio dos pedidos aos médiuns (fase C) e a conferência automática com relatório (fase D) vêm a seguir, e os painéis dizem isso.
 
 O Crivo não existe para provar que a mediunidade é real, nem que não é. Ele existe para que **a resposta, qualquer que seja, seja defensável**.
 
@@ -46,7 +46,7 @@ O Crivo não existe para provar que a mediunidade é real, nem que não é. Ele 
 
 ## Status
 
-🧱 **Fase 0 → 1: fundamentos implementados.** O núcleo de confiança está de pé: trilha de auditoria encadeada por hash, sorteio reproduzível com compromisso → revelação, pré-registro congelável e CLI de verificação. No AIR automatizado (P4), a fase A está no ar: contas com perfil fixo, confirmação por e-mail, painéis por perfil e avisos ao administrador; questionário, envio aos médiuns e conferência automática vêm a seguir. Na leitura pareada (P1), os épicos de campo (sessões, redação, avaliação cega, desmascaramento) estão com o esquema de banco pronto e a implementação pendente. Ver a tabela de estado em [`docs/PLAN.md`](docs/PLAN.md).
+🧱 **Fase 0 → 1: fundamentos implementados.** O núcleo de confiança está de pé: trilha de auditoria encadeada por hash, sorteio reproduzível com compromisso → revelação, pré-registro congelável e CLI de verificação. No AIR automatizado (P4), as fases A e B estão no ar: contas com perfil fixo, confirmação por e-mail, painéis por perfil, pedido de consulta com questionário e compromisso salgado na trilha, e avisos ao administrador; envio aos médiuns e conferência automática vêm a seguir. Na leitura pareada (P1), os épicos de campo (sessões, redação, avaliação cega, desmascaramento) estão com o esquema de banco pronto e a implementação pendente. Ver a tabela de estado em [`docs/PLAN.md`](docs/PLAN.md).
 
 ## Como rodar
 
@@ -135,8 +135,9 @@ Perfil `prod`: PostgreSQL do sistema operacional escutando só em `127.0.0.1`, a
 | `AIRLAB_MAIL_FROM` | Remetente dos e-mails |
 | `AIRLAB_CONTACT_EMAIL` | Contato humano mostrado na página de inscrição |
 | `AIRLAB_ADMIN_EMAIL` | Opcional: quem recebe por e-mail os avisos de etapa concluída (sempre aparecem no painel) |
+| `AIRLAB_CEP_REFERENCE` | Referência da aprovação do comitê de ética. Sem ela, o formulário de pedido de consulta fica fechado em produção |
 
-Antes de abrir a inscrição a pessoas reais, vale a trava 4 do E10: aprovação do comitê de ética (CEP/Plataforma Brasil).
+Antes de abrir a inscrição a pessoas reais, vale a trava 4 do E10: aprovação do comitê de ética (CEP/Plataforma Brasil). O pedido de consulta, que coleta os dados sensíveis, só abre em produção com `AIRLAB_CEP_REFERENCE` definida.
 
 ## Contribuir
 
@@ -168,7 +169,7 @@ Sem Docker: todo passo do projeto — build, teste, execução, implantação e 
 
 ## Próximos passos
 
-1. P4, fases B a D (E13): questionário e pedido com compromisso salgado; pareamento, sorteio do médium e leitura; conferência automática, desmascaramento no N e devolutiva
+1. P4, fases C e D (E13): estudo P4 com o questionário congelado, pareamento, sorteio do médium e leitura; conferência automática, desmascaramento no N e devolutiva
 2. E4 (sessões) e E5 (redação), consumindo o evento do sorteio
 3. E6 (avaliação cega) com links de uso único
 4. E7 (desmascaramento e análise primária) e o relatório neutro

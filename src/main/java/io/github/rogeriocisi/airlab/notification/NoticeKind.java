@@ -2,7 +2,7 @@ package io.github.rogeriocisi.airlab.notification;
 
 /**
  * Completed steps the administrator is told about (SPEC E13, "Avisos ao administrador").
- * Phase A emits only {@link #ACCOUNT_CONFIRMED}; the others arrive with phases B to D and are
+ * Phase A emits {@link #ACCOUNT_CONFIRMED} and phase B {@link #REQUEST_LOCKED}; the others arrive with phases C and D and are
  * listed now so the panel and the SPEC say the same thing.
  */
 public enum NoticeKind {

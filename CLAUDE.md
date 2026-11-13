@@ -44,7 +44,7 @@ Instruções para o Claude Code neste repositório.
 
 Já implementado (ver `docs/PLAN.md`, seção 2, para a tabela completa):
 
-1. Plano técnico, migrações `V1`–`V17` dos esquemas `research`/`identity`/`audit` e papel `airlab_app`
+1. Plano técnico, migrações `V1`–`V18` dos esquemas `research`/`identity`/`audit` e papel `airlab_app`
 2. `audit`: trilha append-only encadeada por hash + CLI `airlab verify`
 3. `allocation`: sorteio reproduzível (`SecureRandom` para a semente, SHA-256 em modo contador para a expansão), compromisso → revelação, custódia cifrada da semente
 4. `study` (E1) e `participant` (E2), com pareamento
@@ -52,7 +52,8 @@ Já implementado (ver `docs/PLAN.md`, seção 2, para a tabela completa):
 6. Escala de itens de cinco categorias com justificativa obrigatória (E6) e desvios de protocolo append-only (E1/E7)
 7. `catalog` (SPEC 1.1) e `trials` (E11, E12): seção de testes no site e os dois protocolos de ESP integralmente automatizados, com semente comprometida, alvo derivado no travamento e impressão travada antes das candidatas
 8. E13, fase A: catálogo em duas seções (protocolos AIR e experimentos extras), páginas do P4, contas com perfil fixo, confirmação por e-mail, painéis por perfil e avisos ao administrador
+9. E13, fase B: questionário versionado (`catalog.Questionnaires`, `v1-rascunho`) e pedido de consulta travado na criação, com compromisso salgado (`participant.ConsultationCommitment`); rascunho só na sessão
 
-A fazer, nesta ordem: E13 fases B a D (questionário e pedido; envio ao médium e leitura; conferência, desmascaramento e devolutiva), E4 (sessões), E5 (persistência da redação), E6 (avaliação cega), E7 (desmascaramento e relatório), E8/E9 (carimbo de tempo e pacote de verificação).
+A fazer, nesta ordem: E13 fases C e D (estudo P4 com questionário congelado, pareamento, envio ao médium e leitura; conferência, desmascaramento e devolutiva), E4 (sessões), E5 (persistência da redação), E6 (avaliação cega), E7 (desmascaramento e relatório), E8/E9 (carimbo de tempo e pacote de verificação).
 
 A suíte da matriz de cegamento cresce junto: cada linha nova da matriz da SPEC, seção 4, entra como teste antes da tela correspondente.
