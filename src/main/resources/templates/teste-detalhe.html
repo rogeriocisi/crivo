@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title th:text="${protocolo.name} + ' — Crivo'">Protocolo — Crivo</title>
   <th:block th:replace="~{fragments/site :: social(${protocolo.name} + ' — Crivo', ${protocolo.summary})}"></th:block>
-  <link rel="stylesheet" href="/css/crivo.css">
+  <link rel="stylesheet" th:href="@{/css/crivo.css}">
 </head>
 <body>
 <a class="pular" href="#conteudo">Pular para o conteúdo</a>
@@ -65,11 +65,11 @@
       <p class="acoes">
         <a class="botao botao-cheio"
            th:if="${protocolo.quickTest()}"
-           th:href="'/testes/' + ${protocolo.slug} + '/rodar'">Fazer o teste agora</a>
+           th:href="@{/testes/{s}/rodar(s=${protocolo.slug})}">Fazer o teste agora</a>
         <a class="botao botao-cheio"
-           th:if="${protocolo.code == 'P4'}" href="/conta/criar">Criar uma conta</a>
-        <a class="botao botao-vazio" th:if="${protocolo.code == 'P4'}" href="/estudos">Estudos e relatórios</a>
-        <a class="botao botao-vazio" href="/testes">Voltar ao catálogo</a>
+           th:if="${protocolo.code == 'P4'}" th:href="@{/conta/criar}">Criar uma conta</a>
+        <a class="botao botao-vazio" th:if="${protocolo.code == 'P4'}" th:href="@{/estudos}">Estudos e relatórios</a>
+        <a class="botao botao-vazio" th:href="@{/testes}">Voltar ao catálogo</a>
       </p>
     </div>
   </section>
@@ -92,7 +92,7 @@
         pareada depende de uma equipe — experimentador e redator — e não recebe participantes. Ela
         fica aqui como referência, porque é o protocolo mais próximo da literatura e é contra ele
         que se mede o que a versão automatizada ganha e perde. Para participar, veja a
-        <a href="/testes/leitura-estruturada">leitura estruturada automatizada</a>.
+        <a th:href="@{/testes/leitura-estruturada}">leitura estruturada automatizada</a>.
       </p>
     </div>
   </section>

@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Crivo — protocolos cegos para pesquisa de cognição anômala</title>
   <th:block th:replace="~{fragments/site :: social('Crivo — protocolos cegos para pesquisa de cognição anômala', 'Plataforma aberta para conduzir estudos de cognição anômala, com a mediunidade (AIR) como um ramo: cegamento múltiplo, sorteio verificável, pré-registro imutável e trilha de auditoria encadeada por hash.')}"></th:block>
-  <link rel="stylesheet" href="/css/crivo.css">
+  <link rel="stylesheet" th:href="@{/css/crivo.css}">
 </head>
 
 <body>
@@ -41,7 +41,7 @@
         <div class="acoes aparece">
           <a class="botao botao-cheio" href="#air-automatizado">Participar pelo site</a>
           <a class="botao botao-vazio" href="#o-que-e">Comece por aqui</a>
-          <a class="botao botao-vazio" href="/testes">Os protocolos</a>
+          <a class="botao botao-vazio" th:href="@{/testes}">Os protocolos</a>
         </div>
         <blockquote class="epigrafe aparece">Passar pelo crivo da razão.</blockquote>
       </div>
@@ -64,7 +64,7 @@
           <article class="caminho">
             <h3>Protocolo AIR</h3>
             <p>
-              A <a href="/testes/leitura-estruturada">leitura estruturada automatizada</a>: do
+              A <a th:href="@{/testes/leitura-estruturada}">leitura estruturada automatizada</a>: do
               cadastro ao relatório, tudo pelo site, sem ninguém da equipe no circuito.
             </p>
           </article>
@@ -73,7 +73,7 @@
             <p>
               Dois testes rápidos de percepção extrassensorial, anônimos e sem conta, que você faz
               agora e confere depois. Eles não dizem nada sobre mediunidade.
-              <a href="/testes#extras">Ver os experimentos</a>.
+              <a th:href="@{/testes#extras}">Ver os experimentos</a>.
             </p>
           </article>
         </div>
@@ -122,7 +122,7 @@
           casos célebres da época foram desmascarados como fraude. A fase moderna é bem mais recente:
           só <strong>a partir do fim dos anos 1990</strong> surgiram protocolos cegos e quantitativos,
           e os níveis de cegamento foram aumentando desde então, em grande parte como resposta direta
-          às críticas céticas. <a href="/historia">A linha do tempo completa está aqui</a>, e vale
+          às críticas céticas. <a th:href="@{/historia}">A linha do tempo completa está aqui</a>, e vale
           a leitura por um motivo: cada controle que hoje parece óbvio nasceu de um estudo que não
           resistiu à crítica.
         </p>
@@ -205,7 +205,7 @@
           (2005) e Hyman (2003); o panorama histórico e a distinção entre os dois ramos seguem o
           verbete <a href="https://pt.wikipedia.org/wiki/Estudos_sobre_mediunidade"><em>Estudos sobre
               mediunidade</em></a> da Wikipédia, conferido contra os artigos originais onde eles se
-          sobrepõem. Tudo está em <a href="/referencias">Referências</a>.
+          sobrepõem. Tudo está em <a th:href="@{/referencias}">Referências</a>.
         </p>
       </div>
     </section>
@@ -506,7 +506,7 @@
 
         <p class="nota nota-espacada">
           Vai participar como consulente?
-          <a href="/consulente">Há uma página só sobre isso</a>, com o passo a passo do pedido, o
+          <a th:href="@{/consulente}">Há uma página só sobre isso</a>, com o passo a passo do pedido, o
           que se pede de você e os seus direitos. Ela pode ser impressa e entregue em papel.
         </p>
       </div>
@@ -560,7 +560,7 @@
               Pela leitura estruturada automatizada, tudo acontece no site: crie uma conta, escolha
               o perfil e acompanhe pelo seu painel.
             </p>
-            <p><a class="botao botao-cheio" href="/conta/criar">Criar uma conta</a></p>
+            <p><a class="botao botao-cheio" th:href="@{/conta/criar}">Criar uma conta</a></p>
           </article>
           <article class="caminho">
             <h3>Conduzir um estudo</h3>

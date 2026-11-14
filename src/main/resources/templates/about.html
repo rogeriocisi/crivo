@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Vocabulário e protocolo — Crivo</title>
   <th:block th:replace="~{fragments/site :: social('Vocabulário e protocolo — Crivo', 'O que é uma leitura, por que existe o chamariz, quem enxerga o quê e por que o vocabulário do Crivo é deliberadamente neutro.')}"></th:block>
-  <link rel="stylesheet" href="/css/crivo.css">
+  <link rel="stylesheet" th:href="@{/css/crivo.css}">
 </head>
 <body>
 <a class="pular" href="#conteudo">Pular para o conteúdo</a>
@@ -158,7 +158,7 @@
       </div>
 
       <p class="nota nota-espacada">
-        <a href="/">Voltar ao início</a> ·
+        <a th:href="@{/}">Voltar ao início</a> ·
         <a href="https://github.com/rogeriocisi/crivo">Ver a especificação completa no repositório</a>
       </p>
     </div>

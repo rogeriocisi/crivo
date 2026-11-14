@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Painel do consulente — Crivo</title>
   <meta name="robots" content="noindex">
-  <link rel="stylesheet" href="/css/crivo.css">
+  <link rel="stylesheet" th:href="@{/css/crivo.css}">
 </head>
 <body>
 <a class="pular" href="#conteudo">Pular para o conteúdo</a>
@@ -37,9 +37,9 @@
         </dl>
         <p class="acoes">
           <a class="botao botao-cheio" th:if="${situacao.state.name() == 'UNBLINDED'}"
-             href="/painel/consulente/devolutiva">Ver a devolutiva</a>
+             th:href="@{/painel/consulente/devolutiva}">Ver a devolutiva</a>
           <a class="botao" th:classappend="${situacao.state.name() == 'UNBLINDED'} ? 'botao-vazio' : 'botao-cheio'"
-             href="/painel/consulente/pedido">Ver meu pedido</a>
+             th:href="@{/painel/consulente/pedido}">Ver meu pedido</a>
         </p>
         <div class="ressalva" th:switch="${situacao.state.name()}">
           <th:block th:case="'LOCKED'">
@@ -75,7 +75,7 @@
       <th:block th:unless="${situacao}">
         <p>Você ainda não fez um pedido.</p>
         <p class="acoes" th:if="${pedidosAbertos}">
-          <a class="botao botao-cheio" href="/painel/consulente/pedido/novo">Fazer o pedido</a>
+          <a class="botao botao-cheio" th:href="@{/painel/consulente/pedido/novo}">Fazer o pedido</a>
         </p>
         <div class="ressalva" th:unless="${pedidosAbertos}">
           <p>
@@ -101,7 +101,7 @@
   <section>
     <div class="faixa">
       <p class="acoes">
-        <a class="botao botao-vazio" href="/conta">Minha conta</a>
+        <a class="botao botao-vazio" th:href="@{/conta}">Minha conta</a>
       </p>
       <form method="post" th:action="@{/logout}">
         <button class="botao botao-vazio" type="submit">Sair</button>

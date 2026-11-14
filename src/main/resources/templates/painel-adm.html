@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Painel do administrador — Crivo</title>
   <meta name="robots" content="noindex">
-  <link rel="stylesheet" href="/css/crivo.css">
+  <link rel="stylesheet" th:href="@{/css/crivo.css}">
 </head>
 <body>
 <a class="pular" href="#conteudo">Pular para o conteúdo</a>
@@ -46,7 +46,7 @@
         <li>E-mail:
           <strong th:text="${caixaLocal} ? 'caixa de saída local (nada sai da máquina)'
                            : (${emailAtivo} ? 'SMTP configurado' : 'desativado')">local</strong>
-          <a th:if="${caixaLocal}" href="/caixa-de-saida">abrir a caixa de saída</a></li>
+          <a th:if="${caixaLocal}" th:href="@{/caixa-de-saida}">abrir a caixa de saída</a></li>
         <li>Avisos por e-mail:
           <strong th:text="${avisoPorEmail} ? 'ligados' : 'só no painel'">só no painel</strong>
           <span class="nota" th:unless="${avisoPorEmail}">(defina <code>AIRLAB_ADMIN_EMAIL</code>)</span></li>
@@ -55,7 +55,7 @@
           <span th:unless="${carimbo.enabled}"> · <strong>desligado</strong> (<code>AIRLAB_TIMESTAMP_ENABLED</code>)</span>
           <span class="erro" th:if="${carimbo.failuresSinceLastGrant > 0}"
                 th:text="' · ' + ${carimbo.failuresSinceLastGrant} + ' falha(s) desde o último'">falhas</span>
-          <a href="/carimbos">ver os carimbos</a></li>
+          <a th:href="@{/carimbos}">ver os carimbos</a></li>
       </ul>
     </div>
   </section>
@@ -82,21 +82,21 @@
         <code th:text="${estudo.studyCode}">STD-0000</code> ·
         <span th:text="${estudo.title}">Título</span> · congelado, questionário
         <code th:text="${estudo.questionnaireVersion}">v1</code>.
-        <a href="/painel/adm/estudo-p4">Abrir o estudo</a>
+        <a th:href="@{/painel/adm/estudo-p4}">Abrir o estudo</a>
       </p>
       <th:block th:unless="${estudo}">
         <p>
           Nenhum estudo P4 aberto. Os pedidos travados esperam: o pareamento e o envio aos médiuns só
           começam depois do pré-registro congelado.
         </p>
-        <p class="acoes"><a class="botao botao-cheio" href="/painel/adm/estudo-p4">Criar o estudo P4</a></p>
+        <p class="acoes"><a class="botao botao-cheio" th:href="@{/painel/adm/estudo-p4}">Criar o estudo P4</a></p>
       </th:block>
 
       <h3>Sinalizações</h3>
       <p>
         <strong th:text="${sinalizacoesPendentes}">0</strong> sinalização(ões) de contas ligadas aguardando revisão.
-        <a href="/painel/adm/sinalizacoes">Revisar</a> ·
-        <a href="/estudos">Página pública dos estudos</a>
+        <a th:href="@{/painel/adm/sinalizacoes}">Revisar</a> ·
+        <a th:href="@{/estudos}">Página pública dos estudos</a>
       </p>
     </div>
   </section>

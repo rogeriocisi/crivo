@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Criar conta — Crivo</title>
   <th:block th:replace="~{fragments/site :: social('Criar conta — Crivo', 'Crie uma conta de consulente ou de médium para participar da leitura estruturada automatizada, o protocolo AIR que roda inteiro pelo site.')}"></th:block>
-  <link rel="stylesheet" href="/css/crivo.css">
+  <link rel="stylesheet" th:href="@{/css/crivo.css}">
 </head>
 <body>
 <a class="pular" href="#conteudo">Pular para o conteúdo</a>
@@ -22,7 +22,7 @@
       <p class="chamada">
         A conta serve para participar do protocolo AIR que roda inteiro pelo site. Você escolhe
         agora o seu perfil — <strong>consulente</strong> ou <strong>médium</strong> — e ele não muda
-        depois. <a href="/testes/leitura-estruturada">Veja antes como o protocolo funciona</a>.
+        depois. <a th:href="@{/testes/leitura-estruturada}">Veja antes como o protocolo funciona</a>.
       </p>
 
       <div class="ressalva" th:unless="${inscricaoAberta}">
@@ -110,7 +110,7 @@
         </p>
       </div>
 
-      <p class="nota nota-espacada">Já tem conta? <a href="/login">Entrar</a>.</p>
+      <p class="nota nota-espacada">Já tem conta? <a th:href="@{/login}">Entrar</a>.</p>
     </div>
   </section>
 </main>

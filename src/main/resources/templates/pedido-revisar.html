@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Rever o pedido — Crivo</title>
   <meta name="robots" content="noindex">
-  <link rel="stylesheet" href="/css/crivo.css">
+  <link rel="stylesheet" th:href="@{/css/crivo.css}">
 </head>
 <body>
 <a class="pular" href="#conteudo">Pular para o conteúdo</a>
@@ -44,7 +44,7 @@
       <form class="formulario" method="post" th:action="@{/painel/consulente/pedido/confirmar}">
         <button class="botao botao-cheio" type="submit">Confirmar e travar</button>
       </form>
-      <p class="nota nota-espacada"><a href="/painel/consulente/pedido/novo">Voltar e corrigir</a></p>
+      <p class="nota nota-espacada"><a th:href="@{/painel/consulente/pedido/novo}">Voltar e corrigir</a></p>
     </div>
   </section>
 </main>

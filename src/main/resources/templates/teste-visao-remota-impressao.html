@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Impressão — Crivo</title>
   <th:block th:replace="~{fragments/site :: social('Impressão — Crivo', 'Protocolos cegos para pesquisa de cognição anômala, com sorteio verificável e trilha de auditoria encadeada por hash.')}"></th:block>
-  <link rel="stylesheet" href="/css/crivo.css">
+  <link rel="stylesheet" th:href="@{/css/crivo.css}">
 </head>
 <body>
 <a class="pular" href="#conteudo">Pular para o conteúdo</a>
@@ -32,7 +32,7 @@
         coisa.
       </p>
 
-      <form method="post" th:action="'/testes/' + ${protocolo.slug()} + '/impressao'" data-envio-unico>
+      <form method="post" th:action="@{/testes/{s}/impressao(s=${protocolo.slug()})}" data-envio-unico>
         <p>
           <label for="impressao">Impressão desta tentativa</label>
           <textarea id="impressao" name="impressao" rows="7" required
@@ -62,6 +62,6 @@
 </main>
 
 <footer th:replace="~{fragments/site :: rodape}"></footer>
-<script src="/js/sessao-teste.js" defer></script>
+<script th:src="@{/js/sessao-teste.js}" defer></script>
 </body>
 </html>

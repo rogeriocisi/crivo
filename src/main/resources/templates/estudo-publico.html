@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Estudo P4 — Crivo</title>
-  <link rel="stylesheet" href="/css/crivo.css">
+  <link rel="stylesheet" th:href="@{/css/crivo.css}">
 </head>
 <body>
 <a class="pular" href="#conteudo">Pular para o conteúdo</a>
@@ -77,11 +77,11 @@
       </dl>
       <p class="nota">
         O congelamento está na trilha de auditoria, e a trilha é carimbada por uma autoridade de carimbo do
-        tempo independente logo depois dele: veja os <a href="/carimbos">carimbos de tempo</a>.
+        tempo independente logo depois dele: veja os <a th:href="@{/carimbos}">carimbos de tempo</a>.
       </p>
       <h3>Documento do pré-registro</h3>
       <pre class="documento" th:text="${estudo.document}">documento</pre>
-      <p class="nota nota-espacada"><a href="/estudos">Todos os estudos</a></p>
+      <p class="nota nota-espacada"><a th:href="@{/estudos}">Todos os estudos</a></p>
     </div>
   </section>
 </main>

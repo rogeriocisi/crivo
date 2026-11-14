@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Para quem vai fazer um pedido de consulta — Crivo</title>
   <th:block th:replace="~{fragments/site :: social('Para quem vai fazer um pedido de consulta — Crivo', 'O que acontece, passo a passo, para quem participa da leitura estruturada automatizada como consulente: o que é pedido, como responder ao questionário e quais são os seus direitos.')}"></th:block>
-  <link rel="stylesheet" href="/css/crivo.css">
+  <link rel="stylesheet" th:href="@{/css/crivo.css}">
 </head>
 <body>
 <a class="pular" href="#conteudo">Pular para o conteúdo</a>
@@ -230,9 +230,9 @@
       </div>
 
       <p class="nota nota-espacada">
-        Para entender o protocolo por inteiro, veja <a href="/#protocolo">como ele funciona</a>, a
-        <a href="/testes/leitura-estruturada">página do protocolo</a> e o
-        <a href="/sobre">vocabulário</a>. Esta página pode ser impressa e entregue em papel.
+        Para entender o protocolo por inteiro, veja <a th:href="@{/#protocolo}">como ele funciona</a>, a
+        <a th:href="@{/testes/leitura-estruturada}">página do protocolo</a> e o
+        <a th:href="@{/sobre}">vocabulário</a>. Esta página pode ser impressa e entregue em papel.
       </p>
     </div>
   </section>

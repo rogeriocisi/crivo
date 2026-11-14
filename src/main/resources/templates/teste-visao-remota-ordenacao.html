@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Ordenação — Crivo</title>
   <th:block th:replace="~{fragments/site :: social('Ordenação — Crivo', 'Protocolos cegos para pesquisa de cognição anômala, com sorteio verificável e trilha de auditoria encadeada por hash.')}"></th:block>
-  <link rel="stylesheet" href="/css/crivo.css">
+  <link rel="stylesheet" th:href="@{/css/crivo.css}">
 </head>
 <body>
 <a class="pular" href="#conteudo">Pular para o conteúdo</a>
@@ -34,12 +34,12 @@
       <ul class="figuras">
         <li th:each="c : ${candidatas.candidates()}">
           <p class="selo">Figura <span th:text="${c.position()}">1</span></p>
-          <img th:src="${c.imagePath()}" th:alt="'Figura ' + ${c.position()}"
+          <img th:src="@{${c.imagePath()}}" th:alt="'Figura ' + ${c.position()}"
                width="400" height="300">
         </li>
       </ul>
 
-      <form method="post" th:action="'/testes/' + ${protocolo.slug()} + '/ordenacao'"
+      <form method="post" th:action="@{/testes/{s}/ordenacao(s=${protocolo.slug()})}"
             data-envio-unico>
         <ul class="ordenacao" data-ordenacao>
           <li th:each="lugar : ${#numbers.sequence(1, candidatas.candidates().size())}">
@@ -72,6 +72,6 @@
 </main>
 
 <footer th:replace="~{fragments/site :: rodape}"></footer>
-<script src="/js/sessao-teste.js" defer></script>
+<script th:src="@{/js/sessao-teste.js}" defer></script>
 </body>
 </html>

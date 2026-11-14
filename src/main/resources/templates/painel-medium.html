@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Painel do médium — Crivo</title>
   <meta name="robots" content="noindex">
-  <link rel="stylesheet" href="/css/crivo.css">
+  <link rel="stylesheet" th:href="@{/css/crivo.css}">
 </head>
 <body>
 <a class="pular" href="#conteudo">Pular para o conteúdo</a>
@@ -118,7 +118,7 @@
   <section>
     <div class="faixa">
       <p class="acoes">
-        <a class="botao botao-vazio" href="/conta">Minha conta</a>
+        <a class="botao botao-vazio" th:href="@{/conta}">Minha conta</a>
       </p>
       <form method="post" th:action="@{/logout}">
         <button class="botao botao-vazio" type="submit">Sair</button>

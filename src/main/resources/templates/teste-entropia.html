@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>A sua parte da semente — Crivo</title>
   <th:block th:replace="~{fragments/site :: social('A sua parte da semente — Crivo', 'Protocolos cegos para pesquisa de cognição anômala, com sorteio verificável e trilha de auditoria encadeada por hash.')}"></th:block>
-  <link rel="stylesheet" href="/css/crivo.css">
+  <link rel="stylesheet" th:href="@{/css/crivo.css}">
 </head>
 <body>
 <a class="pular" href="#conteudo">Pular para o conteúdo</a>
@@ -41,7 +41,7 @@
         desejado é um ataque de pré-imagem ao SHA-256. Ninguém sabe fazer isso.
       </p>
 
-      <form method="post" th:action="'/testes/' + ${protocolo.slug()} + '/entropia'"
+      <form method="post" th:action="@{/testes/{s}/entropia(s=${protocolo.slug()})}"
             data-gerador-nonce>
         <p>
           <label for="campo-nonce">A sua metade, sorteada neste navegador</label>
@@ -72,6 +72,6 @@
 </main>
 
 <footer th:replace="~{fragments/site :: rodape}"></footer>
-<script src="/js/gerador-nonce.js" defer></script>
+<script th:src="@{/js/gerador-nonce.js}" defer></script>
 </body>
 </html>

@@ -21,17 +21,17 @@
   </th:block>
 
   <header th:fragment="topo" class="topo">
-    <a class="marca" href="/">Crivo <span>AIR Lab</span></a>
+    <a class="marca" th:href="@{/}">Crivo <span>AIR Lab</span></a>
     <nav class="navegacao" aria-label="Navegação principal">
-      <a href="/#air-automatizado">Como participar</a>
-      <a href="/historia" th:attr="aria-current=${secaoAtual == 'historia'} ? 'page' : null">História</a>
-      <a href="/referencias" th:attr="aria-current=${secaoAtual == 'referencias'} ? 'page' : null">Referências</a>
-      <a href="/sobre" th:attr="aria-current=${secaoAtual == 'sobre'} ? 'page' : null">Glossário</a>
-      <a href="/consulente" th:attr="aria-current=${secaoAtual == 'consulente'} ? 'page' : null">Para participantes</a>
-      <a href="/testes" th:attr="aria-current=${secaoAtual == 'testes'} ? 'page' : null">Protocolos</a>
-      <a href="/conta/criar" th:unless="${logado}" th:attr="aria-current=${secaoAtual == 'conta'} ? 'page' : null">Criar conta</a>
-      <a href="/login" th:unless="${logado}" th:attr="aria-current=${secaoAtual == 'login'} ? 'page' : null">Entrar</a>
-      <a href="/painel" th:if="${logado}" th:attr="aria-current=${secaoAtual == 'painel'} ? 'page' : null">Painel</a>
+      <a th:href="@{/#air-automatizado}">Como participar</a>
+      <a th:href="@{/historia}" th:attr="aria-current=${secaoAtual == 'historia'} ? 'page' : null">História</a>
+      <a th:href="@{/referencias}" th:attr="aria-current=${secaoAtual == 'referencias'} ? 'page' : null">Referências</a>
+      <a th:href="@{/sobre}" th:attr="aria-current=${secaoAtual == 'sobre'} ? 'page' : null">Glossário</a>
+      <a th:href="@{/consulente}" th:attr="aria-current=${secaoAtual == 'consulente'} ? 'page' : null">Para participantes</a>
+      <a th:href="@{/testes}" th:attr="aria-current=${secaoAtual == 'testes'} ? 'page' : null">Protocolos</a>
+      <a th:href="@{/conta/criar}" th:unless="${logado}" th:attr="aria-current=${secaoAtual == 'conta'} ? 'page' : null">Criar conta</a>
+      <a th:href="@{/login}" th:unless="${logado}" th:attr="aria-current=${secaoAtual == 'login'} ? 'page' : null">Entrar</a>
+      <a th:href="@{/painel}" th:if="${logado}" th:attr="aria-current=${secaoAtual == 'painel'} ? 'page' : null">Painel</a>
     </nav>
   </header>
 
@@ -39,17 +39,17 @@
     <div class="faixa">
       <ul>
         <li><a href="https://github.com/rogeriocisi/crivo">Repositório no GitHub</a></li>
-        <li><a href="/testes">Protocolos e experimentos</a></li>
-        <li><a href="/testes/leitura-estruturada">AIR automatizado</a></li>
-        <li><a href="/estudos">Estudos e relatórios</a></li>
-        <li><a href="/carimbos">Carimbos de tempo</a></li>
-        <li><a href="/conta/criar">Criar conta</a></li>
-        <li><a href="/consulente">Para participantes</a></li>
-        <li><a href="/historia">Linha do tempo</a></li>
-        <li><a href="/referencias">Referências</a></li>
-        <li><a href="/sobre">Glossário</a></li>
-        <li><a href="/#verificar">Como auditar</a></li>
-        <li><a href="/login">Entrar</a></li>
+        <li><a th:href="@{/testes}">Protocolos e experimentos</a></li>
+        <li><a th:href="@{/testes/leitura-estruturada}">AIR automatizado</a></li>
+        <li><a th:href="@{/estudos}">Estudos e relatórios</a></li>
+        <li><a th:href="@{/carimbos}">Carimbos de tempo</a></li>
+        <li><a th:href="@{/conta/criar}">Criar conta</a></li>
+        <li><a th:href="@{/consulente}">Para participantes</a></li>
+        <li><a th:href="@{/historia}">Linha do tempo</a></li>
+        <li><a th:href="@{/referencias}">Referências</a></li>
+        <li><a th:href="@{/sobre}">Glossário</a></li>
+        <li><a th:href="@{/#verificar}">Como auditar</a></li>
+        <li><a th:href="@{/login}">Entrar</a></li>
       </ul>
       <p>
         O Crivo é software livre, desenvolvido por Rogerio Cisi. Nome público <strong>Crivo</strong>;
