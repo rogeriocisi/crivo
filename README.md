@@ -138,7 +138,7 @@ Os testes de cegamento e de integridade da trilha rodam contra um PostgreSQL rea
 
 ### Produção
 
-Perfil `prod`: PostgreSQL do sistema operacional escutando só em `127.0.0.1`, aplicação como serviço (`systemd` no Linux, serviço do Windows), Caddy na borda com HTTPS automático. Os segredos vêm do ambiente ou de um `.env` não versionado — ver [`.env.example`](.env.example). As regras completas estão na Constitution, em *Implantação por fase*.
+Perfil `prod`: o padrão é uma VM gratuita da Oracle Cloud (Always Free, região São Paulo), com o PostgreSQL do sistema operacional escutando só em `127.0.0.1`, a aplicação como serviço `systemd` e o Caddy na borda com HTTPS automático, num domínio próprio. Um PaaS pago (Railway ou Render) com PostgreSQL gerenciado é a alternativa. Os segredos vêm do ambiente ou de um `.env` não versionado — ver [`.env.example`](.env.example). As regras completas estão na Constitution, em *Implantação por fase*.
 
 **Inscrição do P4 em produção.** Fica fechada até que existam envio de e-mail e um contato humano (SPEC E10, travas 3 e 5):
 
