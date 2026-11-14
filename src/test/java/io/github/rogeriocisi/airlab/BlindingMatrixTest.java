@@ -141,7 +141,7 @@ class BlindingMatrixTest {
                 answers, "0".repeat(64), java.time.Instant.EPOCH).toString())
                 .doesNotContain("Sebastiao").doesNotContain("cancer");
         assertThat(new io.github.rogeriocisi.airlab.participant.AccountSignUp("Maria", "maria@exemplo",
-                "segredo-123456", io.github.rogeriocisi.airlab.participant.AccountProfile.SITTER, "conta-v1", true)
+                "segredo-123456", io.github.rogeriocisi.airlab.participant.AccountProfile.SITTER, "conta-v2", true)
                 .toString())
                 .doesNotContain("Maria").doesNotContain("maria@exemplo").doesNotContain("segredo");
     }

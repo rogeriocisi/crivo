@@ -53,7 +53,7 @@ class AccountPagesTest {
                         .param("senha", PASSWORD)
                         .param("confirmacao", PASSWORD)
                         .param("perfil", profile)
-                        .param("termo", "conta-v1")
+                        .param("termo", "conta-v2")
                         .param("aceite", "true"))
                 .andExpect(redirectedUrl("/conta/verifique-seu-email"));
 
@@ -173,7 +173,7 @@ class AccountPagesTest {
                         .param("senha", PASSWORD)
                         .param("confirmacao", PASSWORD)
                         .param("perfil", "medium")
-                        .param("termo", "conta-v1")
+                        .param("termo", "conta-v2")
                         .param("aceite", "true"))
                 .andExpect(redirectedUrl("/conta/verifique-seu-email"));
     }
@@ -187,7 +187,7 @@ class AccountPagesTest {
                         .param("senha", PASSWORD)
                         .param("confirmacao", "outra-senha-qualquer")
                         .param("perfil", "consulente")
-                        .param("termo", "conta-v1")
+                        .param("termo", "conta-v2")
                         .param("aceite", "true"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("A confirmação não é igual à senha.")))
