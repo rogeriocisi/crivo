@@ -1,5 +1,6 @@
 package io.github.rogeriocisi.airlab.web;
 
+import io.github.rogeriocisi.airlab.anchor.AnchorService;
 import io.github.rogeriocisi.airlab.notification.AdminNotices;
 import io.github.rogeriocisi.airlab.notification.Mailer;
 import io.github.rogeriocisi.airlab.participant.AccountService;
@@ -41,11 +42,12 @@ class PanelController {
     private final Mailer mailer;
     private final SignUpGate gate;
     private final Environment environment;
+    private final AnchorService anchors;
 
     PanelController(AccountService accounts, ConsultationService consultations,
                     StructuredStudyService structuredStudies, MediumReadingService mediumReadings,
                     FeedbackService feedback, AdminNotices notices, Mailer mailer, SignUpGate gate,
-                    Environment environment) {
+                    Environment environment, AnchorService anchors) {
         this.accounts = accounts;
         this.consultations = consultations;
         this.structuredStudies = structuredStudies;
@@ -55,6 +57,7 @@ class PanelController {
         this.mailer = mailer;
         this.gate = gate;
         this.environment = environment;
+        this.anchors = anchors;
     }
 
     /** Sends each person to the panel of their profile. */
@@ -118,6 +121,7 @@ class PanelController {
         model.addAttribute("estudo", structuredStudies.current().orElse(null));
         model.addAttribute("progresso", structuredStudies.progress());
         model.addAttribute("sinalizacoesPendentes", accounts.pendingFlags());
+        model.addAttribute("carimbo", anchors.status());
         model.addAttribute("pedidosAbertos", gate.requestsOpen());
         model.addAttribute("avisos", notices.recent(50));
         model.addAttribute("caixaLocal", mailer.localOutbox());

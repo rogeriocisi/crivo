@@ -30,4 +30,16 @@ public interface AuditTrail {
     String headHash();
 
     long size();
+
+    /** The last event, as position and hash, or empty when the trail is empty. */
+    java.util.Optional<AuditHead> head();
+
+    /**
+     * Distinct types of the events after a position, which is what the external anchoring needs to
+     * decide whether a milestone happened since the last stamp (SPEC E8).
+     */
+    java.util.Set<AuditEventType> typesAfter(long position);
+
+    /** Hash stored for the event at a position, or empty when there is none. */
+    java.util.Optional<String> hashAt(long position);
 }

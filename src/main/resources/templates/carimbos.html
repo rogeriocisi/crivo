@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Carimbos de tempo — Crivo</title>
+  <th:block th:replace="~{fragments/site :: social('Carimbos de tempo — Crivo', 'Os carimbos de tempo RFC 3161 que uma autoridade independente emitiu sobre a trilha de auditoria do Crivo, com o token de cada um para conferência por fora.')}"></th:block>
+  <link rel="stylesheet" href="/css/crivo.css">
+</head>
+<body>
+<a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+<div class="faixa">
+  <header th:replace="~{fragments/site :: topo}"></header>
+</div>
+
+<main id="conteudo">
+  <section class="abertura">
+    <div class="faixa">
+      <p class="rotulo">Ancoragem externa</p>
+      <h1>Carimbos de tempo da trilha</h1>
+      <p class="chamada">
+        A trilha de auditoria é encadeada por hash: alterar um evento quebra a cadeia. Mas quem opera a
+        instalação poderia, em tese, reescrever a cadeia inteira. Para fechar essa porta, a cabeça da
+        trilha é carimbada por uma <strong>autoridade independente</strong>, que atesta que aquele hash
+        já existia naquele instante. Como cada evento contém o hash do anterior, um carimbo vale para
+        a trilha inteira até ali — inclusive o pré-registro e o compromisso da semente de cada estudo.
+      </p>
+      <p class="tese">
+        Só o hash sai do servidor: 32 bytes que não revelam nenhum conteúdo nem dado pessoal.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <div class="faixa">
+      <h2>Carimbos concedidos</h2>
+      <p class="nota">
+        Autoridade: <strong th:text="${situacao.authority}">FreeTSA</strong>
+        (<code th:text="${situacao.authorityUrl}">https://freetsa.org/tsr</code>). Carimbada logo depois
+        de cada congelamento, emenda, revelação de semente e relatório, e uma vez por dia se a trilha mudou.
+      </p>
+      <p th:if="${#lists.isEmpty(carimbos)}">Nenhum carimbo concedido ainda.</p>
+      <div class="tabela" th:unless="${#lists.isEmpty(carimbos)}">
+      <table class="tentativas">
+        <thead>
+          <tr><th scope="col">Carimbo</th><th scope="col">Posição na trilha</th><th scope="col">Hash carimbado</th>
+            <th scope="col">Hora atestada (UTC)</th><th scope="col">Token</th></tr>
+        </thead>
+        <tbody>
+          <tr th:each="c : ${carimbos}">
+            <td><code th:text="${c.code}">ANC-0000</code></td>
+            <td th:text="${c.anchoredPosition}">1</td>
+            <td><code class="hash" th:text="${c.anchoredHash}">hash</code></td>
+            <td><time th:datetime="${c.attestedAt}" th:text="${@datas.utc(c.attestedAt)}">2026-11-14</time></td>
+            <td><a th:href="@{'/carimbos/' + ${c.code} + '.tsr'}" th:text="${c.code} + '.tsr'">baixar</a></td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
+    </div>
+  </section>
+
+  <section id="conferir">
+    <div class="faixa">
+      <h2>Como conferir sem confiar no Crivo</h2>
+      <p>
+        Baixe o certificado da autoridade e o da raiz <strong>direto do site dela</strong>, não daqui, e
+        confira o SHA-256 de cada arquivo contra o que ela publica. Estes são os valores que esta
+        instalação usa:
+      </p>
+      <dl class="leituras">
+        <dt>tsa.crt</dt><dd><code class="hash" th:text="${situacao.tsaCertificateSha256}">hash</code></dd>
+        <dt>cacert.pem</dt><dd><code class="hash" th:text="${situacao.caCertificateSha256}">hash</code></dd>
+      </dl>
+      <pre class="documento">curl -O https://freetsa.org/files/tsa.crt
+curl -O https://freetsa.org/files/cacert.pem
+sha256sum tsa.crt cacert.pem
+
+openssl ts -verify -digest HASH_CARIMBADO -in ANC-XXXXXXXX.tsr \
+    -CAfile cacert.pem -untrusted tsa.crt</pre>
+      <p class="nota">
+        No Windows, <code>Get-FileHash</code> no PowerShell dá o SHA-256, e o <code>openssl</code> vem com o
+        Git for Windows. O resultado esperado é <code>Verification: OK</code>.
+      </p>
+      <p>
+        O token prova que o hash existia na hora atestada. Para saber que esse hash é o da trilha
+        publicada — e não um número qualquer —, recalcule a cadeia: <code>airlab verify</code> faz as
+        duas conferências, e o pacote de verificação (E9) trará a trilha para quem quiser refazê-las
+        por fora.
+      </p>
+      <div class="ressalva">
+        <p>
+          <strong>O que este carimbo não prova.</strong> Ele não impede uma reescrita feita antes do
+          primeiro carimbo depois de um marco — em operação normal, cerca de um minuto. E ele vale
+          tanto quanto a autoridade que o assina: é uma só, por enquanto.
+        </p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer th:replace="~{fragments/site :: rodape}"></footer>
+</body>
+</html>

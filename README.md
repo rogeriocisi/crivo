@@ -49,7 +49,7 @@ O Crivo não existe para provar que a mediunidade é real, nem que não é. Ele 
 
 ## Status
 
-🧱 **Fase 0 → 1: fundamentos implementados.** O núcleo de confiança está de pé: trilha de auditoria encadeada por hash, sorteio reproduzível com compromisso → revelação, pré-registro congelável e CLI de verificação. No AIR automatizado (P4), o fluxo inteiro está no ar: contas com perfil fixo, pedido de consulta com compromisso salgado, estudo P4 congelado, pareamento e sorteio do médium automáticos, leitura travada, prazos com reenvio e, no N, desmascaramento, conferência, relatório e devolutiva automáticos. A leitura pareada conduzida por equipe (P1) foi **descontinuada** na SPEC 0.14 e não será implementada: o projeto segue só com o protocolo AIR totalmente automático. Ver a tabela de estado em [`docs/PLAN.md`](docs/PLAN.md).
+🧱 **Fase 0 → 1: fundamentos implementados.** O núcleo de confiança está de pé: trilha de auditoria encadeada por hash e **carimbada por uma autoridade de carimbo do tempo independente** (FreeTSA, RFC 3161, com os tokens públicos em `/carimbos`), sorteio reproduzível com compromisso → revelação, pré-registro congelável e CLI de verificação. No AIR automatizado (P4), o fluxo inteiro está no ar: contas com perfil fixo, pedido de consulta com compromisso salgado, estudo P4 congelado, pareamento e sorteio do médium automáticos, leitura travada, prazos com reenvio e, no N, desmascaramento, conferência, relatório e devolutiva automáticos. A leitura pareada conduzida por equipe (P1) foi **descontinuada** na SPEC 0.14 e não será implementada: o projeto segue só com o protocolo AIR totalmente automático. Ver a tabela de estado em [`docs/PLAN.md`](docs/PLAN.md).
 
 ## Como rodar
 
@@ -150,6 +150,7 @@ Perfil `prod`: PostgreSQL do sistema operacional escutando só em `127.0.0.1`, a
 | `AIRLAB_ADMIN_EMAIL` | Opcional: quem recebe por e-mail os avisos de etapa concluída (sempre aparecem no painel) |
 | `AIRLAB_CEP_REFERENCE` | Referência da aprovação do comitê de ética. Sem ela, o formulário de pedido de consulta fica fechado em produção |
 | `AIRLAB_BASE_URL` | Endereço público do site (por exemplo `https://crivo.exemplo.org`), para o link do e-mail que avisa o médium de um pedido novo |
+| `AIRLAB_TIMESTAMP_ENABLED` | Carimbo de tempo externo da trilha (RFC 3161, FreeTSA). Ligado por padrão; exige saída HTTPS do servidor para `freetsa.org`. Só o hash da cabeça da trilha sai do servidor. Os tokens ficam em `/carimbos` e o `airlab verify` os reconfere |
 
 Antes de abrir a inscrição a pessoas reais, vale a trava 4 do E10: aprovação do comitê de ética (CEP/Plataforma Brasil). O pedido de consulta, que coleta os dados sensíveis, só abre em produção com `AIRLAB_CEP_REFERENCE` definida. E o estudo P4 só congela, em produção, um questionário revisado: a versão `v1-rascunho` vale só no perfil local.
 
@@ -185,7 +186,7 @@ Sem Docker: todo passo do projeto — build, teste, execução, implantação e 
 
 Só o P4 (leitura estruturada automatizada). Ver `docs/SPEC.md`, seção 10.
 
-1. Ancoragem externa da trilha e do pré-registro por carimbo de tempo RFC 3161 (E8)
+1. ~~Ancoragem externa da trilha por carimbo de tempo RFC 3161~~ — fase 1, FreeTSA, feita; falta decidir se o primeiro envio ao médium espera o carimbo, e a fase 2 com OpenTimestamps (E8)
 2. Pacote de verificação do P4 (E9), depois da decisão de LGPD sobre publicar respostas sobre pessoas falecidas
 3. Revisão do questionário `v1-rascunho` pelo pesquisador (questão em aberto 9)
 4. *Dry-run* completo do P4 com participantes fictícios

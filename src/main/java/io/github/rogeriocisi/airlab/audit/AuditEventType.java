@@ -68,5 +68,8 @@ public enum AuditEventType {
     READING_REQUEST_CANCELLED,
     STRUCTURED_READING_LOCKED,
 
-    BLINDING_INCIDENT_REPORTED
+    BLINDING_INCIDENT_REPORTED,
+
+    /** The head of the trail was stamped by an external time stamp authority (SPEC E8, v0.15). */
+    TIMESTAMP_ANCHORED
 }

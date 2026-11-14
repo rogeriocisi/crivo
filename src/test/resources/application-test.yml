@@ -10,6 +10,10 @@ airlab:
     # Fora do diretorio do projeto de proposito: um cluster PostgreSQL nao deve viver
     # em pasta sincronizada (Google Drive, OneDrive) nem em disco de rede.
     data-directory: ${java.io.tmpdir}/airlab-test-pgdata
+  timestamp:
+    # Nenhum teste fala com o FreeTSA de verdade (salvo o FreeTsaLiveTest, sob AIRLAB_LIVE_TSA=true):
+    # os testes chamam o servico com o relogio que precisam e uma autoridade de teste.
+    enabled: false
   p4:
     # Os testes rodam o ciclo do P4 eles mesmos, com o relogio que precisam.
     cycle-enabled: false

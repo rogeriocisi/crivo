@@ -61,7 +61,7 @@ class SecurityConfiguration {
                                 "/consulente", "/login", "/css/**", "/js/**", "/targets/**",
                                 "/testes", "/testes/**", "/error", "/actuator/health",
                                 "/conta/criar", "/conta/verifique-seu-email", "/conta/confirmar",
-                                "/estudos", "/estudos/**")
+                                "/estudos", "/estudos/**", "/carimbos", "/carimbos/**")
                         .permitAll()
                         .requestMatchers("/painel/adm", "/painel/adm/**", "/caixa-de-saida").hasRole("ADMIN")
                         .requestMatchers("/painel/consulente", "/painel/consulente/**").hasRole("SITTER")

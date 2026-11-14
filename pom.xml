@@ -22,6 +22,7 @@
     <spring-modulith.version>1.4.1</spring-modulith.version>
     <embedded-postgres.version>2.1.0</embedded-postgres.version>
     <embedded-postgres-binaries.version>16.9.0</embedded-postgres-binaries.version>
+    <bouncycastle.version>1.87</bouncycastle.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
@@ -80,6 +81,13 @@
     <dependency>
       <groupId>org.springframework.modulith</groupId>
       <artifactId>spring-modulith-starter-core</artifactId>
+    </dependency>
+    <!-- Carimbo de tempo RFC 3161 (SPEC E8, ancoragem externa): montar o pedido e conferir o token
+         assinado (CMS/ASN.1). Justificativa em docs/PLAN.md, secao 7. -->
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcpkix-jdk18on</artifactId>
+      <version>${bouncycastle.version}</version>
     </dependency>
     <dependency>
       <groupId>org.flywaydb</groupId>

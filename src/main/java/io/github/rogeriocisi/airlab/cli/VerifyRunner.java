@@ -2,6 +2,8 @@ package io.github.rogeriocisi.airlab.cli;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.rogeriocisi.airlab.allocation.AllocationEngine;
+import io.github.rogeriocisi.airlab.anchor.AnchorCheck;
+import io.github.rogeriocisi.airlab.anchor.AnchorService;
 import io.github.rogeriocisi.airlab.allocation.AllocationPlan;
 import io.github.rogeriocisi.airlab.allocation.AllocationService;
 import io.github.rogeriocisi.airlab.allocation.AllocationSnapshot;
@@ -32,7 +34,9 @@ import org.springframework.stereotype.Component;
  *   <li>the audit chain recomputes to the stored hashes;</li>
  *   <li>each preregistration document still hashes to its published SHA-256;</li>
  *   <li>for every study whose seed is revealed, rerunning the draw from the seed reproduces
- *       the stored allocations and the published commitment.</li>
+ *       the stored allocations and the published commitment;</li>
+ *   <li>every external time stamp is signed by the pinned authority over exactly the hash of the
+ *       event at its position in the trail (SPEC E8, v0.15).</li>
  * </ol>
  *
  * <p>Exit code 0 when everything checks out, 1 otherwise, so that a scheduled run on either
@@ -46,17 +50,20 @@ class VerifyRunner implements ApplicationRunner {
     private final AllocationService allocations;
     private final ObjectMapper objectMapper;
     private final ApplicationContext context;
+    private final AnchorService anchors;
 
     VerifyRunner(AuditTrail auditTrail,
                  StudyService studies,
                  AllocationService allocations,
                  ObjectMapper objectMapper,
-                 ApplicationContext context) {
+                 ApplicationContext context,
+                 AnchorService anchors) {
         this.auditTrail = auditTrail;
         this.studies = studies;
         this.allocations = allocations;
         this.objectMapper = objectMapper;
         this.context = context;
+        this.anchors = anchors;
     }
 
     @Override
@@ -100,6 +107,19 @@ class VerifyRunner implements ApplicationRunner {
                 }
             }
             verifyDraw(study, failures);
+        }
+        println("");
+
+        println("3) Carimbos de tempo externos");
+        List<AnchorCheck> checks = anchors.verifyAll();
+        if (checks.isEmpty()) {
+            println("   Nenhum carimbo concedido ainda.");
+        }
+        for (AnchorCheck check : checks) {
+            println("   " + check.code() + " (posicao " + check.anchoredPosition() + "): " + check.detail());
+            if (!check.ok()) {
+                failures.add("carimbo " + check.code());
+            }
         }
         println("");
 

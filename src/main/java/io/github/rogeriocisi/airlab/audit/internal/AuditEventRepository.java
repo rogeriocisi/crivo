@@ -11,4 +11,8 @@ interface AuditEventRepository extends JpaRepository<AuditEvent, Long> {
 
     @Query("select e from AuditEvent e order by e.seq asc")
     Stream<AuditEvent> streamAllOrdered();
+
+    @Query("select distinct e.eventType from AuditEvent e where e.seq > :position")
+    java.util.List<io.github.rogeriocisi.airlab.audit.AuditEventType> distinctTypesAfter(
+            @org.springframework.data.repository.query.Param("position") long position);
 }

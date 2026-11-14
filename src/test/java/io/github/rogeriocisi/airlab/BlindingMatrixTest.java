@@ -282,6 +282,20 @@ class BlindingMatrixTest {
                 "account", "name", "email");
     }
 
+    // --- E8, ancoragem externa (SPEC 0.15): o que se publica sobre os carimbos ---------------------
+
+    @Test
+    @DisplayName("E8: carimbos publicados levam posicao, hash e hora; nunca dado pessoal, conteudo ou nota")
+    void anchor_projections_carry_no_personal_content_or_outcome() {
+        for (Class<?> type : new Class<?>[]{io.github.rogeriocisi.airlab.anchor.AnchorView.class,
+                io.github.rogeriocisi.airlab.anchor.AnchorCheck.class,
+                io.github.rogeriocisi.airlab.anchor.AnchorStatus.class}) {
+            assertNoFieldsNamedLike(type, IDENTIFYING_NAMES);
+            assertNoFieldsNamedLike(type, "sitter", "medium", "answer", "resposta", "reading", "score", "nota",
+                    "seed", "salt", "target");
+        }
+    }
+
     private static void assertNoFieldsNamedLike(Class<?> type, String... forbidden) {
         Arrays.stream(type.getRecordComponents()).forEach(component -> {
             String name = component.getName().toLowerCase(Locale.ROOT);

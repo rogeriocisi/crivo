@@ -92,4 +92,24 @@ class HashChainAuditTrail implements AuditTrail {
     public long size() {
         return events.count();
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public java.util.Optional<io.github.rogeriocisi.airlab.audit.AuditHead> head() {
+        return events.findFirstByOrderBySeqDesc().map(event ->
+                new io.github.rogeriocisi.airlab.audit.AuditHead(event.seq(), event.hash(), event.occurredAt()));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public java.util.Set<AuditEventType> typesAfter(long position) {
+        java.util.List<AuditEventType> types = events.distinctTypesAfter(position);
+        return types.isEmpty() ? java.util.Set.of() : java.util.EnumSet.copyOf(types);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public java.util.Optional<String> hashAt(long position) {
+        return events.findById(position).map(AuditEvent::hash);
+    }
 }

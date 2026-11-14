@@ -63,6 +63,23 @@ airlab:
     allow-draft-questionnaire: false
   storage:
     path: ${AIRLAB_STORAGE_PATH:./data/media}
+  # Ancoragem externa da trilha por carimbo de tempo RFC 3161 (SPEC E8, v0.15). So o hash da cabeca
+  # da trilha sai do servidor. Os certificados ficam no repositorio e sao conferidos contra o SHA-256
+  # publicado pela autoridade (freetsa.org) antes de qualquer uso.
+  timestamp:
+    enabled: ${AIRLAB_TIMESTAMP_ENABLED:true}
+    authority: FreeTSA
+    url: ${AIRLAB_TIMESTAMP_URL:https://freetsa.org/tsr}
+    tsa-certificate: classpath:timestamp/freetsa/tsa.crt
+    tsa-certificate-sha256: 8bfb0305bb64e2571ca507552ef3245cb1c2fee8728e0ff8689225081ea13467
+    ca-certificate: classpath:timestamp/freetsa/cacert.pem
+    ca-certificate-sha256: 2151b61137ffa86bf664691ba67e7da0b19f98c758e3d228d5d8ebf27e044438
+    # Marcos (congelamento, emenda, semente revelada, relatorio) sao carimbados na verificacao seguinte;
+    # fora deles, uma trilha que mudou e carimbada a cada intervalo.
+    interval: PT24H
+    retry-after: PT15M
+    timeout: PT20S
+    check-ms: 60000
   identity:
     # Chave AES-256 em Base64 para os campos do esquema identity (LGPD, P6).
     # Em producao vem do ambiente; sem ela a aplicacao nao inicia no perfil prod.

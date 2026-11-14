@@ -1,6 +1,6 @@
 # Plano técnico do MVP — Crivo (AIR Lab)
 
-> Derivado de `CONSTITUTION.md` (prevalece) e de `SPEC.md`. Versão 1.8 · novembro/2026 · 1.8: o P1 é descontinuado (SPEC 0.14) e fica no site só como referência; `session`, `redaction`, `scoring` e `unblinding` congelam no estado atual; os próximos cortes são só do P4 · 1.3: protocolo P4 (SPEC E13), fase A — contas com perfil fixo, e-mail e avisos ao administrador · 1.4: fase B — questionário versionado e pedido de consulta travado com compromisso salgado · 1.5: fase C — módulo `structured`: estudo P4, ciclo automático, pareamento, sorteio do médium, leitura travada e prazos · 1.6: fase D — desmascaramento automático no N, conferência, análise, relatório e devolutiva · 1.7: fase E — contas ligadas, teto por médium e página pública dos estudos.
+> Derivado de `CONSTITUTION.md` (prevalece) e de `SPEC.md`. Versão 1.9 · novembro/2026 · 1.3: protocolo P4 (SPEC E13), fase A — contas com perfil fixo, e-mail e avisos ao administrador · 1.4: fase B — questionário versionado e pedido de consulta travado com compromisso salgado · 1.5: fase C — módulo `structured`: estudo P4, ciclo automático, pareamento, sorteio do médium, leitura travada e prazos · 1.6: fase D — desmascaramento automático no N, conferência, análise, relatório e devolutiva · 1.7: fase E — contas ligadas, teto por médium e página pública dos estudos. · 1.8: o P1 é descontinuado (SPEC 0.14) e fica no site só como referência; `session`, `redaction`, `scoring` e `unblinding` congelam no estado atual; os próximos cortes são só do P4 · 1.9: ancoragem externa da trilha por carimbo RFC 3161 do FreeTSA (SPEC 0.15, E8, fase 1): módulo `anchor`, migração `V22` e a BouncyCastle
 > Este documento registra as decisões de implementação do MVP: estrutura de módulos,
 > esquemas e migrações, execução por linha de comando e justificativa de cada dependência.
 
@@ -48,7 +48,8 @@ quem pode depender; `ModularityTest` verifica isso no build.
 | `session` | E4 | **Congelado (P1 descontinuado)**: só as tabelas da `V6`; não será implementado |
 | `scoring` | E6 | **Congelado (P1 descontinuado)**: escala de cinco categorias e `AccessLink` ficam como estão; nada mais será implementado |
 | `unblinding` | E7 | **Congelado (P1 descontinuado)**: só as tabelas da `V9`. O desmascaramento do P4 mora em `structured` |
-| `cli` | E8 | **Implementado**: `airlab verify` |
+| `cli` | E8 | **Implementado**: `airlab verify` — trilha, pré-registros, sorteios e, desde a 1.9, os carimbos de tempo |
+| `anchor` | E8 | **Implementado (fase 1)**: ancoragem externa da cabeça da trilha por carimbo RFC 3161 do FreeTSA — logo depois de cada marco e a cada 24 horas se a trilha mudou; token conferido antes de guardar (`TimestampProtocol`), certificados fixados pelo SHA-256 publicado (`TrustAnchors`), página pública `/carimbos` com o `.tsr`, e reconferência na CLI |
 | `catalog` | — | **Implementado**: catálogo de protocolos (SPEC 1.1) e questionários versionados do P4 (`Questionnaires`), sem estado e sem dependência de outro módulo |
 | `trials` | E11, E12 | **Implementado**: sessões de autoatendimento dos dois testes de ESP — semente comprometida, alvo derivado só no travamento, impressão travada antes das candidatas, sessão abandonada registrada |
 | `support`, `platform`, `web` | — | Infraestrutura, páginas públicas, criação de conta, entrada e painéis por perfil (consulente, médium, administrador) |
@@ -85,6 +86,7 @@ Flyway, em `src/main/resources/db/migration`. Histórico no esquema `research`.
 | `V19` | P4, fase C: `research.structured_study` (versão do questionário, N, prazo; imutável), `research.structured_pair` (dois pedidos travados; só se desfaz), `research.reading_assignment` (envio a um médium sorteado, com a lista de elegíveis e a ordem dos nomes; só se encerra), `research.structured_reading` (leitura cifrada com compromisso; imutável) e `identity.first_name_release` (a quem o nome foi liberado; só se revoga). Chaves estrangeiras para `consultation_request`: não existe par nem envio sobre pedido que não esteja travado (E13, fase C) |
 | `V20` | P4, fase D: `research.structured_score` (campos comparáveis, as quatro contagens e o `d` de cada par, com o médium revelado) e `research.structured_report` (números da análise e documento canônico com hash). *Trigger*: as duas recusam linha de estudo que não esteja desmascarado, e nenhuma linha muda nem some — nenhuma nota existe antes do desmascaramento, nem por SQL (E13, fase D) |
 | `V21` | P4, fase E: `identity.account_signal` (índice cego do e-mail canônico e do nome normalizado; apagado na desistência) e `identity.account_flag` (duas contas que compartilham um sinal; decidida uma vez, nunca apagada); coluna `max_pairs_per_medium` em `research.structured_study`, nula nos estudos anteriores |
+| `V22` | Ancoragem externa (SPEC 0.15, E8): `audit.timestamp_anchor`, no esquema `audit`, onde a aplicação só tem `SELECT` e `INSERT`. *Trigger* recusa `UPDATE`, `DELETE`, `TRUNCATE` e linha cujo hash não seja o do evento daquela posição da trilha; `CHECK` exige token, hora atestada e série no carimbo concedido e motivo na falha |
 
 **Migração aplicada não se edita**: corrigir o vocabulário dos comentários mudaria o checksum
 do Flyway e quebraria a validação em qualquer banco já migrado — inclusive o do próprio autor.
@@ -240,6 +242,7 @@ O que resta decidir é qual efeito declarar: os efeitos por seção de leitura e
 | `flyway-core`, `flyway-database-postgresql` | Migrações auditáveis | Baixo |
 | `postgresql` (driver) | Banco de referência | Baixo |
 | `io.zonky.test:embedded-postgres` + binários `linux-amd64` e `windows-amd64` (PostgreSQL 16.9) | **Substitui o Testcontainers e o Docker Compose**: PostgreSQL real em desenvolvimento e teste sem container, nos dois sistemas operacionais | Médio: é preciso acompanhar a versão dos binários do PostgreSQL. Aceito porque remove a dependência de Docker, exigida pela regra arquitetural 8. **Os binários 17.x falham no `initdb` em Windows** (`coluna "attnum" não existe`); a versão está fixada em 16.9.0 e só deve subir depois de testada nos dois sistemas |
+| `org.bouncycastle:bcpkix-jdk18on` 1.87 (traz `bcprov` e `bcutil`) | Carimbo de tempo RFC 3161 (SPEC 0.15, E8): montar o pedido e, sobretudo, **conferir o token** — estrutura CMS assinada, ASN.1, `messageImprint`, *nonce* e certificado do signatário. O JDK não tem API para nenhuma das três coisas, e reescrever um verificador de CMS seria o oposto de "maduro e chato" (P8). É a biblioteca de referência do ecossistema Java para isso, mantida há mais de 20 anos | Baixo: uma dependência, versão fixada em `bouncycastle.version`. Usada só no módulo `anchor`; a criptografia do resto do projeto continua JCA puro |
 | `spring-boot-starter-mail` (Jakarta Mail) | Confirmação de conta e avisos do P4 por SMTP externo (SPEC E13, E10 trava 3). É o cliente de e-mail do próprio Spring, sem serviço adicional: em desenvolvimento nada é enviado, em produção basta um SMTP | Baixo, versão alinhada pelo parent |
 | Nenhuma biblioteca de estatística | A análise primária é um teste binomial exato, escrito em aritmética racional (~40 linhas) e validado contra valores de referência | Nenhum |
 | Nenhuma biblioteca de JSON para hashing | A forma canônica é escrita no projeto (`CanonicalJson`), porque o hash não pode mudar quando uma biblioteca muda de versão | Nenhum |
@@ -284,6 +287,10 @@ sorteio na CLI, nunca para calcular hash.
 | `TrialSessionIntegrationTest` | E10 trava 1, E11, E12 | PostgreSQL real: semente só no fim, alvo ausente do banco antes do travamento, impressão não reescrita, tentativa travada imutável, fechamento idempotente, **nada acontece antes da entropia do participante — recusado no serviço e pelo *trigger*** |
 | `TargetDerivationTest` (semente conjunta) | E11 | Unitário: vetor de teste das duas metades, e a ordem das metades faz parte da regra |
 | `TrialRunControllerTest` | E11, E12 | Páginas: passo da entropia antes de qualquer tentativa, reenvio retoma o teste, coluna de figuras só onde há figuras |
+| `TimestampProtocolTest` | E8 | Unitário, contra uma autoridade de teste com assinatura real (`TestAuthority`): resposta concedida confere; outro hash, outro *nonce*, outra autoridade, recusa e resposta ilegível são recusados; token guardado só confere com o próprio hash, e um byte adulterado o derruba |
+| `TrustAnchorsTest` | E8 | Os certificados do FreeTSA no repositório conferem com os SHA-256 publicados e formam cadeia; arquivo fora da fixação, outra raiz e certificado sem o uso crítico de carimbo são recusados |
+| `AnchorIntegrationTest` | P4, P7, E8 | PostgreSQL real, em banco próprio: marco carimbado na verificação seguinte sobre o hash da cabeça e registrado na trilha; mudança comum espera o intervalo; trilha parada não é recarimbada; falha fica fora da trilha e espera para repetir; resposta de outra autoridade ou recusa nunca vira carimbo; banco recusa reescrever, apagar e hash que não é o do evento; a CLI pega token que carimba outro valor; `/carimbos` e o `.tsr` são públicos |
+| `FreeTsaLiveTest` | E8 | Ida e volta real ao FreeTSA com os certificados fixados. Só roda com `AIRLAB_LIVE_TSA=true`, porque o build não pode depender de terceiro no ar |
 
 Os testes de integração usam o mesmo PostgreSQL embarcado, então `./mvnw test` funciona em
 Windows e Linux sem Docker e sem banco instalado.
@@ -338,10 +345,9 @@ Windows e Linux sem Docker e sem banco instalado.
 Só o P4, desde a SPEC 0.14. O P1 está descontinuado e fica no site apenas como referência; os
 módulos dele não recebem mais código.
 
-1. **E8, ancoragem externa**: carimbo de tempo RFC 3161 sobre o documento do pré-registro, o
-   relatório e a cabeça da trilha, para que o compromisso da semente do P4 deixe de depender de
-   ordem atestada pela própria plataforma (SPEC, questão 8). Exige escolher a autoridade de
-   carimbo e justificar a dependência de ASN.1/CMS (P8).
+1. **E8, ancoragem externa**: ~~fase 1, FreeTSA~~ — feita na 1.9. Falta decidir se o primeiro
+   envio ao médium espera o carimbo do congelamento (SPEC, questão 8a) e a fase 2, OpenTimestamps,
+   para não depender de uma autoridade só (questão 8b).
 2. **E9, pacote de verificação do P4**: envios, listas de elegíveis, leituras e a conferência
    refeita por fora. Depende da decisão de LGPD sobre publicar respostas sobre pessoas falecidas.
 3. **Questões em aberto do P4** (SPEC, seção 9): 9 (revisão do questionário), 11 (qualificação de

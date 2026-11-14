@@ -75,6 +75,10 @@
         <dt>Hash do pré-registro (SHA-256)</dt><dd><code class="hash" th:text="${estudo.documentSha256}">hash</code></dd>
         <dt>Compromisso da semente</dt><dd><code class="hash" th:text="${estudo.seedCommitment}">hash</code></dd>
       </dl>
+      <p class="nota">
+        O congelamento está na trilha de auditoria, e a trilha é carimbada por uma autoridade de carimbo do
+        tempo independente logo depois dele: veja os <a href="/carimbos">carimbos de tempo</a>.
+      </p>
       <h3>Documento do pré-registro</h3>
       <pre class="documento" th:text="${estudo.document}">documento</pre>
       <p class="nota nota-espacada"><a href="/estudos">Todos os estudos</a></p>

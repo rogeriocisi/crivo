@@ -1,0 +1,4 @@
+# Certificados de carimbo de tempo (SPEC E8): a aplicacao confere o SHA-256 de cada arquivo contra o
+# valor publicado pela autoridade. Uma conversao de fim de linha (CRLF no Windows) mudaria o hash e a
+# conferencia falharia, entao estes arquivos sao tratados como binarios e nunca convertidos.
+src/main/resources/timestamp/** binary

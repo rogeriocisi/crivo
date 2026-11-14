@@ -34,7 +34,8 @@ Instruções para o Claude Code neste repositório.
 
 ## Convenções
 
-- Pacote base: `io.github.rogeriocisi.airlab`; módulos `study`, `allocation`, `session`, `redaction`, `scoring`, `unblinding`, `analysis`, `participant`, `audit`, `catalog`, `trials`, `notification`, `structured`.
+- Pacote base: `io.github.rogeriocisi.airlab`; módulos `study`, `allocation`, `session`, `redaction`, `scoring`, `unblinding`, `analysis`, `participant`, `audit`, `anchor`, `catalog`, `trials`, `notification`, `structured`.
+- **Carimbo de tempo (E8)**: nenhum teste fala com o FreeTSA de verdade, salvo o `FreeTsaLiveTest`, que só roda com `AIRLAB_LIVE_TSA=true`; os outros usam a `anchor.internal.TestAuthority`, que assina de verdade. Os certificados em `src/main/resources/timestamp/` são binários para o Git (`.gitattributes`): uma conversão de fim de linha mudaria o SHA-256 fixado. Ao trocar de autoridade, atualize os arquivos e os SHA-256 juntos, conferindo-os contra o que a autoridade publica.
 - Código, identificadores e commits em **inglês**; documentação e interface em **português**.
 - Commits pequenos, no padrão Conventional Commits.
 - Vocabulário neutro (P3): *reading*, *item*, *target*, *decoy*, *score*. Nunca linguagem que pressuponha a origem da informação.
@@ -56,7 +57,8 @@ Já implementado (ver `docs/PLAN.md`, seção 2, para a tabela completa):
 10. E13, fase C (módulo `structured`): estudo P4 congelado com o questionário no anexo e compromisso sobre a semente; ciclo agendado que pareia, sorteia o médium, libera os nomes (`identity.first_name_release`), vence prazos e reenvia; leitura do médium travada com compromisso salgado (`structured.ReadingCommitment`)
 11. E13, fase D: desmascaramento automático no N (`structured.internal.StructuredUnblinding`), compromissos conferidos, conferência (`structured.StructuredScoring`), Wilcoxon, sinal e permutação dentro dos estratos (`analysis.StratifiedPermutationTest`), relatório com hash e devolutiva (`structured.FeedbackService`); notas e relatório recusados pelo banco antes do desmascaramento
 12. E13, fase E: sinalização de contas ligadas por índice cego, sem bloqueio e com revisão humana (`AccountService.flags`, `keptApart`); teto de pares por médium no pré-registro; página pública `/estudos`
+13. E8, ancoragem externa, fase 1 (módulo `anchor`, migração `V22`): a cabeça da trilha é carimbada pelo FreeTSA (RFC 3161) logo depois de cada marco e a cada 24 horas se mudou; o token é conferido antes de guardar, contra certificados fixados pelo SHA-256 publicado; `/carimbos` publica os tokens; `airlab verify` os reconfere
 
-A fazer, só no P4: ancoragem externa da trilha e do pré-registro por carimbo de tempo RFC 3161 (E8); pacote de verificação do P4 (E9), que depende da decisão de LGPD sobre publicar respostas; e o que a SPEC, seção 9, ainda deixa em aberto para o P4 (questões 9, 11 e 12).
+A fazer, só no P4: pacote de verificação do P4 (E9), que depende da decisão de LGPD sobre publicar respostas; as decisões da ancoragem que a SPEC deixa em aberto (questão 8: esperar o carimbo antes do primeiro envio, e a fase 2 com OpenTimestamps); e as questões 9, 11 e 12.
 
 A suíte da matriz de cegamento cresce junto: cada linha nova da matriz da SPEC, seção 4, entra como teste antes da tela correspondente.

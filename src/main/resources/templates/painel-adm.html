@@ -50,6 +50,12 @@
         <li>Avisos por e-mail:
           <strong th:text="${avisoPorEmail} ? 'ligados' : 'só no painel'">só no painel</strong>
           <span class="nota" th:unless="${avisoPorEmail}">(defina <code>AIRLAB_ADMIN_EMAIL</code>)</span></li>
+        <li>Carimbo de tempo externo (<span th:text="${carimbo.authority}">FreeTSA</span>):
+          <strong th:text="${carimbo.lastAttestedAt} ? 'último em ' + ${@datas.utc(carimbo.lastAttestedAt)} + ' (UTC)' : 'nenhum ainda'">nenhum ainda</strong>
+          <span th:unless="${carimbo.enabled}"> · <strong>desligado</strong> (<code>AIRLAB_TIMESTAMP_ENABLED</code>)</span>
+          <span class="erro" th:if="${carimbo.failuresSinceLastGrant > 0}"
+                th:text="' · ' + ${carimbo.failuresSinceLastGrant} + ' falha(s) desde o último'">falhas</span>
+          <a href="/carimbos">ver os carimbos</a></li>
       </ul>
     </div>
   </section>
