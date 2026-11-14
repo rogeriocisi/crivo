@@ -151,11 +151,12 @@ class MediumReadingPagesTest {
                 .andExpect(content().string(not(containsString(pair.medium()))));
 
         RequestPostProcessor admin = user("pesquisador").roles("ADMIN", "RESEARCHER");
-        mvc.perform(get("/painel/adm").with(admin))
+        String panel = mvc.perform(get("/painel/adm").with(admin))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Pares ativos")))
                 .andExpect(content().string(not(containsString("Florisbela"))))
-                .andExpect(content().string(not(containsString(pair.medium()))));
+                .andReturn().getResponse().getContentAsString(java.nio.charset.StandardCharsets.UTF_8);
+        assertMediumOnlyInOwnAccountNotice(panel, pair.medium());
         mvc.perform(get("/painel/adm/estudo-p4").with(admin))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("O que foi congelado")))
@@ -172,5 +173,38 @@ class MediumReadingPagesTest {
                 .andExpect(content().string(not(containsString(pair.medium()))))
                 .andExpect(content().string(not(containsString(pair.assignment()))))
                 .andExpect(content().string(not(containsString(pair.code()))));
+    }
+
+    /**
+     * The admin panel lists notices with type, code and time, and "account confirmed" carries the
+     * medium's own code by design (SPEC E13: a notice has only type, pseudonymous code and time). What
+     * the P4 matrix forbids is the pair-to-medium link. So the medium's code may appear only in its own
+     * account notice, never next to a pair code, and nowhere else on the page.
+     *
+     * <p>A plain "the code is absent" check depended on how many notices the shared test database
+     * had: on a fresh database the medium's notice is among the latest shown and the check failed;
+     * on a busy one it had scrolled off and the check passed for the wrong reason.
+     */
+    private static void assertMediumOnlyInOwnAccountNotice(String html, String mediumCode) {
+        java.util.regex.Matcher items = java.util.regex.Pattern
+                .compile("<li>(.*?)</li>", java.util.regex.Pattern.DOTALL).matcher(html);
+        StringBuilder outside = new StringBuilder();
+        int last = 0;
+        while (items.find()) {
+            String item = items.group(1);
+            if (item.contains(mediumCode)) {
+                org.assertj.core.api.Assertions.assertThat(item)
+                        .describedAs("o codigo do medium so pode aparecer no aviso da propria conta")
+                        .contains("Conta confirmada")
+                        .doesNotContain("PAR-")
+                        .doesNotContain("ENV-");
+                outside.append(html, last, items.start());
+                last = items.end();
+            }
+        }
+        outside.append(html.substring(last));
+        org.assertj.core.api.Assertions.assertThat(outside.toString())
+                .describedAs("o codigo do medium nao pode aparecer fora do aviso da propria conta")
+                .doesNotContain(mediumCode);
     }
 }
