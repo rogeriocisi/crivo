@@ -55,6 +55,11 @@ public record Protocol(String code,
         return status == Status.IMPLEMENTED;
     }
 
+    /** Reference only: keeps its code and its page, and is not offered for participation. */
+    public boolean discontinued() {
+        return status == Status.DISCONTINUED;
+    }
+
     /**
      * Whether anyone can take it right now in the browser, anonymously, as a quick test. Only
      * the ESP protocols are like that: the automated AIR protocol runs end to end too, but
@@ -107,7 +112,13 @@ public record Protocol(String code,
         IMPLEMENTED("Disponível"),
         /** Delivered in phases; part of it works today and the page says which part. */
         IN_PROGRESS("Em construção"),
-        PLANNED("Planejado");
+        PLANNED("Planejado"),
+        /**
+         * Will not be implemented, and stays on the site as reference only: its page describes the
+         * design, takes no participants and is not listed among the protocols on offer. The code is
+         * kept because codes are never renumbered.
+         */
+        DISCONTINUED("Só referência, não implementado");
 
         private final String label;
 

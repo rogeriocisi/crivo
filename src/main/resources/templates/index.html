@@ -62,11 +62,10 @@
         <div th:replace="~{fragments/p4 :: o-que-nao-e}"></div>
         <div class="caminhos">
           <article class="caminho">
-            <h3>Protocolos AIR</h3>
+            <h3>Protocolo AIR</h3>
             <p>
-              Dois: a <a href="/testes/leitura-estruturada">leitura estruturada automatizada</a>, em
-              destaque, e a <a href="/testes/leitura-pareada">leitura pareada cega</a>, conduzida por
-              uma equipe com experimentador e redator.
+              A <a href="/testes/leitura-estruturada">leitura estruturada automatizada</a>: do
+              cadastro ao relatório, tudo pelo site, sem ninguém da equipe no circuito.
             </p>
           </article>
           <article class="caminho">
@@ -268,72 +267,76 @@
     <section id="protocolo">
       <div class="faixa">
         <p class="rotulo">Como funciona</p>
-        <h2>A leitura pareada, conduzida por equipe: oito etapas, cada uma presa à anterior</h2>
+        <h2>A leitura estruturada automatizada: oito etapas, cada uma presa à anterior</h2>
         <p>
-          O protocolo AIR mais próximo da literatura é a <strong>leitura pareada com cegamento
-          múltiplo</strong> (P1). Ele não roda sozinho pelo site: precisa de um experimentador que
-          conduza a sessão e de um redator que divida a leitura em itens.
-          Dois falecidos de perfil semelhante formam um par, e a leitura de cada um serve de
-          <em>chamariz</em> para o outro. Só conta como evidência aquilo que se ajusta ao alvo
-          verdadeiro mais do que ao chamariz, de forma consistente e acima do acaso.
+          O protocolo AIR do Crivo roda inteiro pelo site. O consulente e o médium respondem ao
+          <strong>mesmo questionário fechado</strong> sobre a pessoa falecida — o consulente porque a
+          conheceu, o médium conhecendo só o primeiro nome. Dois pedidos de perfil semelhante formam
+          um par, e cada um serve de <em>chamariz</em> para o outro. Só conta como evidência aquilo
+          que se ajusta ao alvo verdadeiro mais do que ao chamariz, de forma consistente e acima do
+          acaso.
         </p>
 
         <ol class="corrente">
           <li>
             <h3>Pré-registro</h3>
             <p>
-              O pesquisador declara hipóteses, critérios de triagem, escala de pontuação, medida
-              primária, regra de parada e tamanho da amostra — e o documento é congelado com hash.
+              O pesquisador declara hipóteses, critérios de inclusão de médiuns, o questionário, o
+              número de pares e o prazo — e o documento é congelado com hash antes do primeiro par.
             </p>
             <span class="selo">o poder estatístico do desenho fica declarado no próprio documento</span>
           </li>
           <li>
-            <h3>Consentimento e cadastro</h3>
+            <h3>Conta e consentimento</h3>
             <p>
-              Cada participante consente de forma específica e destacada. Os dados identificáveis ficam
-              cifrados, em um esquema separado do banco; a pesquisa trabalha só com códigos.
+              Cada pessoa cria uma conta com perfil fixo — consulente ou médium, nunca os dois — e
+              confirma o e-mail. Os dados identificáveis ficam cifrados, num esquema separado do banco.
             </p>
           </li>
           <li>
-            <h3>Pareamento</h3>
-            <p>Os alvos são pareados pelos critérios declarados antes da coleta, nunca depois.</p>
-          </li>
-          <li>
-            <h3>Sorteio verificável</h3>
+            <h3>Pedido travado</h3>
             <p>
-              O sistema sorteia médium, experimentador, ordem das leituras, horários e ordem de
-              apresentação, e publica o compromisso criptográfico do resultado.
+              O consulente informa o primeiro nome e responde ao questionário. As respostas travam na
+              hora, e a trilha recebe um compromisso salgado delas, antes de qualquer médium ver o pedido.
             </p>
-            <span class="selo">compromisso → revelação: qualquer pessoa refaz o sorteio no fim</span>
+            <span class="selo">compromisso → revelação: as respostas não podem mudar depois</span>
           </li>
           <li>
-            <h3>Sessões</h3>
+            <h3>Pareamento e sorteio</h3>
             <p>
-              O experimentador conduz a sessão conhecendo apenas o primeiro nome do alvo, liberado por
-              uma via única e auditada. O médium nunca tem contato com quem avalia.
+              Pedidos do mesmo gênero, faixa etária e período formam pares, e o médium de cada par é
+              sorteado a partir de uma semente cujo compromisso foi publicado no pré-registro.
             </p>
           </li>
           <li>
-            <h3>Redação em itens</h3>
+            <h3>Leitura</h3>
             <p>
-              A leitura vira uma lista numerada, um item por afirmação verificável, feita por quem não
-              sabe a quem a leitura pertence. Nomes, datas e referências à sessão saem.
+              O médium recebe só os dois primeiros nomes do par, em ordem sorteada, e responde ao
+              questionário para cada um. Ao enviar, a leitura trava com hash na trilha.
             </p>
           </li>
           <li>
-            <h3>Avaliação cega</h3>
+            <h3>Desmascaramento automático</h3>
             <p>
-              Cada participante recebe duas leituras sem rótulo — a sua e o chamariz — pontua item a
-              item, dá uma nota global a cada uma e escolhe qual acredita ser a sua. Ao enviar, trava.
+              Quando o número de pares declarado se completa, o próprio sistema encerra a coleta e
+              revela a semente e os sais. Ninguém escolhe o momento — nem o administrador.
             </p>
           </li>
           <li>
-            <h3>Desmascaramento e análise</h3>
+            <h3>Conferência e análise</h3>
             <p>
-              Fechadas todas as avaliações, a operação irreversível revela a semente. A análise
-              pré-registrada roda, e o relatório sai no mesmo formato para qualquer resultado.
+              As respostas são comparadas campo a campo, contra o alvo e contra o chamariz, por uma
+              regra determinística e publicada. A análise pré-registrada roda, e o relatório sai no
+              mesmo formato para qualquer resultado.
             </p>
-            <span class="selo">tudo isso deixa rastro na trilha encadeada por hash</span>
+            <span class="selo">nenhuma nota existe antes do desmascaramento, nem no banco</span>
+          </li>
+          <li>
+            <h3>Devolutiva</h3>
+            <p>
+              Cada consulente vê as respostas do médium para o seu alvo ao lado das suas; cada médium
+              vê as contagens das próprias leituras. Tudo deixa rastro na trilha encadeada por hash.
+            </p>
           </li>
         </ol>
       </div>
@@ -502,8 +505,8 @@
         </div>
 
         <p class="nota nota-espacada">
-          Foi convidado a participar de um estudo como consulente?
-          <a href="/consulente">Há uma página só sobre isso</a>, com o passo a passo da avaliação, o
+          Vai participar como consulente?
+          <a href="/consulente">Há uma página só sobre isso</a>, com o passo a passo do pedido, o
           que se pede de você e os seus direitos. Ela pode ser impressa e entregue em papel.
         </p>
       </div>
@@ -597,9 +600,9 @@
             trilha de auditoria, sorteio verificável, pré-registro e análise. Na leitura estruturada
             automatizada já funcionam as contas com perfil, o pedido de consulta com compromisso
             publicado, o estudo congelado, o pareamento e o sorteio do médium automáticos, a leitura
-            travada e, no fim, o desmascaramento, a conferência, o relatório e a devolutiva automáticos. Na leitura pareada, as etapas de campo têm esquema de banco e regras
-            definidas, mas ainda não têm interface. A plataforma ainda não foi usada com participantes
-            reais.
+            travada e, no fim, o desmascaramento, a conferência, o relatório e a devolutiva automáticos.
+            A leitura pareada conduzida por equipe, que chegou a ser especificada, foi descontinuada.
+            A plataforma ainda não foi usada com participantes reais.
           </p>
         </div>
       </div>

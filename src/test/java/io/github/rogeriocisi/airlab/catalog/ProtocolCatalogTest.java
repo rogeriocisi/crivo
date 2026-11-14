@@ -81,14 +81,25 @@ class ProtocolCatalogTest {
     }
 
     @Test
-    @DisplayName("as duas secoes cobrem o catalogo inteiro, com o AIR automatizado em destaque")
+    @DisplayName("as duas secoes cobrem o catalogo inteiro menos o descontinuado, com o AIR automatizado")
     void the_two_sections_cover_the_catalog() {
-        assertThat(ProtocolCatalog.air().stream().map(Protocol::code)).containsExactly("P4", "P1");
+        assertThat(ProtocolCatalog.air().stream().map(Protocol::code)).containsExactly("P4");
         assertThat(ProtocolCatalog.extras().stream().map(Protocol::code)).containsExactly("P2", "P3");
         assertThat(ProtocolCatalog.air()).allMatch(p -> p.branch() == Protocol.Branch.AIR);
         assertThat(ProtocolCatalog.extras()).allMatch(p -> p.branch() == Protocol.Branch.ESP);
         assertThat(ProtocolCatalog.air().size() + ProtocolCatalog.extras().size())
-                .isEqualTo(ProtocolCatalog.all().size());
+                .isEqualTo((int) ProtocolCatalog.all().stream().filter(p -> !p.discontinued()).count());
+    }
+
+    @Test
+    @DisplayName("a leitura pareada (P1) esta descontinuada: mantem o codigo e sai das secoes do site")
+    void the_paired_reading_is_discontinued_and_not_offered() {
+        Protocol paired = ProtocolCatalog.pairedReading();
+        assertThat(paired.discontinued()).isTrue();
+        assertThat(paired.status().label()).isEqualTo("Só referência, não implementado");
+        assertThat(ProtocolCatalog.byCode("P1")).contains(paired);
+        assertThat(ProtocolCatalog.air()).doesNotContain(paired);
+        assertThat(ProtocolCatalog.extras()).doesNotContain(paired);
     }
 
     @Test

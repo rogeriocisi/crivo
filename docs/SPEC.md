@@ -3,7 +3,7 @@
 > Spec de alto nível. Cada épico abaixo vira uma spec detalhada própria antes da implementação.
 > Conformidade obrigatória com `CONSTITUTION.md`. Contexto e motivação em `VISION.md`. Fundamentação científica em `REFERENCES.md`.
 >
-> Versão 0.13 · novembro/2026 · 0.2: seção 2.1 "O que é uma leitura", regra "um item = uma afirmação" e referências · 0.3: critérios de inclusão de médiuns no pré-registro, regra de parada vinculante e unidade de análise por par (seções 5 e 9) · 0.4: medida primária pareada com Wilcoxon exato, teste de permutação de Pratt e Birge, controles de comprimento e de pistas temporais, escala de itens de cinco categorias e desvios de protocolo — derivados dos artigos em `references/` · 0.5: *sitter* passa a ser **consulente** em todo o texto em português, com a forma inglesa registrada no glossário e mantida nos identificadores do código · 0.6: épico E10, autoatendimento e automação, com as travas obrigatórias · 0.7: o Crivo passa a ser uma plataforma de protocolos de cognição anômala, com catálogo de protocolos (seção 1.1) e os épicos E11 e E12 — dois testes integralmente automatizáveis · 0.8: a semente dos testes de autoatendimento passa a ter duas metades, uma do servidor e uma do participante, o que remove a necessidade de confiar na plataforma quanto à ordem dos fatos · 0.9: protocolo **P4, leitura estruturada automatizada** (épico E13), o ramo AIR integralmente automatizado: contas com perfil fixo (consulente ou médium), questionário fechado preenchido pelo consulente e pelo médium e conferência automática contra o alvo e o chamariz; o catálogo passa a se dividir em **protocolos AIR** e **experimentos extras** · 0.10: fase B do P4 — questionário versionado `v1-rascunho`, pedido de consulta travado com compromisso salgado, rascunho só na sessão, campos de pareamento iguais aos do P1 e formulário fechado em produção sem referência do CEP; seção 10 atualizada · 0.11: fase C do P4 — estudo P4 congelado numa tela com o questionário no anexo, compromisso sobre a semente, ciclo automático de pareamento e envio, um médium sorteado por par, leitura travada com compromisso salgado, prazo com reenvio, e nenhum código de médium na trilha antes do desmascaramento · 0.12: fase D do P4 — desmascaramento automático no N, conferência com integridade verificada, análise primária e secundárias, relatório com hash, devolutiva do consulente e do médium; e o esclarecimento, na página inicial, de que o P4 não é mensagem do falecido nem resposta a perguntas · 0.13: fase E do P4 — sinalização de contas ligadas por índice cego, sem bloqueio e com revisão humana; teto de pares por médium no pré-registro; página pública dos estudos e relatórios
+> Versão 0.14 · novembro/2026 · 0.14: **o P1, leitura pareada conduzida por equipe, é descontinuado** — não será implementado; o Crivo segue só com o protocolo AIR totalmente automático (P4). Os épicos E4 a E7, que eram do P1, ficam no texto como registro e sem implementação · 0.2: seção 2.1 "O que é uma leitura", regra "um item = uma afirmação" e referências · 0.3: critérios de inclusão de médiuns no pré-registro, regra de parada vinculante e unidade de análise por par (seções 5 e 9) · 0.4: medida primária pareada com Wilcoxon exato, teste de permutação de Pratt e Birge, controles de comprimento e de pistas temporais, escala de itens de cinco categorias e desvios de protocolo — derivados dos artigos em `references/` · 0.5: *sitter* passa a ser **consulente** em todo o texto em português, com a forma inglesa registrada no glossário e mantida nos identificadores do código · 0.6: épico E10, autoatendimento e automação, com as travas obrigatórias · 0.7: o Crivo passa a ser uma plataforma de protocolos de cognição anômala, com catálogo de protocolos (seção 1.1) e os épicos E11 e E12 — dois testes integralmente automatizáveis · 0.8: a semente dos testes de autoatendimento passa a ter duas metades, uma do servidor e uma do participante, o que remove a necessidade de confiar na plataforma quanto à ordem dos fatos · 0.9: protocolo **P4, leitura estruturada automatizada** (épico E13), o ramo AIR integralmente automatizado: contas com perfil fixo (consulente ou médium), questionário fechado preenchido pelo consulente e pelo médium e conferência automática contra o alvo e o chamariz; o catálogo passa a se dividir em **protocolos AIR** e **experimentos extras** · 0.10: fase B do P4 — questionário versionado `v1-rascunho`, pedido de consulta travado com compromisso salgado, rascunho só na sessão, campos de pareamento iguais aos do P1 e formulário fechado em produção sem referência do CEP; seção 10 atualizada · 0.11: fase C do P4 — estudo P4 congelado numa tela com o questionário no anexo, compromisso sobre a semente, ciclo automático de pareamento e envio, um médium sorteado por par, leitura travada com compromisso salgado, prazo com reenvio, e nenhum código de médium na trilha antes do desmascaramento · 0.12: fase D do P4 — desmascaramento automático no N, conferência com integridade verificada, análise primária e secundárias, relatório com hash, devolutiva do consulente e do médium; e o esclarecimento, na página inicial, de que o P4 não é mensagem do falecido nem resposta a perguntas · 0.13: fase E do P4 — sinalização de contas ligadas por índice cego, sem bloqueio e com revisão humana; teto de pares por médium no pré-registro; página pública dos estudos e relatórios
 
 ---
 
@@ -13,7 +13,9 @@ O Crivo é uma plataforma de **protocolos cegos para pesquisa de cognição anô
 
 A distinção entre os dois ramos não é cosmética. Na literatura, *anomalous information reception* designa especificamente a obtenção de informação sobre um falecido sem via sensorial; um teste de precognição com alvo gerado depois da resposta não é AIR, e chamá-lo assim seria impreciso. O termo que cobre os dois é **cognição anômala**, e é o que a plataforma usa. O codinome técnico **AIR Lab** permanece nos pacotes Java, na CLI e nos artefatos Maven, como herança do primeiro protocolo.
 
-O ramo AIR tem dois protocolos. O **P1** é conduzido por uma equipe (experimentador *proxy* e redator) e é o mais próximo da literatura. O **P4** roda inteiro pelo site, sem ninguém da equipe no circuito: o consulente responde a um questionário fechado sobre o falecido, o médium responde ao mesmo questionário conhecendo só o primeiro nome, e o sistema confere as respostas. Os dois convivem porque cada um paga um preço diferente, e cada um declara o seu (seção 1.1, regra 2).
+O ramo AIR tem **um protocolo ativo, o P4**, que roda inteiro pelo site, sem ninguém da equipe no circuito: o consulente responde a um questionário fechado sobre o falecido, o médium responde ao mesmo questionário conhecendo só o primeiro nome, e o sistema confere as respostas. O preço que ele paga — a ausência de experimentador *proxy* e de resposta livre — está declarado entre os seus limites (seção 1.1, regra 2).
+
+**Decisão da v0.14: o P1 está descontinuado.** A leitura pareada, conduzida por uma equipe (experimentador *proxy* e redator) e mais próxima da literatura, não será implementada. O projeto concentra o esforço no que pode rodar sem equipe e com pontuação objetiva. O P1 **fica no site apenas como referência**: a página dele descreve o desenho e os limites, não tem inscrição e diz que não é implementado; o catálogo não o oferece entre os protocolos para participar. O código P1 fica reservado. O que o P1 já tinha e é compartilhado com o P4 — estudo e pré-registro (E1), participantes (E2), sorteio (E3), trilha e CLI (E8) — continua valendo; os épicos exclusivos do P1 (E4 a E7) ficam nesta especificação só como registro.
 
 **Dentro do escopo**: um estudo por vez e por protocolo, um pesquisador (o **administrador** da instalação), exportação de dados e verificação; o P4 com inscrição aberta por conta; os dois testes de ESP em autoatendimento público.
 **Fora do escopo**: multi-tenant, ganzfeld (exige emissor e cabine), presentimento e DMILS (exigem sensores), ESP em sonho (exige pernoite), juízes externos remunerados, aplicativo mobile, integração com IA na avaliação.
@@ -25,7 +27,7 @@ O catálogo se apresenta em duas seções: **protocolos AIR**, com o P4 em desta
 | Seção | Código | Nome público | Ramo | Acaso | Automação | Épico |
 |---|---|---|---|---|---|---|
 | Protocolos AIR | **P4** | Leitura estruturada automatizada | AIR (mediunidade) | 50% | **Integral**: conta, pedido, leitura, conferência e avisos sem ninguém da equipe | E13 |
-| Protocolos AIR | **P1** | Leitura pareada cega | AIR (mediunidade) | 50% | Parcial: exige equipe — sessão síncrona com experimentador *proxy* e redator | E1–E9 |
+| — | **P1** | Leitura pareada cega — **descontinuado (0.14)** | AIR (mediunidade) | 50% | Parcial: exigia equipe — sessão síncrona com experimentador *proxy* e redator | E1–E9 (E4–E7 não serão implementados) |
 | Experimentos extras | **P2** | Escolha forçada precognitiva | ESP (precognição) | 25% | **Integral** | E11 |
 | Experimentos extras | **P3** | Visão remota com quatro alvos | ESP (resposta livre) | 25% | **Integral** | E12 |
 
@@ -37,7 +39,8 @@ Regras do catálogo:
 2. **Cada protocolo declara o que o seu resultado não sustenta.** O P1 não distingue entre sobrevivência e telepatia com os vivos; o P2 e o P3 não dizem nada sobre falecidos. Isso é texto obrigatório na página do protocolo, não nota de rodapé.
 3. **O acaso é declarado e verificável**, não estimado a partir dos dados.
 4. **P2 e P3 não substituem o P1.** Eles existem porque são integralmente automatizáveis e porque qualquer pessoa pode conferir a lisura do próprio teste depois; servem de porta de entrada e de vitrine do método, não de prova sobre mediunidade.
-5. **P4 e P1 não se substituem.** O P4 ganha pontuação objetiva — ninguém julga se um item "encaixa" — e automação integral; perde o experimentador *proxy* e a resposta livre. O P1 faz o caminho inverso. Um resultado de um não vale como replicação do outro.
+5. **Um resultado do P4 não vale como replicação dos estudos com *proxy* da literatura.** O P4 ganha pontuação objetiva — ninguém julga se um item "encaixa" — e automação integral; perde o experimentador *proxy* e a resposta livre. Era esse o caminho inverso do P1, agora descontinuado.
+6. **Protocolo descontinuado fica só como referência**: mantém o código e a página, com o status "Só referência, não implementado", e sai da lista de protocolos para participar. Códigos nunca são reaproveitados.
 
 ## 2. Glossário
 
@@ -126,6 +129,8 @@ Esta matriz é a **especificação de segurança central**. Cada célula "✗" v
 
 ## 5. Épicos
 
+> **E4, E5, E6 e E7 eram do P1 e estão descontinuados desde a v0.14.** O texto deles fica como registro das decisões de desenho, e nada neles deve ser implementado. E1, E2, E3, E8 e E9 continuam valendo para o P4 naquilo em que se aplicam; o E10 e o E13 são o centro do projeto.
+
 ### E1. Estudo e pré-registro
 **Objetivo**: criar um estudo e congelar o pré-registro de forma verificável.
 - Criar o estudo com título, protocolo (v1: pareado), hipóteses, **critérios de recrutamento e triagem de médiuns**, critérios de pareamento, escalas de pontuação, análise primária e secundária, regras de exclusão, **medida primária**, **efeito esperado**, **unidade de análise**, **regra de parada**, tamanho-alvo da amostra e **diferença máxima de itens entre as duas leituras de um par**.
@@ -154,7 +159,7 @@ Esta matriz é a **especificação de segurança central**. Cada célula "✗" v
 
 **Aceite**: com a semente revelada, uma CLI reproduz exatamente as mesmas alocações.
 
-### E4. Sessões
+### E4. Sessões — *descontinuado (P1)*
 **Objetivo**: conduzir as leituras sem vazamento.
 - Agenda de sessões **contrabalanceada**: o sorteio atribui índices de dia e de horário, de modo que nenhum par ocupe sistematicamente o primeiro ou o último horário do dia. É a defesa contra pistas temporais — uma referência ao tempo dentro da leitura ("aquele acidente de hoje") permite ao consulente deduzir qual leitura é a dele. O'Keeffe e Wiseman (2005) foram os primeiros a controlar isso.
 - O experimentador vê apenas o primeiro nome do alvo e um roteiro padronizado.
@@ -164,7 +169,7 @@ Esta matriz é a **especificação de segurança central**. Cada célula "✗" v
 
 **Aceite**: o arquivo armazenado não contém nome original, metadados de dispositivo nem dados de geolocalização.
 
-### E5. Redação
+### E5. Redação — *descontinuado (P1)*
 **Objetivo**: transformar a leitura em lista de itens avaliáveis, sem pistas espúrias.
 - O redator vê a transcrição sem saber a qual consulente ela pertence.
 - Divide em itens numerados, com **uma única afirmação verificável por item**. Itens com várias afirmações dificultam a pontuação, uma crítica feita ao formato de O'Keeffe & Wiseman, 2005 (ver `REFERENCES.md`).
@@ -173,7 +178,7 @@ Esta matriz é a **especificação de segurança central**. Cada célula "✗" v
 
 **Aceite**: as duas leituras de um par chegam ao consulente em formato idêntico e sem o primeiro nome.
 
-### E6. Avaliação cega
+### E6. Avaliação cega — *descontinuado (P1)*
 **Objetivo**: o consulente avalia as duas leituras do par sem saber qual é a dele.
 - Acesso por link de uso único e expirável (sem conta permanente). Vale para o P1; no P4 o consulente tem conta, mas não avalia leitura nenhuma (E13).
 - Para cada item: escala pré-registrada de cinco categorias — *encaixe óbvio / encaixe parcial ou interpretado / sem encaixe / **encaixa em outra pessoa próxima** / não sei avaliar*. As duas categorias intermediárias exigem que o avaliador **escreva a interpretação**, e só o encaixe óbvio conta para a acurácia da medida primária. A categoria "encaixa em outra pessoa" existe porque, sem ela, o item que descreve um parente vivo é forçado a virar acerto ou erro, e em qualquer dos dois casos a explicação alternativa desaparece da conta.
@@ -184,7 +189,7 @@ Esta matriz é a **especificação de segurança central**. Cada célula "✗" v
 
 **Aceite**: a interface e a API do consulente não expõem nenhum identificador que permita inferir qual leitura é a dele, nem por ordem, ID sequencial ou data.
 
-### E7. Desmascaramento e análise
+### E7. Desmascaramento e análise — *descontinuado (P1); no P4, ver E13, fase D*
 **Objetivo**: revelar e analisar exatamente como foi pré-registrado.
 - Desmascaramento permitido só quando todas as avaliações estiverem fechadas (ou o prazo pré-registrado tiver expirado). É uma ação explícita e irreversível.
 - Revelação da semente.
@@ -583,33 +588,32 @@ FirstNameRelease(identity) ──1 ReadingAssignment, ──1 ConsultationReques
 
 ## 8. Corte do MVP
 
-**Entra**: E1, E2 (com termo simples), E3, E4 (sem transcrição automática), E5, E6, E7 (somente a análise primária), E8 (cadeia de hashes e CLI de verificação básica).
-**Fica para depois**: transcrição local, espelho no OSF, análise secundária completa, E9 completo, painel de acompanhamento.
+O MVP é o **P4 de ponta a ponta** (E13, fases A a E, implementadas), sobre E1, E2, E3 e E8. Desde a v0.14 o corte não inclui mais o P1 (E4 a E7).
+**Fica para depois**: ancoragem externa por carimbo de tempo (E8), espelho no OSF, pacote de verificação do P4 (E9).
 
-**Marco de validação do MVP**: um *dry-run* completo com participantes fictícios (pessoas reais simulando os papéis com falecidos inventados). O objetivo é exercitar todo o fluxo e tentar quebrar o cegamento de propósito antes do piloto real.
+**Marco de validação do MVP**: um *dry-run* completo do P4 com participantes fictícios (pessoas reais simulando consulentes e médiuns, com falecidos inventados). O objetivo é exercitar todo o fluxo e tentar quebrar o cegamento de propósito antes do piloto real.
 
 ## 9. Questões em aberto
 
 1. **Tamanho da amostra**: precisa de cálculo de poder formal, e agora com uma consequência prática em cima da mesa. A dependência entre os dois consulentes de um par **está decidida** (unidade de análise = par, ver E7), e isso tem custo: as cerca de 70 escolhas independentes necessárias para detectar 65% contra 50% (α = 0,05 unilateral, poder de 80%) passam a significar **70 pares, ou seja 140 consulentes e 140 sessões**, não 70 consulentes. A alternativa é usar as duas escolhas de cada par com um método que corrija o agrupamento (por exemplo GEE ou erro-padrão robusto por cluster), o que recupera parte do poder mas exige uma decisão estatística e uma implementação que a v1 não tem. **Decidido na v0.4**: a medida primária passa a ser a diferença pareada contínua, que mantém o par como unidade e recupera o poder — cerca de 30 pares para d = 0,5, contra 240 pares para 58% de acerto na escolha forçada. O cálculo está implementado (`PowerCheck`) e entra no documento congelado. **O que resta decidir**: qual efeito declarar. Os efeitos por seção de leitura em Beischel et al. (2015) vão de d = 0,49 a 0,75, e a seção escolhida muda o tamanho do estudo.
-2. **Escala de itens**: qual escala usar e como tratar o "não sei avaliar".
-3. **Primeiro nome**: dar ao médium o nome real ou um pseudônimo? (Isso afeta a ética e a validade.)
+2. **Escala de itens** — *sem objeto desde a v0.14*: era do P1. No P4 a conferência é por igualdade entre opções, e o "não sei" tira o campo da comparação do par inteiro.
+3. **Primeiro nome**: dar ao médium o nome real ou um pseudônimo? (Isso afeta a ética e a validade.) No P4, ver a questão 10.
 4. **Recrutamento de médiuns**: o campo de critérios já existe no pré-registro e é obrigatório; falta decidir o conteúdo — quais critérios de inclusão e se haverá triagem prévia. Se houver triagem por desempenho, ela precisa estar descrita ali, porque é exatamente o ponto que a crítica usa para explicar resultados positivos.
 5. **CEP**: o estudo terá fins de publicação acadêmica? Se sim, a submissão à Plataforma Brasil vem antes do piloto.
 6. **Devolutiva**: o que cada participante recebe ao final, e como comunicar resultados nulos com cuidado.
 7. **Reconciliação** com a documentação de pesquisa já existente no Google Drive (*TransferênciaAnômalaInformação*).
 
-8. **Confiança no compromisso** — *resolvido para os testes públicos; em aberto para o P1*. A
+8. **Confiança no compromisso** — *resolvido para os testes públicos; em aberto para o P4*. A
    entropia do participante está implementada (E11, E12): a semente tem duas metades, o servidor
    se compromete com a dele antes de ver a do participante, e sem a metade do participante não
    existe tentativa. Para o P2 e o P3, a prova não depende mais de ordem atestada por quem opera
    a plataforma.
 
-   Continua em aberto para o **P1**, onde o sorteio é do pesquisador e os participantes não
-   estão no circuito no momento do compromisso. Ali a saída é a **ancoragem externa** da cabeça
-   da cadeia de auditoria (RFC 3161 ou OpenTimestamps, já previstos no E8), que torna reescrita
-   retroativa detectável por terceiros. Vale considerar também aplicar entropia de terceiros ao
-   sorteio do P1 — por exemplo, do próprio consulente no momento do cadastro do alvo —, mas isso
-   muda o fluxo do E3 e precisa de spec própria.
+   Continua em aberto para o **P4**, em que o compromisso da semente e o do pré-registro são
+   atestados pela própria plataforma, e nenhum participante está no circuito no momento do
+   congelamento. A saída é a **ancoragem externa** do pré-registro e da cabeça da cadeia de
+   auditoria (RFC 3161 ou OpenTimestamps, já previstos no E8), que torna reescrita retroativa
+   detectável por terceiros. (A questão valia também para o P1, descontinuado na v0.14.)
 
 9. **P4 — questionário**: o rascunho do anexo do E13 precisa de revisão do pesquisador. Os
    critérios são: opções mutuamente exclusivas, poucas opções dominantes, nenhum campo dedutível
@@ -627,5 +631,9 @@ FirstNameRelease(identity) ──1 ReadingAssignment, ──1 ConsultationReques
 
 Os passos iniciais desta seção estão feitos: os documentos estão em `/docs` e no `CLAUDE.md`, o plano técnico existe (`docs/PLAN.md`), E8 e E3 estão implementados, e a matriz de cegamento é uma suíte de testes (`BlindingMatrixTest`) que cresce antes de cada tela. O estado detalhado por épico está no plano técnico. A ordem daqui em diante:
 
-1. **P1**: E4 (sessões) e E5 (redação), consumindo o evento do sorteio; E6 (avaliação cega); E7 (desmascaramento e relatório).
-2. **E8/E9**: carimbo de tempo RFC 3161 e pacote de verificação, que no P4 publica também os envios, as listas de elegíveis e as leituras.
+Desde a v0.14, só o P4.
+
+1. **E8**: ancoragem externa do documento do pré-registro, do relatório e da cabeça da trilha por carimbo de tempo RFC 3161 (questão 8).
+2. **E9**: pacote de verificação do P4, com os envios, as listas de elegíveis e as leituras — depende da decisão de LGPD sobre publicar respostas sobre pessoas falecidas.
+3. **Questões 9, 11 e 12**: revisão do questionário, qualificação de médiuns e o valor do teto de um estudo real.
+4. ***Dry-run*** do P4 (seção 8).

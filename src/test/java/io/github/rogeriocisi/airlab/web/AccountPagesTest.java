@@ -82,7 +82,25 @@ class AccountPagesTest {
                 .andExpect(content().string(containsString("Como participar, passo a passo")))
                 .andExpect(content().string(containsString("O que cada perfil vê")));
         mvc.perform(get("/")).andExpect(status().isOk())
-                .andExpect(content().string(containsString("id=\"air-automatizado\"")));
+                .andExpect(content().string(containsString("id=\"air-automatizado\"")))
+                .andExpect(content().string(containsString("A leitura estruturada automatizada: oito etapas")));
+        mvc.perform(get("/consulente")).andExpect(status().isOk())
+                .andExpect(content().string(containsString("Você faz o pedido")))
+                .andExpect(content().string(org.hamcrest.Matchers.not(containsString("link de uso único"))));
+        mvc.perform(get("/sobre")).andExpect(status().isOk())
+                .andExpect(content().string(containsString("Questionário")));
+    }
+
+    @Test
+    @DisplayName("a leitura pareada (P1) fica so como referencia: fora da lista de protocolos, pagina sem inscricao")
+    void the_paired_reading_is_reference_only() throws Exception {
+        mvc.perform(get("/testes")).andExpect(status().isOk())
+                .andExpect(content().string(org.hamcrest.Matchers.not(containsString("<span>P1</span> ·"))))
+                .andExpect(content().string(containsString("href=\"/testes/leitura-pareada\">como referência")));
+        mvc.perform(get("/testes/leitura-pareada")).andExpect(status().isOk())
+                .andExpect(content().string(containsString("Só como referência")))
+                .andExpect(content().string(containsString("Só referência, não implementado")))
+                .andExpect(content().string(org.hamcrest.Matchers.not(containsString(">Criar uma conta</a>"))));
     }
 
     @Test

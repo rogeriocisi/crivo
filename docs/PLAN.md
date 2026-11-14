@@ -1,6 +1,6 @@
 # Plano técnico do MVP — Crivo (AIR Lab)
 
-> Derivado de `CONSTITUTION.md` (prevalece) e de `SPEC.md`. Versão 1.7 · novembro/2026 · 1.3: protocolo P4 (SPEC E13), fase A — contas com perfil fixo, e-mail e avisos ao administrador · 1.4: fase B — questionário versionado e pedido de consulta travado com compromisso salgado · 1.5: fase C — módulo `structured`: estudo P4, ciclo automático, pareamento, sorteio do médium, leitura travada e prazos · 1.6: fase D — desmascaramento automático no N, conferência, análise, relatório e devolutiva · 1.7: fase E — contas ligadas, teto por médium e página pública dos estudos.
+> Derivado de `CONSTITUTION.md` (prevalece) e de `SPEC.md`. Versão 1.8 · novembro/2026 · 1.8: o P1 é descontinuado (SPEC 0.14) e fica no site só como referência; `session`, `redaction`, `scoring` e `unblinding` congelam no estado atual; os próximos cortes são só do P4 · 1.3: protocolo P4 (SPEC E13), fase A — contas com perfil fixo, e-mail e avisos ao administrador · 1.4: fase B — questionário versionado e pedido de consulta travado com compromisso salgado · 1.5: fase C — módulo `structured`: estudo P4, ciclo automático, pareamento, sorteio do médium, leitura travada e prazos · 1.6: fase D — desmascaramento automático no N, conferência, análise, relatório e devolutiva · 1.7: fase E — contas ligadas, teto por médium e página pública dos estudos.
 > Este documento registra as decisões de implementação do MVP: estrutura de módulos,
 > esquemas e migrações, execução por linha de comando e justificativa de cada dependência.
 
@@ -43,11 +43,11 @@ quem pode depender; `ModularityTest` verifica isso no build.
 | `participant` | E2, E13 | **Implementado**: participantes, consentimento, alvos, pareamento, desistência; **contas do P4** (`AccountService`) com perfil fixo, confirmação de e-mail por link de uso único e exclusão que mantém o código; **pedidos de consulta do P4** (`ConsultationService`), travados na criação, com compromisso salgado (`ConsultationCommitment`), e a **liberação dos primeiros nomes** só ao médium sorteado; **sinalização de contas ligadas** por índice cego do e-mail canônico e do nome normalizado, com revisão humana e sem bloqueio |
 | `notification` | E13 | **Implementado**: `Mailer` — caixa de saída em memória nos perfis `local`/`test`, SMTP em produção, desativado sem SMTP —, `AdminNotices`, avisos ao administrador só com tipo, código e hora, e o e-mail ao médium sorteado, sem nomes |
 | `structured` | E13 | **Implementado (fases C e D)**: estudo P4 congelado com o questionário no anexo (`StructuredStudyService`), ciclo automático — pareamento, sorteio do médium, envio, prazos e reenvio —, leitura do médium travada com compromisso salgado (`MediumReadingService`, `ReadingCommitment`); no N, desmascaramento automático, conferência (`StructuredScoring`), análise, relatório (`StructuredReport`) e devolutiva (`FeedbackService`) |
-| `redaction` | E5 | Parcial: `ClueScrubber` (guarda de pistas). Persistência e telas pendentes |
+| `redaction` | E5 | **Congelado (P1 descontinuado)**: `ClueScrubber` fica como está; nada mais será implementado |
 | `analysis` | E7 | Parcial: Wilcoxon pareado exato (medida primária), binomial exato, permutação de Pratt e Birge e a sua versão **dentro dos estratos** (`StratifiedPermutationTest`, P4), `PowerCheck`, política de rótulo e redução às unidades independentes. Persistência e relatório pendentes |
-| `session` | E4 | Pendente (tabelas prontas; os slots contrabalanceados já saem do sorteio) |
-| `scoring` | E6 | Parcial: escala de cinco categorias com justificativa obrigatória e a lógica do link de uso único (`AccessLink`). Pacotes e telas pendentes |
-| `unblinding` | E7 | Pendente (tabelas prontas) |
+| `session` | E4 | **Congelado (P1 descontinuado)**: só as tabelas da `V6`; não será implementado |
+| `scoring` | E6 | **Congelado (P1 descontinuado)**: escala de cinco categorias e `AccessLink` ficam como estão; nada mais será implementado |
+| `unblinding` | E7 | **Congelado (P1 descontinuado)**: só as tabelas da `V9`. O desmascaramento do P4 mora em `structured` |
 | `cli` | E8 | **Implementado**: `airlab verify` |
 | `catalog` | — | **Implementado**: catálogo de protocolos (SPEC 1.1) e questionários versionados do P4 (`Questionnaires`), sem estado e sem dependência de outro módulo |
 | `trials` | E11, E12 | **Implementado**: sessões de autoatendimento dos dois testes de ESP — semente comprometida, alvo derivado só no travamento, impressão travada antes das candidatas, sessão abandonada registrada |
@@ -335,13 +335,15 @@ Windows e Linux sem Docker e sem banco instalado.
 
 ## 10. Próximos cortes
 
-1. **E4 (sessões)**: consumir `AllocationDrawn`, criar sessões, tela do experimentador com
-   apenas o primeiro nome, upload de mídia com identificador aleatório. É aqui que a unidade
-   confirmatória sorteada precisa ser persistida junto com as sessões, para alimentar o E7.
-2. **E5 (redação)**: persistência das leituras redigidas e itens, usando o `ClueScrubber` como
-   validação de submissão.
-3. **E6 (avaliação cega)**: links de uso único e expiráveis, formulário do consulente, bloqueio no
-   envio, mais as linhas da matriz de cegamento que dependem de estado persistido.
-4. **E7 (desmascaramento e análise)**: operação irreversível depois do fechamento de todas as
-   avaliações, execução da análise primária, relatório neutro.
-5. **E8/E9**: carimbo de tempo RFC 3161, pacote de verificação e script de análise em R.
+Só o P4, desde a SPEC 0.14. O P1 está descontinuado e fica no site apenas como referência; os
+módulos dele não recebem mais código.
+
+1. **E8, ancoragem externa**: carimbo de tempo RFC 3161 sobre o documento do pré-registro, o
+   relatório e a cabeça da trilha, para que o compromisso da semente do P4 deixe de depender de
+   ordem atestada pela própria plataforma (SPEC, questão 8). Exige escolher a autoridade de
+   carimbo e justificar a dependência de ASN.1/CMS (P8).
+2. **E9, pacote de verificação do P4**: envios, listas de elegíveis, leituras e a conferência
+   refeita por fora. Depende da decisão de LGPD sobre publicar respostas sobre pessoas falecidas.
+3. **Questões em aberto do P4** (SPEC, seção 9): 9 (revisão do questionário), 11 (qualificação de
+   médiuns) e 12 (valor do teto num estudo real).
+4. ***Dry-run*** do P4 com participantes fictícios.

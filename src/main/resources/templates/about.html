@@ -35,60 +35,65 @@
         <div>
           <dt>Leitura</dt>
           <dd>
-            Tudo o que o médium produz numa sessão a respeito de um alvo. Vem do inglês
-            <em>reading</em>, usado na literatura científica. No vocabulário espírita, o mais próximo
-            seria “comunicação” — a troca é deliberada: “comunicação” já pressupõe que alguém está se
-            comunicando, enquanto “leitura” descreve apenas o que se observou.
+            As respostas do médium ao questionário a respeito de um alvo, conhecendo só o primeiro
+            nome. Vem do inglês <em>reading</em>, usado na literatura científica. No vocabulário
+            espírita, o mais próximo seria “comunicação” — a troca é deliberada: “comunicação” já
+            pressupõe que alguém está se comunicando, enquanto “leitura” descreve apenas o que se
+            observou.
           </dd>
         </div>
         <div>
-          <dt>Item</dt>
+          <dt>Questionário</dt>
           <dd>
-            Uma única afirmação verificável extraída da leitura. “Era um homem alto, de mãos grandes”
-            é um item; duas afirmações no mesmo item tornam a pontuação ambígua e já renderam crítica
-            publicada a estudos anteriores.
+            A lista versionada de campos de múltipla escolha sobre a pessoa falecida, a mesma para o
+            consulente e para o médium, congelada no pré-registro. Cada campo é uma única pergunta
+            fechada: não há texto livre para interpretar, e por isso ninguém julga se uma resposta
+            “encaixa”.
           </dd>
         </div>
         <div>
           <dt>Consulente</dt>
           <dd>
-            Quem conheceu a pessoa falecida em vida e avalia as leituras. Na literatura em inglês o
-            termo é <em lang="en">sitter</em>, e é por ele que se procura nos artigos; em português
-            adotamos <strong>consulente</strong>, que descreve o papel sem soar a jargão traduzido.
-            No código o identificador permanece <code>sitter</code>, pela regra de manter código em
-            inglês.
+            Quem conheceu a pessoa falecida em vida e faz o pedido de consulta: o primeiro nome e as
+            respostas ao questionário. Na literatura em inglês o termo é <em lang="en">sitter</em>, e
+            é por ele que se procura nos artigos; em português adotamos <strong>consulente</strong>,
+            que descreve o papel sem soar a jargão traduzido. No código o identificador permanece
+            <code>sitter</code>, pela regra de manter código em inglês.
           </dd>
         </div>
         <div>
           <dt>Alvo</dt>
-          <dd>A pessoa falecida indicada por quem avalia. O médium recebe apenas o primeiro nome.</dd>
+          <dd>A pessoa falecida indicada pelo consulente. O médium recebe apenas o primeiro nome.</dd>
         </div>
         <div>
           <dt>Chamariz</dt>
           <dd>
-            A leitura do outro alvo do par, apresentada como alternativa. É o que separa acerto de
-            afirmação genérica: uma frase que serve para qualquer pessoa serve também para o chamariz.
+            As respostas do outro consulente do par, contra as quais a mesma leitura também é
+            conferida. É o que separa acerto de resposta frequente: “morreu do coração” coincide com
+            muita gente, e coincide também com o chamariz.
           </dd>
         </div>
         <div>
           <dt>Par</dt>
           <dd>
-            Dois alvos de perfil semelhante, pelos critérios declarados antes da coleta. Cada um é o
-            chamariz do outro.
+            Dois pedidos de perfil semelhante — mesmo gênero, faixa de idade e período do falecimento
+            —, pelos critérios declarados antes da coleta. Cada um é o chamariz do outro, e o mesmo
+            médium sorteado faz as duas leituras.
           </dd>
         </div>
         <div>
-          <dt>Experimentador</dt>
+          <dt>Compromisso</dt>
           <dd>
-            Quem conduz a sessão no lugar de quem avalia. Conhece só o primeiro nome do alvo, para que
-            não possa transmitir pistas nem ser acusado disso.
+            Uma impressão digital criptográfica, publicada antes, de algo que só é revelado depois —
+            as respostas do consulente, a leitura do médium, a semente do sorteio. Quem confere no fim
+            sabe que nada foi trocado no meio.
           </dd>
         </div>
         <div>
           <dt>Desmascaramento</dt>
           <dd>
-            A revelação de qual leitura era de qual alvo, depois que todas as avaliações estão
-            fechadas. Explícita, única e irreversível.
+            A revelação de qual leitura era de qual alvo. Acontece sozinha quando o número de pares
+            declarado se completa — ninguém escolhe o momento — e é única e irreversível.
           </dd>
         </div>
         <div>
@@ -108,18 +113,23 @@
       <h2>O que acontece com uma leitura</h2>
       <ol>
         <li>
-          <strong>Sessão.</strong> O experimentador diz ao médium apenas o primeiro nome do alvo. O
-          médium fala livremente e responde a perguntas objetivas, e tudo é gravado.
-        </li>
-        <li><strong>Leitura bruta.</strong> A gravação e sua transcrição.</li>
-        <li>
-          <strong>Leitura redigida.</strong> A transcrição vira uma lista numerada de itens. Saem o
-          primeiro nome, as datas e as referências ao experimentador.
+          <strong>Pedido.</strong> O consulente informa o primeiro nome da pessoa falecida e responde
+          a um questionário fechado sobre ela. As respostas travam com um compromisso salgado na
+          trilha, antes de qualquer médium receber o pedido.
         </li>
         <li>
-          <strong>Avaliação cega.</strong> Quem avalia recebe duas leituras do par, sem rótulo e em
-          ordem sorteada, pontua cada item, dá uma nota global a cada leitura e escolhe qual acredita
-          ser a sua.
+          <strong>Leitura estruturada.</strong> O médium sorteado recebe só os dois primeiros nomes
+          do par e responde ao mesmo questionário para cada um. Ao enviar, a leitura trava com hash
+          na trilha.
+        </li>
+        <li>
+          <strong>Conferência.</strong> No fim da coleta, cada leitura é comparada campo a campo com
+          as respostas do consulente do alvo e com as do outro consulente do par, o chamariz. Conta a
+          diferença entre as duas comparações.
+        </li>
+        <li>
+          <strong>Devolutiva.</strong> Cada consulente vê as respostas do médium para o seu alvo ao
+          lado das suas; cada médium vê as contagens das próprias leituras.
         </li>
       </ol>
 
@@ -129,20 +139,21 @@
         automatizado que tenta violá-la.
       </p>
       <ul>
-        <li>O médium e o experimentador nunca sabem quem é o participante que avaliará.</li>
-        <li>Quem redige a leitura em itens não sabe a quem ela pertence.</li>
-        <li>Quem avalia não sabe qual das duas leituras é a sua, nem pela ordem, nem pela data.</li>
+        <li>O médium vê só os primeiros nomes dos pedidos que recebeu — nunca o consulente, nunca as respostas dele.</li>
+        <li>O consulente não sabe qual médium recebeu o seu pedido nem vê a leitura antes do fim.</li>
         <li>
-          O próprio pesquisador não enxerga a ligação entre leitura e alvo antes do desmascaramento,
-          e não tem como ler a semente do sorteio: ela fica sob custódia cifrada.
+          O administrador não vê respostas, primeiros nomes, leituras nem a ligação entre pedido e
+          médium antes do desmascaramento, e não tem como ler a semente do sorteio: ela fica sob
+          custódia cifrada.
         </li>
-        <li>Experimentador e redator devem ser pessoas diferentes; se não forem, isso vira limitação registrada.</li>
+        <li>As notas não ficam escondidas: elas simplesmente não existem antes do desmascaramento, e o banco recusa gravá-las.</li>
       </ul>
 
       <div class="ressalva">
         <p>
           Nenhum modelo de inteligência artificial participa da avaliação das leituras, da pontuação
-          ou da decisão de acerto. A avaliação é humana e cega.
+          ou da decisão de acerto. A conferência é uma comparação de igualdade entre opções, por uma
+          regra publicada.
         </p>
       </div>
 

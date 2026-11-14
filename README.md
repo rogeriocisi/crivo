@@ -13,7 +13,7 @@ O catálogo tem duas seções: **protocolos AIR**, com o automatizado em destaqu
 | Seção | Código | Protocolo | Acaso | Automação |
 |---|---|---|---|---|
 | Protocolos AIR | **P4** | [Leitura estruturada automatizada](docs/SPEC.md#e13-leitura-estruturada-automatizada-p4) | 50% | **Integral**: conta, pedido, leitura, conferência e avisos sem ninguém da equipe |
-| Protocolos AIR | **P1** | [Leitura pareada cega](docs/SPEC.md) | 50% | Parcial: exige equipe — sessão síncrona com experimentador *proxy* e redator |
+| ~~Protocolos AIR~~ | ~~**P1**~~ | ~~Leitura pareada cega~~ | — | **Só referência** (SPEC 0.14): exigia equipe e não será implementado; a página fica no site como referência |
 | Experimentos extras | **P2** | Escolha forçada precognitiva (ESP) | 25% | Integral — qualquer pessoa faz pelo navegador, sem conta |
 | Experimentos extras | **P3** | Visão remota com quatro alvos (ESP) | 25% | Integral — qualquer pessoa faz pelo navegador, sem conta |
 
@@ -49,7 +49,7 @@ O Crivo não existe para provar que a mediunidade é real, nem que não é. Ele 
 
 ## Status
 
-🧱 **Fase 0 → 1: fundamentos implementados.** O núcleo de confiança está de pé: trilha de auditoria encadeada por hash, sorteio reproduzível com compromisso → revelação, pré-registro congelável e CLI de verificação. No AIR automatizado (P4), o fluxo inteiro está no ar: contas com perfil fixo, pedido de consulta com compromisso salgado, estudo P4 congelado, pareamento e sorteio do médium automáticos, leitura travada, prazos com reenvio e, no N, desmascaramento, conferência, relatório e devolutiva automáticos. Na leitura pareada (P1), os épicos de campo (sessões, redação, avaliação cega, desmascaramento) estão com o esquema de banco pronto e a implementação pendente. Ver a tabela de estado em [`docs/PLAN.md`](docs/PLAN.md).
+🧱 **Fase 0 → 1: fundamentos implementados.** O núcleo de confiança está de pé: trilha de auditoria encadeada por hash, sorteio reproduzível com compromisso → revelação, pré-registro congelável e CLI de verificação. No AIR automatizado (P4), o fluxo inteiro está no ar: contas com perfil fixo, pedido de consulta com compromisso salgado, estudo P4 congelado, pareamento e sorteio do médium automáticos, leitura travada, prazos com reenvio e, no N, desmascaramento, conferência, relatório e devolutiva automáticos. A leitura pareada conduzida por equipe (P1) foi **descontinuada** na SPEC 0.14 e não será implementada: o projeto segue só com o protocolo AIR totalmente automático. Ver a tabela de estado em [`docs/PLAN.md`](docs/PLAN.md).
 
 ## Como rodar
 
@@ -183,10 +183,12 @@ Sem Docker: todo passo do projeto — build, teste, execução, implantação e 
 
 ## Próximos passos
 
-1. P1: E4 (sessões) e E5 (redação), consumindo o evento do sorteio
-2. P1: E6 (avaliação cega) com links de uso único
-3. P1: E7 (desmascaramento e análise primária) e o relatório neutro
-4. Carimbo de tempo RFC 3161 e pacote de verificação (E8/E9)
+Só o P4 (leitura estruturada automatizada). Ver `docs/SPEC.md`, seção 10.
+
+1. Ancoragem externa da trilha e do pré-registro por carimbo de tempo RFC 3161 (E8)
+2. Pacote de verificação do P4 (E9), depois da decisão de LGPD sobre publicar respostas sobre pessoas falecidas
+3. Revisão do questionário `v1-rascunho` pelo pesquisador (questão em aberto 9)
+4. *Dry-run* completo do P4 com participantes fictícios
 
 ## Autor
 

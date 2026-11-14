@@ -22,7 +22,7 @@ public final class ProtocolCatalog {
             Protocol.Branch.AIR,
             1, 2,
             Protocol.Automation.PARTIAL,
-            Protocol.Status.IMPLEMENTED,
+            Protocol.Status.DISCONTINUED,
             "O médium produz uma leitura sobre um falecido-alvo conhecendo apenas o primeiro nome, "
                     + "entregue por um experimentador que não sabe nada sobre essa pessoa. A leitura é "
                     + "convertida em itens verificáveis por quem não sabe de quem ela é. O consulente "
@@ -99,7 +99,7 @@ public final class ProtocolCatalog {
                             + "existem na memória do consulente e no banco de dados.",
                     "Não tem experimentador proxy. Nos dois estudos em que o médium não interagiu "
                             + "com ninguém o resultado foi nulo (Silva e Moreira-Almeida, 2022), e um "
-                            + "nulo aqui não refuta a leitura pareada.",
+                            + "nulo aqui não refuta os protocolos com proxy da literatura.",
                     "O questionário fechado só captura o que cabe nos campos: as afirmações livres e "
                             + "específicas, que costumam ser as mais marcantes, ficam fora da nota.",
                     "O primeiro nome carrega informação, como o gênero e às vezes a geração. O "
@@ -112,8 +112,11 @@ public final class ProtocolCatalog {
     private static final List<Protocol> ALL =
             List.of(PAIRED_READING, PRECOGNITIVE_FORCED_CHOICE, REMOTE_VIEWING, STRUCTURED_READING);
 
-    /** The AIR section of the catalog, automated protocol first: it is the one featured. */
-    private static final List<Protocol> AIR = List.of(STRUCTURED_READING, PAIRED_READING);
+    /**
+     * The AIR section of the catalog. Only the fully automated protocol is offered: the paired
+     * reading (P1), which needs a team, was discontinued in SPEC 0.14 and is not listed.
+     */
+    private static final List<Protocol> AIR = List.of(STRUCTURED_READING);
 
     /** The extra experiments: the ESP tests, which say nothing about mediumship. */
     private static final List<Protocol> EXTRAS = List.of(PRECOGNITIVE_FORCED_CHOICE, REMOTE_VIEWING);
@@ -121,7 +124,7 @@ public final class ProtocolCatalog {
     private ProtocolCatalog() {
     }
 
-    /** Every protocol, in code order. */
+    /** Every protocol, in code order, discontinued ones included: codes are never reused. */
     public static List<Protocol> all() {
         return ALL;
     }
