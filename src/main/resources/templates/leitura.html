@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Leitura — Crivo</title>
   <meta name="robots" content="noindex">
-  <link rel="stylesheet" href="/css/crivo.css">
+  <link rel="stylesheet" th:href="@{/css/crivo.css}">
 </head>
 <body>
 <a class="pular" href="#conteudo">Pular para o conteúdo</a>
@@ -54,7 +54,7 @@
         <button class="botao botao-cheio" type="submit">Rever antes de travar</button>
       </form>
 
-      <p class="nota nota-espacada"><a href="/painel/medium">Voltar ao painel sem enviar</a></p>
+      <p class="nota nota-espacada"><a th:href="@{/painel/medium}">Voltar ao painel sem enviar</a></p>
     </div>
   </section>
 </main>

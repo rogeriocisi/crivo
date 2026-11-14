@@ -6,7 +6,7 @@
   <title>Caixa de saída — Crivo</title>
   <meta name="robots" content="noindex">
   <meta name="referrer" content="no-referrer">
-  <link rel="stylesheet" href="/css/crivo.css">
+  <link rel="stylesheet" th:href="@{/css/crivo.css}">
 </head>
 <body>
 <a class="pular" href="#conteudo">Pular para o conteúdo</a>
@@ -39,7 +39,7 @@
         <pre class="comando" th:text="${m.body}">Corpo</pre>
       </article>
 
-      <p class="acoes nota-espacada"><a class="botao botao-vazio" href="/painel/adm">Voltar ao painel</a></p>
+      <p class="acoes nota-espacada"><a class="botao botao-vazio" th:href="@{/painel/adm}">Voltar ao painel</a></p>
     </div>
   </section>
 </main>

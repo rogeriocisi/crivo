@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Confirme o e-mail — Crivo</title>
   <meta name="robots" content="noindex">
-  <link rel="stylesheet" href="/css/crivo.css">
+  <link rel="stylesheet" th:href="@{/css/crivo.css}">
 </head>
 <body>
 <a class="pular" href="#conteudo">Pular para o conteúdo</a>
@@ -34,7 +34,7 @@
         <p>
           <strong>Perfil local.</strong> Nenhum e-mail sai desta máquina. O link de confirmação está
           no log da aplicação, numa linha que começa com <code>Perfil local: link de confirmacao</code>,
-          e na <a href="/caixa-de-saida">caixa de saída</a>, que só o administrador abre.
+          e na <a th:href="@{/caixa-de-saida}">caixa de saída</a>, que só o administrador abre.
         </p>
       </div>
       <div class="ressalva" th:if="${smtpLocal}">
@@ -47,7 +47,7 @@
       </div>
 
       <p class="acoes">
-        <a class="botao botao-vazio" href="/login">Ir para a entrada</a>
+        <a class="botao botao-vazio" th:href="@{/login}">Ir para a entrada</a>
       </p>
     </div>
   </section>

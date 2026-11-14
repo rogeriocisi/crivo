@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Resultado da sessão — Crivo</title>
   <th:block th:replace="~{fragments/site :: social('Resultado da sessão — Crivo', 'Protocolos cegos para pesquisa de cognição anômala, com sorteio verificável e trilha de auditoria encadeada por hash.')}"></th:block>
-  <link rel="stylesheet" href="/css/crivo.css">
+  <link rel="stylesheet" th:href="@{/css/crivo.css}">
 </head>
 <body>
 <a class="pular" href="#conteudo">Pular para o conteúdo</a>
@@ -96,7 +96,7 @@ alvo(n) = SHA-256(semente || "trial:" || n || contador) mod 4</pre>
         <p class="nota">
           O botão abaixo roda a regra no seu navegador, sem falar com o servidor, e compara o
           resultado com o que esta sessão gravou. O código está em
-          <a href="/js/verificador-alvos.js"><code>/js/verificador-alvos.js</code></a> — pode ler
+          <a th:href="@{/js/verificador-alvos.js}"><code>/js/verificador-alvos.js</code></a> — pode ler
           antes de clicar.
         </p>
 
@@ -227,9 +227,9 @@ alvo(n) = SHA-256(semente || "trial:" || n || contador) mod 4</pre>
       </table>
 
       <p class="acoes">
-        <a class="botao botao-cheio" th:href="'/testes/' + ${protocolo.slug()} + '/rodar'">
+        <a class="botao botao-cheio" th:href="@{/testes/{s}/rodar(s=${protocolo.slug()})}">
           Fazer outra sessão</a>
-        <a class="botao botao-vazio" href="/testes">Voltar ao catálogo</a>
+        <a class="botao botao-vazio" th:href="@{/testes}">Voltar ao catálogo</a>
       </p>
       <p class="nota">
         Uma sessão nova sorteia outra semente. Repetir o teste é livre, e é justamente por isso
@@ -242,7 +242,7 @@ alvo(n) = SHA-256(semente || "trial:" || n || contador) mod 4</pre>
 </main>
 
 <footer th:replace="~{fragments/site :: rodape}"></footer>
-<script src="/js/verificador-alvos.js" defer></script>
-<script src="/js/sessao-teste.js" defer></script>
+<script th:src="@{/js/verificador-alvos.js}" defer></script>
+<script th:src="@{/js/sessao-teste.js}" defer></script>
 </body>
 </html>

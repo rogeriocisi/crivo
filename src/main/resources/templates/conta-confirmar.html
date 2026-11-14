@@ -6,7 +6,7 @@
   <title>Confirmar e-mail — Crivo</title>
   <meta name="robots" content="noindex">
   <meta name="referrer" content="no-referrer">
-  <link rel="stylesheet" href="/css/crivo.css">
+  <link rel="stylesheet" th:href="@{/css/crivo.css}">
 </head>
 <body>
 <a class="pular" href="#conteudo">Pular para o conteúdo</a>
@@ -35,13 +35,13 @@
       <th:block th:if="${resultado == 'CONFIRMED'}">
         <h1>Conta confirmada</h1>
         <p class="chamada">Pronto. Agora é só entrar com o seu e-mail e a sua senha.</p>
-        <p class="acoes"><a class="botao botao-cheio" href="/login">Entrar</a></p>
+        <p class="acoes"><a class="botao botao-cheio" th:href="@{/login}">Entrar</a></p>
       </th:block>
 
       <th:block th:if="${resultado == 'ALREADY_USED'}">
         <h1>Este link já foi usado</h1>
         <p class="chamada">A conta já está confirmada. Basta entrar.</p>
-        <p class="acoes"><a class="botao botao-cheio" href="/login">Entrar</a></p>
+        <p class="acoes"><a class="botao botao-cheio" th:href="@{/login}">Entrar</a></p>
       </th:block>
 
       <th:block th:if="${resultado == 'EXPIRED'}">
@@ -50,7 +50,7 @@
           Crie a conta de novo, com o mesmo e-mail, para receber um link novo. O perfil escolhido da
           primeira vez continua valendo.
         </p>
-        <p class="acoes"><a class="botao botao-cheio" href="/conta/criar">Receber outro link</a></p>
+        <p class="acoes"><a class="botao botao-cheio" th:href="@{/conta/criar}">Receber outro link</a></p>
       </th:block>
 
       <th:block th:if="${resultado == 'UNKNOWN'}">
@@ -58,7 +58,7 @@
         <p class="chamada">
           Confira se o endereço foi copiado inteiro. Se a conta foi excluída, o link deixa de valer.
         </p>
-        <p class="acoes"><a class="botao botao-vazio" href="/conta/criar">Criar conta</a></p>
+        <p class="acoes"><a class="botao botao-vazio" th:href="@{/conta/criar}">Criar conta</a></p>
       </th:block>
     </div>
   </section>

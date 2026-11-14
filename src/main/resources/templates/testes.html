@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Protocolos — Crivo</title>
   <th:block th:replace="~{fragments/site :: social('Protocolos — Crivo', 'Os protocolos da plataforma Crivo: o protocolo AIR de leitura estruturada automatizada e dois experimentos extras de percepção extrassensorial, que você pode fazer agora no navegador.')}"></th:block>
-  <link rel="stylesheet" href="/css/crivo.css">
+  <link rel="stylesheet" th:href="@{/css/crivo.css}">
 </head>
 <body>
 <a class="pular" href="#conteudo">Pular para o conteúdo</a>
@@ -49,12 +49,12 @@
             <span th:text="'acaso ' + ${p.chancePercent()} + '%'">acaso</span> ·
             <span th:text="${#strings.toLowerCase(p.status.label())}">situação</span>
           </p>
-          <h3><a th:href="'/testes/' + ${p.slug}" th:text="${p.name}">Nome</a></h3>
+          <h3><a th:href="@{/testes/{s}(s=${p.slug})}" th:text="${p.name}">Nome</a></h3>
           <p th:text="${p.summary}">Resumo</p>
           <p class="acoes">
-            <a class="botao botao-vazio" th:href="'/testes/' + ${p.slug}">Como funciona</a>
+            <a class="botao botao-vazio" th:href="@{/testes/{s}(s=${p.slug})}">Como funciona</a>
             <a class="botao botao-cheio" th:if="${p.automation.name() == 'FULL'}"
-               href="/conta/criar">Criar uma conta</a>
+               th:href="@{/conta/criar}">Criar uma conta</a>
             <span class="nota" th:if="${p.automation.name() != 'FULL'}">
               Este protocolo precisa de uma equipe — experimentador e redator — e não roda sozinho
               pelo site.
@@ -83,11 +83,11 @@
             <span th:text="${p.branch.label()}">Ramo</span> ·
             <span th:text="'acaso ' + ${p.chancePercent()} + '%'">acaso</span>
           </p>
-          <h3><a th:href="'/testes/' + ${p.slug}" th:text="${p.name}">Nome</a></h3>
+          <h3><a th:href="@{/testes/{s}(s=${p.slug})}" th:text="${p.name}">Nome</a></h3>
           <p th:text="${p.summary}">Resumo</p>
           <p class="acoes">
-            <a class="botao botao-vazio" th:href="'/testes/' + ${p.slug}">Como funciona</a>
-            <a class="botao botao-cheio" th:href="'/testes/' + ${p.slug} + '/rodar'">Fazer o teste agora</a>
+            <a class="botao botao-vazio" th:href="@{/testes/{s}(s=${p.slug})}">Como funciona</a>
+            <a class="botao botao-cheio" th:href="@{/testes/{s}/rodar(s=${p.slug})}">Fazer o teste agora</a>
           </p>
         </li>
       </ul>
@@ -113,7 +113,7 @@
             O projeto especificou também uma leitura pareada, com sessão síncrona, experimentador
             intermediário e redator — o desenho mais próximo da literatura. Ela não será implementada
             e não recebe participantes: o Crivo roda só o que funciona inteiro pelo site. O desenho
-            fica publicado <a href="/testes/leitura-pareada">como referência</a>, porque é contra
+            fica publicado <a th:href="@{/testes/leitura-pareada}">como referência</a>, porque é contra
             ele que se mede o preço de não ter intermediário.
           </p>
         </article>

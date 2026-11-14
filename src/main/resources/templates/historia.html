@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Linha do tempo — Crivo</title>
   <th:block th:replace="~{fragments/site :: social('Linha do tempo — Crivo', 'Cento e quarenta anos de tentativas de estudar mediunidade com método: da Society for Psychical Research em 1882 aos protocolos cegos e ao pré-registro.')}"></th:block>
-  <link rel="stylesheet" href="/css/crivo.css">
+  <link rel="stylesheet" th:href="@{/css/crivo.css}">
 </head>
 <body>
 <a class="pular" href="#conteudo">Pular para o conteúdo</a>
@@ -292,7 +292,7 @@
       </div>
 
       <p class="nota nota-espacada">
-        As entradas de 2005 em diante têm artigo com DOI em <a href="/referencias">Referências</a>.
+        As entradas de 2005 em diante têm artigo com DOI em <a th:href="@{/referencias}">Referências</a>.
         O panorama anterior segue o verbete
         <a href="https://pt.wikipedia.org/wiki/Estudos_sobre_mediunidade"><em>Estudos sobre
         mediunidade</em></a> da Wikipédia e as páginas do

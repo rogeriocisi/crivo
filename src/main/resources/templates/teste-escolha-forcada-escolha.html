@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Tentativa — Crivo</title>
   <th:block th:replace="~{fragments/site :: social('Tentativa — Crivo', 'Protocolos cegos para pesquisa de cognição anômala, com sorteio verificável e trilha de auditoria encadeada por hash.')}"></th:block>
-  <link rel="stylesheet" href="/css/crivo.css">
+  <link rel="stylesheet" th:href="@{/css/crivo.css}">
 </head>
 <body>
 <a class="pular" href="#conteudo">Pular para o conteúdo</a>
@@ -31,7 +31,7 @@
       </p>
       <p class="nota">Pelo teclado: as teclas <kbd>1</kbd> a <kbd>4</kbd> escolhem a porta.</p>
 
-      <form method="post" th:action="'/testes/' + ${protocolo.slug()} + '/escolha'"
+      <form method="post" th:action="@{/testes/{s}/escolha(s=${protocolo.slug()})}"
             data-envio-unico>
         <ul class="portas" data-portas>
           <li th:each="n : ${#numbers.sequence(1, alternativas)}">
@@ -59,7 +59,7 @@
         semente é revelada, e o hash dela tem de bater com o que está aí.
       </p>
 
-      <form method="post" th:action="'/testes/' + ${protocolo.slug()} + '/desistir'" data-envio-unico>
+      <form method="post" th:action="@{/testes/{s}/desistir(s=${protocolo.slug()})}" data-envio-unico>
         <p class="acoes">
           <button class="botao botao-vazio" type="submit">Desistir desta sessão</button>
         </p>
@@ -74,6 +74,6 @@
 </main>
 
 <footer th:replace="~{fragments/site :: rodape}"></footer>
-<script src="/js/sessao-teste.js" defer></script>
+<script th:src="@{/js/sessao-teste.js}" defer></script>
 </body>
 </html>

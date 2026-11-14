@@ -6,7 +6,7 @@
   <title>Entrar — Crivo</title>
   <th:block th:replace="~{fragments/site :: social('Entrar — Crivo', 'Protocolos cegos para pesquisa de cognição anômala, com sorteio verificável e trilha de auditoria encadeada por hash.')}"></th:block>
   <meta name="robots" content="noindex">
-  <link rel="stylesheet" href="/css/crivo.css">
+  <link rel="stylesheet" th:href="@{/css/crivo.css}">
 </head>
 <body>
 <a class="pular" href="#conteudo">Pular para o conteúdo</a>
@@ -26,7 +26,7 @@
         configuração do servidor. Cada um cai no painel do seu perfil.
       </p>
       <p class="nota">
-        Ainda não tem conta? <a href="/conta/criar">Crie uma</a>.
+        Ainda não tem conta? <a th:href="@{/conta/criar}">Crie uma</a>.
       </p>
 
       <form class="formulario" method="post" th:action="@{/login}">
@@ -35,7 +35,7 @@
         </p>
         <p class="erro" th:if="${param.naoConfirmada}" role="alert">
           A conta ainda não foi confirmada. Abra o link que enviamos por e-mail; se ele expirou,
-          <a href="/conta/criar">crie a conta de novo</a> para receber outro.
+          <a th:href="@{/conta/criar}">crie a conta de novo</a> para receber outro.
         </p>
         <p class="aviso" th:if="${param.logout}" role="status">
           Sessão encerrada.
@@ -76,7 +76,7 @@
         </p>
       </div>
 
-      <p class="nota nota-espacada"><a href="/">Voltar ao início</a></p>
+      <p class="nota nota-espacada"><a th:href="@{/}">Voltar ao início</a></p>
     </div>
   </section>
 </main>

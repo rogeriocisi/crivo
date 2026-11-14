@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Escolha forçada precognitiva — Crivo</title>
   <th:block th:replace="~{fragments/site :: social('Escolha forçada precognitiva — Crivo', 'Protocolos cegos para pesquisa de cognição anômala, com sorteio verificável e trilha de auditoria encadeada por hash.')}"></th:block>
-  <link rel="stylesheet" href="/css/crivo.css">
+  <link rel="stylesheet" th:href="@{/css/crivo.css}">
 </head>
 <body>
 <a class="pular" href="#conteudo">Pular para o conteúdo</a>
@@ -50,7 +50,7 @@
         existe para demonstrar o método de verificação, não para prometer um efeito.
       </p>
 
-      <form method="post" th:action="'/testes/' + ${protocolo.slug()} + '/comecar'">
+      <form method="post" th:action="@{/testes/{s}/comecar(s=${protocolo.slug()})}">
         <p>
           <label for="tentativas">Quantas tentativas nesta sessão</label>
           <select id="tentativas" name="tentativas">
@@ -61,7 +61,7 @@
         </p>
         <p class="acoes">
           <button class="botao botao-cheio" type="submit">Começar a sessão</button>
-          <a class="botao botao-vazio" href="/testes/escolha-forcada">Como funciona</a>
+          <a class="botao botao-vazio" th:href="@{/testes/escolha-forcada}">Como funciona</a>
         </p>
       </form>
     </div>

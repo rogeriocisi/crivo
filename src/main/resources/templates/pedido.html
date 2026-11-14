@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Meu pedido — Crivo</title>
   <meta name="robots" content="noindex">
-  <link rel="stylesheet" href="/css/crivo.css">
+  <link rel="stylesheet" th:href="@{/css/crivo.css}">
 </head>
 <body>
 <a class="pular" href="#conteudo">Pular para o conteúdo</a>
@@ -53,7 +53,7 @@
           <dd th:text="${item.value}">Resposta</dd>
         </th:block>
       </dl>
-      <p class="acoes nota-espacada"><a class="botao botao-vazio" href="/painel/consulente">Voltar ao painel</a></p>
+      <p class="acoes nota-espacada"><a class="botao botao-vazio" th:href="@{/painel/consulente}">Voltar ao painel</a></p>
     </div>
   </section>
 </main>
